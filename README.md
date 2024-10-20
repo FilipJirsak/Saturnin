@@ -4,10 +4,20 @@
 
 ## Development
 
+### Client
+
 Run the dev server:
 
 ```shellscript
-npm run dev
+deno task client
+```
+
+### Server
+
+Run the dev server:
+
+```shellscript
+deno task server
 ```
 
 ## Deployment
@@ -15,13 +25,13 @@ npm run dev
 First, build your app for production:
 
 ```sh
-npm run build
+deno task build
 ```
 
 Then run the app in production mode:
 
 ```sh
-npm start
+deno task start
 ```
 
 Now you'll need to pick a host to deploy it to.
@@ -30,7 +40,7 @@ Now you'll need to pick a host to deploy it to.
 
 If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
 
-Make sure to deploy the output of `npm run build`
+Make sure to deploy the output of `deno task build`
 
 - `build/server`
 - `build/client`

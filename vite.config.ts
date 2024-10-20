@@ -11,6 +11,7 @@ declare module "@remix-run/node" {
 export default defineConfig({
   plugins: [
     remix({
+      appDirectory: "client",
       future: {
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
