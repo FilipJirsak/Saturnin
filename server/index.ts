@@ -1,6 +1,19 @@
-import { Hono } from '@hono/hono'
-const app = new Hono()
+import {Hono} from "@hono/hono";
+import {showRoutes} from "@hono/hono/dev";
+import projectRouter from "./project/router.ts";
+import issueRouter from "./issue/index.ts";
+import viewRouter from "./view/index.ts";
 
-app.get('/', (c) => c.text('Hono!'))
+const app = new Hono();
 
-export default app
+const api = new Hono();
+api.route("/project", projectRouter);
+api.route("/issue", issueRouter);
+api.route("/view", viewRouter);
+app.route("/api", api);
+
+showRoutes(app, {
+    verbose: true,
+});
+
+export default app;

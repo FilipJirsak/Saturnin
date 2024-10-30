@@ -1,6 +1,11 @@
 {
   "tasks": {
-    "server": "deno serve --allow-read server/index.ts"
+    "server": "deno serve  --port 8080 --allow-read  --allow-net server/index.ts",
+    "server:dev": "deno serve  --port 8080 --watch --allow-read  --allow-net server/index.ts",
+    "db:dev": "surreal start --unauthenticated file:./data"
   },
-  "imports": { "@hono/hono": "jsr:@hono/hono@^4.6.5" }
+  "imports": {
+    "@hono/hono": "jsr:@hono/hono@^4.6.5",
+    "@surrealdb/surrealdb": "jsr:@surrealdb/surrealdb@^1.0.6"
+  }
 }

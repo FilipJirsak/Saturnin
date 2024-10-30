@@ -1,0 +1,45 @@
+### List projects
+GET {{baseURL}}/api/project
+
+### Create project
+POST {{baseURL}}/api/project
+Content-Type: application/json
+
+{
+  "code": "TEST",
+  "name": "Test project"
+}
+
+### Read project
+GET {{baseURL}}/api/project/TEST2
+
+### Update project
+PUT {{baseURL}}/api/project/TEST2
+Content-Type: application/json
+
+{
+  "name": "Test 2 project"
+}
+
+### Merge project
+PATCH {{baseURL}}/api/project/TEST2
+Content-Type: application/json
+
+{
+  "name": "Test 3 project"
+}
+
+### Patch project
+PATCH {{baseURL}}/api/project/TEST2
+Content-Type: application/json-patch+json
+
+[
+  {
+    "op": "replace",
+    "path": "/name",
+    "value": "Test 4 project"
+  }
+]
+
+### Delete project
+DELETE {{baseURL}}/api/project/TEST2

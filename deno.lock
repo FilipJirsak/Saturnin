@@ -2,6 +2,7 @@
   "version": "4",
   "specifiers": {
     "jsr:@hono/hono@^4.6.5": "4.6.5",
+    "jsr:@surrealdb/surrealdb@^1.0.6": "1.0.6",
     "npm:@remix-run/dev@^2.13.1": "2.13.1_@remix-run+react@2.13.1__react@18.3.1__react-dom@18.3.1___react@18.3.1__typescript@5.6.3_@remix-run+serve@2.13.1__express@4.21.1__typescript@5.6.3_typescript@5.6.3_vite@5.4.9_@babel+core@7.25.8_react@18.3.1_react-dom@18.3.1__react@18.3.1_esbuild@0.17.6_postcss@8.4.47",
     "npm:@remix-run/node@^2.13.1": "2.13.1_typescript@5.6.3",
     "npm:@remix-run/react@^2.13.1": "2.13.1_react@18.3.1_react-dom@18.3.1__react@18.3.1_typescript@5.6.3",
@@ -29,6 +30,9 @@
   "jsr": {
     "@hono/hono@4.6.5": {
       "integrity": "68efe4a0ab7c4fb082cb71aa894a25e1c6cfad6d124dc943471e6758a7a1bdee"
+    },
+    "@surrealdb/surrealdb@1.0.6": {
+      "integrity": "f063e15006582098399ae4c515719c8ed23a4083e42c33c52c61c89a751e573d"
     }
   },
   "npm": {
@@ -5037,7 +5041,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@hono/hono@^4.6.5"
+      "jsr:@hono/hono@^4.6.5",
+      "jsr:@surrealdb/surrealdb@^1.0.6"
     ],
     "packageJson": {
       "dependencies": [
