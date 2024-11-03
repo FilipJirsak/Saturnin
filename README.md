@@ -36,3 +36,15 @@ deno task db:dev
 deno task server:dev
 deno task client:dev
 ```
+
+## Project structure
+```text
+data   – SurrealDB database files. Is created within first SurrealDB start.
+public – Static files for client (frontend).
+client – Client (frontend) code – Remix.
+server – Server (backend) code – Hono.
+types  – Common TypeScript types for both server and client.
+surql  – SurrealDB initialization scripts and sample data.
+test   – Tests
+  http – Testing HTTP requests for IntelliJ Idea HTTP client.
+```
