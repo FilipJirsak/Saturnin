@@ -1,50 +1,38 @@
-# Welcome to Remix!
-
-- 📖 [Remix docs](https://remix.run/docs)
+# Saturnin
 
 ## Development
 
-### Client
+### Before run
 
-Run the dev server:
+Install application dependencies:
 
-```shellscript
-deno task client
-```
+* [Deno](https://deno.com)
+* [SurrealDB](https://surrealdb.com/install)
 
-### Server
-
-Run the dev server:
+Install library dependencies:
 
 ```shellscript
-deno task server
+deno install
 ```
 
-## Deployment
+### Initialize database
 
-First, build your app for production:
+It will remove all data from previous database!
 
-```sh
-deno task build
+Run:
+
+```shellscript
+deno task db:dev
+deno task db:init
+deno task db:sample
 ```
 
-Then run the app in production mode:
+### Development run
 
-```sh
-deno task start
+Run the dev servers:
+
+```shellscript
+deno task db:dev
+deno task server:dev
+deno task client:dev
 ```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `deno task build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.

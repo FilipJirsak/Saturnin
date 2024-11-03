@@ -1,0 +1,10 @@
+### List project issues
+GET {{baseURL}}/api/project/TEST2/issue
+
+### Create issue in project
+POST {{baseURL}}/api/project/TEST2/issue
+Content-Type: application/json
+
+{
+  "title": "Issue A"
+}

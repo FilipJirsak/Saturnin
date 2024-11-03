@@ -1,89 +1,109 @@
 import {type Patch, RecordId, ResponseError} from "@surrealdb/surrealdb";
-import db from "../db.ts";
+import type {Project, ProjectFull} from "../../types/index.ts";
+import db from "../db/index.ts";
 
-type Code = {
-    code: string;
-};
-
-export type Project = {
-    name: string;
-};
-
-export type ProjectFull = Project & Code;
-
-const toDB = (project: ProjectFull): { code: string; entity: Project } => {
-    const { code, ...entity } = project;
-    return { code, entity };
-};
-
-const fromDB: {
-    (entity: Project & { id: RecordId }): ProjectFull;
-    (entity: Project & { id: RecordId } | undefined): ProjectFull | null;
-} = (
-    entity: Project & { id: RecordId } | undefined,
-): ProjectFull | null => {
-    if (entity === undefined) {
-        return null;
-    }
-    const { id, ...project } = entity;
-    return { code: id.id as string, ...project };
-};
-
-export const list = async (): Promise<Project[]> => {
-    return (await db.select<Project>("project")).map((entity) =>
-        fromDB(entity)
+export const list = async (): Promise<ProjectFull[]> => {
+    return await multipleResult(
+        () => db.select<ProjectDBFull>("project"),
     );
 };
 
-export const read = async (code: string): Promise<Project | null> => {
-    return fromDB(await db.select<Project>(new RecordId("project", code)));
+export const read = async (code: string): Promise<ProjectFull | null> => {
+    return await singleResult(
+        () => db.select<ProjectDBFull>(createID(code)),
+    );
 };
 
 export const create = async (
-    project: ProjectFull,
+    projectFull: ProjectFull,
 ): Promise<ProjectFull | null> => {
-    const { code, entity } = toDB(project);
+    const { code, ...project } = projectFull;
     try {
-        const response = await db.create<Project>(
-            new RecordId("project", code),
-            entity,
+        return await singleResult(
+            () => db.create<ProjectDBFull, ProjectDB>(createID(code), toDB(project)),
         );
-        return fromDB(response);
     } catch (e) {
-        if (e instanceof ResponseError) {
+        //TODO
+        if (
+            e instanceof ResponseError &&
+            e.message.match(/Database record `project:.+` already exists/)
+        ) {
+            console.error(e);
             return null;
         }
         throw e;
     }
 };
 
-export const update = async (
-    code: string,
-    project: Project,
-): Promise<ProjectFull | null> => {
-    return fromDB(
-        await db.update<Project>(new RecordId("project", code), project),
+export const update = async (code: string, project: Project): Promise<ProjectFull | null> => {
+    return await singleResult(
+        () => db.update<ProjectDBFull, ProjectDB>(createID(code), toDB(project)),
     );
 };
 
-export const merge = async (
-    code: string,
-    project: Partial<Project>,
-): Promise<ProjectFull | null> => {
-    return fromDB(
-        await db.merge<Project>(new RecordId("project", code), project),
+export const merge = async (code: string, project: Partial<Project>): Promise<ProjectFull | null> => {
+    //TODO Partial<>
+    return await singleResult(
+        () => db.merge<ProjectDBFull, ProjectDB>(createID(code), toDB(project)),
     );
 };
 
-export const patch = async (
-    code: string,
-    patch: Patch[],
-): Promise<ProjectFull | null> => {
-    return fromDB(
-        await db.patch<Project>(new RecordId("project", code), patch),
+export const patch = async (code: string, patch: Patch[]): Promise<ProjectFull | null> => {
+    return await singleResult(
+        () => db.patch<ProjectDBFull>(createID(code), patch),
     );
 };
 
 export const remove = async (code: string) => {
-    await db.delete(new RecordId("project", code));
+    await db.delete(createID(code));
 };
+
+//region Implementation
+type ProjectDB = Omit<Project, "code" | "initial_issue_state"> & {
+    initial_issue_state: RecordId;
+};
+
+type ProjectDBFull = Omit<ProjectFull, "code" | "initial_issue_state"> & {
+    id: RecordId;
+    initial_issue_state: RecordId;
+};
+
+//TODO
+type DBFunc = () => Promise<ProjectDBFull | undefined>;
+type DBFuncMultiple = () => Promise<ProjectDBFull[]>;
+
+const createID = (code: string): RecordId => {
+    return new RecordId("project", code);
+}
+
+const singleResult = async (func: DBFunc): Promise<ProjectFull | null> => {
+    const result = await func();
+    if (result === undefined) {
+        return null;
+    }
+    return fromDB(result);
+};
+
+const multipleResult = async (func: DBFuncMultiple): Promise<ProjectFull[]> => {
+    const result = await func();
+    return result.map(fromDB);
+};
+
+const fromDB = (entity: ProjectDBFull): ProjectFull => {
+    const { id, initial_issue_state, ...project } = entity;
+    return {
+        code: id.id as string,
+        initial_issue_state: initial_issue_state.id as string,
+        ...project,
+    };
+};
+
+const toDB = (project: Project): ProjectDB => {
+    const { initial_issue_state, ...entity } = project;
+    return {
+        initial_issue_state: new RecordId("issue_state", initial_issue_state),
+        ...entity,
+    };
+};
+
+//endregion
