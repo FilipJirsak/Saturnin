@@ -24,6 +24,15 @@ module.exports = {
   // Base config
   extends: ["eslint:recommended"],
 
+/*  rules: {
+    'prettier/prettier': 'error',
+    'object-curly-spacing': ['error', 'always'],
+    'template-curly-spacing': ['error', 'always'],
+    'array-bracket-spacing': ['error', 'always'],
+    'computed-property-spacing': ['error', 'always'],
+    'quotes': ['error', 'single'],
+  },*/
+
   overrides: [
     // React
     {

@@ -1,5 +1,5 @@
 import {type Patch, RecordId, ResponseError} from "@surrealdb/surrealdb";
-import type {Issue, IssueFull} from "../../types/index.ts";
+import type {Issue, IssueFull} from "~/types";
 import db from "../db/index.ts";
 
 export const listProject = async (projectCode: string): Promise<IssueFull[]> => {
