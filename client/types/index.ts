@@ -17,6 +17,10 @@ export type Project = {
 
 export type ProjectFull = Project & Code;
 
+export interface ProjectWithIssues extends ProjectFull {
+    issues: IssueFull[];
+}
+
 export type Issue = TitleOrSummary & {
     description?: string;
     state?: string;
@@ -28,3 +32,8 @@ export type IssueFull = Issue & {
     state: string;
     last_modified: string;
 };
+
+export type LoaderData = {
+    projects: ProjectWithIssues[];
+};
+

@@ -49,6 +49,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     --border: 220 13% 91%;
+    --sidebar-border: 220 13% 85%;
     --input: 220 13% 91%;
     --ring: 262.1 83.3% 57.8%;
     --radius: 0.5rem;
@@ -77,6 +78,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
     --border: 215 27.9% 16.9%;
+    --sidebar-border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
     --ring: 263.4 70% 50.4%;
     --chart-1: 220 70% 50%;
@@ -88,7 +90,7 @@
 }
 
 @layer components {
-  .input-base {
+/*  .input-base {
     @apply block w-full rounded-lg border-surface-200 bg-white px-4 py-2.5 text-surface-900
     shadow-subtle transition duration-200 placeholder:text-surface-500
     focus:border-brand-500 focus:ring-2 focus:ring-brand-200
@@ -118,7 +120,7 @@
   .card {
     @apply rounded-xl border border-surface-200 bg-white p-6 shadow-subtle
     dark:border-surface-700 dark:bg-surface-800;
-  }
+  }*/
 }
 
 
@@ -126,17 +128,6 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-
-
-@layer base {
-  * {
-    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;

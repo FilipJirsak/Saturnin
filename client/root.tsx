@@ -3,12 +3,15 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  ScrollRestoration, useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
-
+import {LinksFunction} from "@remix-run/node";
 import "./styles/tailwind.css";
-import {ReactNode} from "react";
+import {DndProvider} from "react-dnd";
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {ReactNode, useEffect, useState} from "react";
+import {createDragDropManager} from "dnd-core";
+import AppLayout from "~/components/layout/AppLayout";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,11 +26,37 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const manager = createDragDropManager(HTML5Backend)
+
+const ClientOnly = ({ children }: { children: ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return mounted ? children : null;
+}
+
+export const loader = async () => {
+  const resp = await fetch("http://localhost:8080/api/project");
+  const projects = await resp.json();
+  for await (const project of projects) {
+    const issueResp = await fetch(`http://localhost:8080/api/project/${project.code}/issue`);
+    project.issues = await issueResp.json();
+  }
+  return new Response(JSON.stringify({ projects }), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+//TODO (NL): Nutno použít i tento Layout?
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="cs">
       <head>
-        <title>Saturnin</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
@@ -43,5 +72,15 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const { projects } = useLoaderData<typeof loader>();
+
+  return (
+      <ClientOnly>
+        <DndProvider manager={manager} backend={HTML5Backend}>
+          <AppLayout projects={projects}>
+            <Outlet />
+          </AppLayout>
+        </DndProvider>
+      </ClientOnly>
+  );
 }
