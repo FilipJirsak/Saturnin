@@ -1,4 +1,4 @@
-import KanbanBoard from "~/components/features/kanban/KanbanBoard";
+import KanbanBoard from "~/features/views/kanban/KanbanBoard";
 import {useProjects} from "~/hooks/useProjects";
 
 export default function ProjectsBoardPage() {

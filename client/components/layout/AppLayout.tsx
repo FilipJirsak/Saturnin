@@ -11,8 +11,9 @@ import {Fragment, ReactNode} from "react";
 import {AppSidebar} from "~/components/layout/AppSidebar";
 import {Separator} from "~/components/ui/separator";
 import {ProjectWithIssues} from "~/types";
-import {getBreadcrumbs} from "~/lib/utils";
+import {getBreadcrumbs} from "~/utils/helpers";
 import {sidebarItems} from "~/lib/data";
+import {Toaster} from "~/components/ui/toaster";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -58,6 +59,7 @@ const AppLayout = ({ children, projects }: AppLayoutProps) => {
               </div>
             </main>
           </SidebarInset>
+          <Toaster />
         </SidebarProvider>
       </div>
   );

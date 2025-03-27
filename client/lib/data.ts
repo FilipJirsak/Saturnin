@@ -1,4 +1,15 @@
-import {BookOpen, Brain, FolderKanban, Home, Library, MessagesSquare, Network, Settings, Users} from "lucide-react";
+import {
+  BookOpen,
+  Brain,
+  FolderKanban,
+  Home,
+  Inbox,
+  Library,
+  MessagesSquare,
+  Network,
+  Settings,
+  Users
+} from "lucide-react";
 
 export const sidebarItems = {
   user: {
@@ -20,15 +31,18 @@ export const sidebarItems = {
   ],
   navMain: [
     {
-      title: "Přehled",
+      title: "Inbox",
       url: "/",
+      icon: Inbox,
+      isActive: true,
+    },
+      /*TODO (NL): Upravit URLs*/
+    {
+      title: "Přehled",
+      url: "/dashboard",
       icon: Home,
       isActive: true,
       items: [
-        {
-          title: "Dashboard",
-          url: "/",
-        },
         {
           title: "Statistiky",
           url: "/statistics",
@@ -76,7 +90,7 @@ export const sidebarItems = {
           url: "/projects/board",
         },
         {
-          title: "Seznam úkolů",
+          title: "Seznam issues",
           url: "/projects/tasks",
         },
         {
