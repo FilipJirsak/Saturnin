@@ -67,15 +67,18 @@ export function NavProjects({
                       side={isMobile ? "bottom" : "right"}
                       align={isMobile ? "end" : "start"}
                   >
+                    {/*TODO (NL): Doplnit funkcionalitu pro prohlédnutí projektu*/}
                     <DropdownMenuItem>
                       <Folder className="text-muted-foreground" />
                       <span>Prohlédnout projekt</span>
                     </DropdownMenuItem>
+                    {/*TODO (NL): Doplnit funkcionalitu pro sdílení projektu*/}
                     <DropdownMenuItem>
                       <Forward className="text-muted-foreground" />
                       <span>Sdílet projekt</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    {/*TODO (NL): Doplnit funkcionalitu pro smazání projektu*/}
                     <DropdownMenuItem>
                       <Trash2 className="text-muted-foreground" />
                       <span>Smazat projekt</span>
@@ -104,12 +107,6 @@ export function NavProjects({
                 </SidebarMenuButton>
               </SidebarMenuItem>
           )}
-          {/*<SidebarMenuItem>
-            <SidebarMenuButton className="text-sidebar-foreground/70">
-              <MoreHorizontal className="text-sidebar-foreground/70" />
-              <span>Více</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>*/}
         </SidebarMenu>
       </SidebarGroup>
   )
