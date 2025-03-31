@@ -57,16 +57,16 @@ export function InboxIssueCard({
         </CardHeader>
         {issue.description && (
             <CardContent className="p-4 pt-0">
-              <p className="text-sm text-surface-600 dark:text-surface-400">
+              <p className="text-sm text-muted-foreground">
                 {issue.description}
               </p>
             </CardContent>
         )}
         <CardFooter className="p-4 flex justify-between items-center border-t">
-          <div className="text-xs text-surface-500">
-          <span title={formatDate(issue.last_modified)}>
-            {formatRelativeTime(issue.last_modified)}
-          </span>
+          <div className="text-xs text-muted-foreground">
+            <span title={formatDate(issue.last_modified)}>
+              {formatRelativeTime(issue.last_modified)}
+            </span>
           </div>
           <div className="flex items-center space-x-2">
             <Select

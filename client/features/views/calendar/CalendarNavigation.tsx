@@ -26,24 +26,24 @@ export function CalendarNavigation({
                                    }: CalendarNavigationProps) {
   return (
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-surface-900 dark:text-surface-50">
+        <h2 className="text-base font-semibold text-foreground">
           {formatCurrentDate(viewType, currentDate)}
         </h2>
         <div className="flex items-center space-x-2">
-          <div className="flex items-center rounded-full bg-white shadow-sm dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+          <div className="flex items-center rounded-full bg-card shadow-sm border border-border">
             <Button
                 variant="ghost"
                 size="icon"
                 className="rounded-l-full h-9 w-9 flex items-center justify-center"
                 onClick={() => onNavigate('prev')}
             >
-              <ChevronLeftIcon className="h-5 w-5 text-surface-500 dark:text-surface-400" aria-hidden="true" />
+              <ChevronLeftIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
               <span className="sr-only">Předchozí</span>
             </Button>
             <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 text-sm px-4 font-medium hidden md:block border-x border-surface-200 dark:border-surface-700 rounded-none"
+                className="h-9 text-sm px-4 font-medium hidden md:block border-x border-border rounded-none"
                 onClick={onToday}
             >
               Dnes
@@ -54,14 +54,14 @@ export function CalendarNavigation({
                 className="rounded-r-full h-9 w-9 flex items-center justify-center"
                 onClick={() => onNavigate('next')}
             >
-              <ChevronRightIcon className="h-5 w-5 text-surface-500 dark:text-surface-400" aria-hidden="true" />
+              <ChevronRightIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
               <span className="sr-only">Další</span>
             </Button>
           </div>
           <div className="hidden md:flex md:items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-x-1.5 bg-white dark:bg-surface-800">
+                <Button variant="outline" size="sm" className="flex items-center gap-x-1.5 bg-card">
                   {viewType === 'month' ? 'Měsíc' : viewType === 'week' ? 'Týden' : 'Den'}
                   <ChevronDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                 </Button>

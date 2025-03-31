@@ -32,11 +32,11 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
 
   const DragHandle = () => (
       <div
-          className="absolute right-2 top-2 cursor-move h-5 w-5 flex items-center justify-center rounded-full hover:bg-surface-100 dark:hover:bg-surface-700"
+          className="absolute right-2 top-2 cursor-move h-5 w-5 flex items-center justify-center rounded-full hover:bg-muted"
           ref={drag}
       >
         <svg
-            className="h-3 w-3 text-surface-400"
+            className="h-3 w-3 text-muted-foreground"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -58,7 +58,7 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
 
           <CardHeader className="p-4">
             <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-surface-500 dark:text-surface-400">
+            <span className="text-xs font-medium text-muted-foreground">
               {code}
             </span>
             </div>
@@ -67,18 +67,18 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
 
           {summary && (
               <CardContent className="p-4 pt-0">
-                <p className="text-sm text-surface-600 dark:text-surface-300 line-clamp-2">
+                <p className="text-sm text-foreground/80 line-clamp-2">
                   {summary}
                 </p>
               </CardContent>
           )}
 
-          <CardFooter className="p-3 border-t border-surface-100 dark:border-surface-800 flex flex-wrap justify-between">
+          <CardFooter className="p-3 border-t flex flex-wrap justify-between">
             <div className="flex items-center space-x-3">
               {/*TODO (NL): Budeme mít i komentáře?*/}
               {(issue.comments_count !== undefined) && (
-                  <div className="flex items-center text-surface-500 dark:text-surface-400">
-                    <ChatBubbleLeftIcon className="mr-1.5 h-3.5 w-3.5" />
+                  <div className="flex items-center text-muted-foreground">
+                    <ChatBubbleLeftIcon className="mr-1.5 h-3.5 w-3.5"/>
                     <span className="text-xs">
                   {issue.comments_count}
                 </span>
@@ -86,8 +86,8 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
               )}
 
               {(issue.attachments_count !== undefined && issue.attachments_count > 0) && (
-                  <div className="flex items-center text-surface-500 dark:text-surface-400">
-                    <PaperClipIcon className="mr-1.5 h-3.5 w-3.5" />
+                  <div className="flex items-center text-muted-foreground">
+                    <PaperClipIcon className="mr-1.5 h-3.5 w-3.5"/>
                     <span className="text-xs">
                   {issue.attachments_count}
                 </span>
@@ -95,8 +95,8 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
               )}
 
               {due_date && (
-                  <div className="flex items-center text-surface-500 dark:text-surface-400">
-                    <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
+                  <div className="flex items-center text-muted-foreground">
+                    <CalendarIcon className="mr-1.5 h-3.5 w-3.5"/>
                     <span className="text-xs">
                   {format(new Date(due_date), "dd.MM")}
                 </span>
@@ -112,7 +112,7 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
                 </Avatar>
             ) : (
                 /*TODO (NL): Co použít, pokud není přiřazená osoba*/
-                <Avatar className="h-6 w-6 bg-surface-100 text-surface-500 transition-colors">
+                <Avatar className="h-6 w-6 bg-muted text-muted-foreground transition-colors">
                   <AvatarFallback className="text-xs">–</AvatarFallback>
                 </Avatar>
             )}

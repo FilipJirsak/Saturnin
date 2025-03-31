@@ -50,8 +50,8 @@ const KanbanColumn = ({
       <Card
           ref={drop}
           className={cn(
-              "flex w-80 flex-shrink-0 flex-col border-none bg-surface-50 transition-colors dark:bg-surface-800/90",
-              isOver && "bg-primary/5 dark:bg-primary/10"
+              "flex w-80 flex-shrink-0 flex-col border-none bg-muted/20 transition-colors",
+              isOver && "bg-primary/5"
           )}
       >
         <CardHeader className="px-4 pb-2 pt-4">
@@ -78,8 +78,9 @@ const KanbanColumn = ({
         </CardHeader>
         <CardContent className="flex flex-col space-y-3 overflow-auto p-4 pt-0">
           {issues.length === 0 ? (
-              <div className="flex min-h-20 items-center justify-center rounded-md border border-dashed border-surface-300 p-4 text-center dark:border-surface-700">
-                <p className="flex flex-col items-center text-xs text-surface-500 dark:text-surface-400">
+              /*TODO (NL): Tmavší border*/
+              <div className="flex min-h-20 items-center justify-center rounded-md border border-dashed p-4 text-center">
+                <p className="flex flex-col items-center text-xs text-muted-foreground">
                   <ArrowUpToLine size={16} className="mb-1" />
                   <span>Žádné issues</span>
                 </p>
