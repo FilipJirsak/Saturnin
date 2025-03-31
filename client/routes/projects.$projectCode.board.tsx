@@ -11,7 +11,7 @@ export default function ProjectBoardView() {
   const { project, issues } = useOutletContext<ProjectContext>();
 
   return (
-      <div className="rounded-xl border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="rounded-xl border bg-background">
         <div className="overflow-x-auto">
           <KanbanBoard projectCode={project.code} issues={issues} />
         </div>

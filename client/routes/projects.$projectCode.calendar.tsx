@@ -37,7 +37,7 @@ export default function ProjectCalendarView() {
 
   return (
       <Card className="flex flex-col h-full overflow-hidden">
-        <div className="flex-none p-6 border-b border-surface-200 dark:border-surface-700">
+        <div className="flex-none p-6 border-b border-border">
           <CalendarNavigation
               currentDate={currentDate}
               viewType={viewType}

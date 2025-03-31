@@ -50,7 +50,7 @@ export function getLocalDateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-//TODO (NL): Upravit, aby se používalo datum vytvoření issue
+//TODO (NL): Upravit, aby se používalo datum vytvoření issue + upravit href
 /**
  * Converts an issue to a calendar event
  *
@@ -90,7 +90,7 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
       time: time,
       datetime: date.toISOString(),
       href: `#issue-${issue.code}`,
-      colorClass: stateColorMap[issue.state] || 'bg-surface-50 text-surface-700 hover:bg-surface-100 group-hover:text-surface-900 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700 dark:group-hover:text-surface-100'
+      colorClass: stateColorMap[issue.state] || 'bg-muted text-foreground/80 hover:bg-muted/80 group-hover:text-foreground'
     };
   } catch (error) {
     console.warn("Chyba při zpracování data pro issue:", issue.code, error);
@@ -103,7 +103,7 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
       time: "09:00",
       datetime: date.toISOString(),
       href: `#issue-${issue.code}`,
-      colorClass: stateColorMap[issue.state] || 'bg-surface-50 text-surface-700 hover:bg-surface-100 group-hover:text-surface-900 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700 dark:group-hover:text-surface-100'
+      colorClass: stateColorMap[issue.state] || 'bg-muted text-foreground/80 hover:bg-muted/80 group-hover:text-foreground'
     };
   }
 }

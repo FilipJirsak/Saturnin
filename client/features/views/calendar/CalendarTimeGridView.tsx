@@ -32,16 +32,16 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
       <div className="relative h-full">
 
         <div ref={containerRef}
-             className="isolate flex flex-auto flex-col overflow-auto bg-white dark:bg-surface-900 rounded-lg border border-surface-200 dark:border-surface-700">
+             className="isolate flex flex-auto flex-col overflow-auto bg-card rounded-lg border border-border">
           <div style={viewType === 'week' ? {width: '165%'} : {}}
                className="flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
             <div
                 ref={containerNavRef}
-                className={cn("sticky top-0 z-30 flex-none bg-white shadow-sm border-b border-surface-200 dark:border-surface-700 dark:bg-surface-900 sm:pr-8")}
+                className={cn("sticky top-0 z-30 flex-none bg-card shadow-sm border-b border-border sm:pr-8")}
             >
               {viewType === 'week' ? (
                   <>
-                    <div className="grid grid-cols-7 text-sm text-surface-500 dark:text-surface-400 sm:hidden">
+                    <div className="grid grid-cols-7 text-sm text-muted-foreground sm:hidden">
                       {daysOfWeek.map((d, index) => (
                           <button
                               key={index}
@@ -52,7 +52,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                             {d.day}
                             <span className={cn(
                                 "mt-1 flex h-8 w-8 items-center justify-center font-semibold rounded-full",
-                                d.isToday ? "bg-primary text-primary-foreground" : "text-surface-900 dark:text-surface-100"
+                                d.isToday ? "bg-primary text-primary-foreground" : "text-foreground"
                             )}>
                       {d.date.split('-')[2].replace(/^0/, '')}
                     </span>
@@ -60,19 +60,20 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                       ))}
                     </div>
 
+                    {/*TODO (NL): Upravit paddingy*/}
                     <div
-                        className="-mr-px hidden grid-cols-7 divide-x divide-surface-100 border-r border-surface-100 text-sm text-surface-500 dark:divide-surface-700 dark:border-surface-700 dark:text-surface-400 sm:grid">
+                        className="-mr-px hidden grid-cols-7 divide-x divide-border border-r border-border text-sm text-muted-foreground sm:grid">
                       <div className="col-end-1 w-14"/>
                       {daysOfWeek.map((d, index) => (
                           <div key={index} className="flex items-center justify-center py-3">
                             <button
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-muted"
                                 onClick={() => onSelectDay?.(d.date)}
                             >
                               <span>{d.day}</span>
                               <span className={cn(
                                   "flex h-8 w-8 items-center justify-center rounded-full font-medium",
-                                  d.isToday ? "bg-primary text-primary-foreground" : "text-surface-900 dark:text-surface-100"
+                                  d.isToday ? "bg-primary text-primary-foreground" : "text-foreground"
                               )}>
                         {d.date.split('-')[2].replace(/^0/, '')}
                       </span>
@@ -83,7 +84,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                   </>
               ) : (
                   <span
-                      className="flex justify-center border-b border-surface-200 dark:border-surface-700 items-center gap-2 px-4 py-3 rounded-full font-medium text-surface-900 dark:text-surface-100">
+                      className="flex justify-center border-b border-border items-center gap-2 px-4 py-3 rounded-full font-medium text-foreground">
                   {currentDate.toLocaleDateString('cs-CZ', {weekday: 'long'})}
                 </span>
               )}
@@ -91,10 +92,10 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
 
             <div className="flex flex-auto">
               <div
-                  className="sticky left-0 z-10 w-14 text-center flex-none bg-white ring-1 ring-surface-100 dark:bg-surface-900 dark:ring-surface-700"/>
+                  className="sticky left-0 z-10 w-14 text-center flex-none bg-card ring-1 ring-border" />
               <div className="grid flex-auto grid-cols-1 grid-rows-1">
                 <div
-                    className="col-start-1 col-end-2 row-start-1 grid divide-y divide-surface-100 dark:divide-surface-700"
+                    className="col-start-1 col-end-2 row-start-1 grid divide-y divide-border"
                     style={{gridTemplateRows: 'repeat(48, minmax(3.5rem, 1fr))'}}
                 >
                   <div ref={containerOffsetRef} className="row-end-1 h-7"></div>
@@ -102,7 +103,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                       <Fragment key={i}>
                         <div>
                           <div
-                              className="sticky left-0 z-20 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs text-surface-400 dark:text-surface-500">
+                              className="sticky left-0 z-20 -mt-2.5 -ml-14 w-14 pr-2 text-right text-xs text-muted-foreground">
                             {i === 0 ? '12:00' : i < 12 ? `${i}:00` : i === 12 ? '12:00' : `${i - 12}:00`}
                             <span className="ml-1">{i < 12 ? 'AM' : 'PM'}</span>
                           </div>
@@ -114,7 +115,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
 
                 {viewType === 'week' && (
                     <div
-                        className="col-start-1 col-end-2 row-start-1 hidden grid-cols-7 grid-rows-1 divide-x divide-surface-100 dark:divide-surface-700 sm:grid sm:grid-cols-7">
+                        className="col-start-1 col-end-2 row-start-1 hidden grid-cols-7 grid-rows-1 divide-x divide-border sm:grid sm:grid-cols-7">
                       <div className="col-start-1 row-span-full"/>
                       <div className="col-start-2 row-span-full"/>
                       <div className="col-start-3 row-span-full"/>
@@ -135,7 +136,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                       }}
                   >
                     <div
-                        className="absolute left-0 -mt-1.5 -ml-1.5 h-3 w-3 rounded-full border-2 border-primary bg-white dark:bg-surface-900"></div>
+                        className="absolute left-0 -mt-1.5 -ml-1.5 h-3 w-3 rounded-full border-2 border-primary bg-background"/>
                     <div className="h-px bg-primary"/>
                   </div>
                 )}

@@ -28,7 +28,7 @@ const KanbanBoard = ({ projectCode, issues: initialIssues }: BoardProps) => {
         )
     );
 
-    // TODO: Později implementovat uložení na serveru
+    // TODO (NL): Později implementovat uložení na serveru
     console.log(`Moving card ${cardCode} to ${targetState} - bude implementováno později`);
   };
 
@@ -108,7 +108,7 @@ const KanbanBoard = ({ projectCode, issues: initialIssues }: BoardProps) => {
           {ISSUE_STATES.map((state) => (
               <KanbanColumn
                   key={state.value}
-                  title={state.value}
+                  title={state.label}
                   state={state.value}
                   issues={issues.filter((issue) => issue.state === state.value)}
                   onMoveCard={handleMoveCard}

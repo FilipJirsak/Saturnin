@@ -14,13 +14,13 @@ export default function ProjectsBoardPage() {
         {projects.map((project) => (
             <div
                 key={project.code}
-                className="rounded-xl border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800"
+                className="rounded-xl border bg-background"
             >
-              <div className="border-b border-surface-200 p-6 dark:border-surface-700">
-                <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50">
+              <div className="border-b p-6">
+                <h2 className="text-xl font-semibold">
                   {project.title}
                 </h2>
-                <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">
+                <p className="mt-1 text-sm text-muted-foreground/80">
                   Kód projektu: {project.code}
                 </p>
               </div>
