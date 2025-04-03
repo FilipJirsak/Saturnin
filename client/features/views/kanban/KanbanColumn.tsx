@@ -1,7 +1,6 @@
 import { useDrop } from 'react-dnd';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { IssueFull } from "~/types";
-import KanbanCard from "./KanbanCard";
 import {
   Card,
   CardHeader,
@@ -12,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/utils/helpers";
 import { ArrowUpToLine } from "lucide-react";
+import {KanbanCard} from "~/features/views/kanban/KanbanCard";
 
 interface ColumnProps {
   title: string;
@@ -23,7 +23,7 @@ interface ColumnProps {
   onAddClick: (state: string) => void;
 }
 
-const KanbanColumn = ({
+export function KanbanColumn({
                         title,
                         state,
                         issues,
@@ -31,7 +31,7 @@ const KanbanColumn = ({
                         projectCode,
                         onCardClick,
                         onAddClick
-                      }: ColumnProps) => {
+                      }: ColumnProps) {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'CARD',
     drop: (item: { code: string }) => {
@@ -97,6 +97,4 @@ const KanbanColumn = ({
         </CardContent>
       </Card>
   );
-};
-
-export default KanbanColumn;
+}

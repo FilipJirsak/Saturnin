@@ -32,12 +32,20 @@ export function AppSidebar({ projects = [], ...props }: AppSidebarProps) {
 
   return (
       <Sidebar collapsible="icon" {...props}>
-        <SidebarHeader>
-          <TeamSwitcher teams={sidebarItems.teams} />
+        <SidebarHeader className="flex flex-col gap-2">
+          {/*TODO (NL): Upravit logo*/}
+          {/*<div className="flex items-center">
+            <img
+                src="/logo.png"
+                alt="Saturnin Logo"
+                className="h-20 w-auto dark:invert mx-auto"
+            />
+          </div>*/}
+          <TeamSwitcher teams={sidebarItems.teams}/>
         </SidebarHeader>
         <SidebarContent>
-          <NavMain items={sidebarItems.navMain} />
-          <NavProjects projects={sidebarProjects} />
+          <NavMain items={sidebarItems.navMain}/>
+          <NavProjects projects={sidebarProjects}/>
         </SidebarContent>
         <SidebarFooter>
           <NavUser user={sidebarItems.user} />

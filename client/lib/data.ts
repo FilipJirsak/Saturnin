@@ -107,21 +107,9 @@ export const sidebarItems = {
       icon: Settings,
       items: [
         {
-          title: "Obecné",
-          url: "/settings/general",
-        },
-        {
           title: "Profil",
           url: "/settings/profile",
         },
-        {
-          title: "Notifikace",
-          url: "/settings/notifications",
-        },
-        {
-          title: "Integrace",
-          url: "/settings/integrations",
-        }
       ],
     }
   ],

@@ -1,6 +1,6 @@
 import { useOutletContext } from "@remix-run/react";
 import { ProjectWithIssues, IssueFull } from "~/types";
-import KanbanBoard from "~/features/views/kanban/KanbanBoard";
+import {KanbanBoard} from "~/features/views/kanban/KanbanBoard";
 
 type ProjectContext = {
   project: ProjectWithIssues;

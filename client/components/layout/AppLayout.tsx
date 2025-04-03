@@ -23,7 +23,11 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children, projects }: AppLayoutProps) => {
   const location = useLocation();
-  const breadcrumbs = getBreadcrumbs(location.pathname, sidebarItems.navMain);
+  const allNavItems = [
+    ...sidebarItems.navMain,
+    ...sidebarItems.navSettings
+  ];
+  const breadcrumbs = getBreadcrumbs(location.pathname, allNavItems);
 
   return (
       <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
