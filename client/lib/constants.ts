@@ -1,3 +1,29 @@
+/*NAVIGATION*/
+
+export const PATH_TRANSLATIONS: Record<string, string> = {
+  'settings': 'Nastavení',
+  'profile': 'Profil',
+  'general': 'Obecné',
+  'security': 'Zabezpečení',
+  'notifications': 'Upozornění',
+  'billing': 'Předplatné',
+  'integrations': 'Integrace',
+
+  'dashboard': 'Přehled',
+  'statistics': 'Statistiky',
+  'activities': 'Aktivity',
+  'knowledge': 'Znalosti',
+  'projects': 'Projekty',
+  'board': 'Kanban',
+  'calendar': 'Kalendář',
+  'issues': 'Issues',
+  'milestones': 'Milníky',
+  'detail': 'Detail',
+};
+
+
+/*ISSUES*/
+
 //TODO (NL): Nutno udělat konfigurovatelné
 export const ISSUE_STATES = [
   { value: 'new', label: 'Nové' },

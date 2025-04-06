@@ -25,7 +25,7 @@ interface IssueSidebarProps {
 }
 
 /*TODO (NL): Rozdělit do obecných komponent*/
-export default function KanbanIssueSidebar({
+export function KanbanIssueSidebar({
                                        isOpen,
                                        issue,
                                        projectCode,

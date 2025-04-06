@@ -1,18 +1,15 @@
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration, useLoaderData,
-} from "@remix-run/react";
-import {LinksFunction} from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
+import {Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useLocation} from "@remix-run/react";
 import "./styles/tailwind.css";
-import {DndProvider} from "react-dnd";
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {ReactNode, useEffect, useState} from "react";
-import {createDragDropManager} from "dnd-core";
+import { createDragDropManager } from "dnd-core";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+
 import AppLayout from "~/components/layout/AppLayout";
-import {ThemeProvider} from "~/features/darkMode/ThemeProvider";
+import { ThemeProvider } from "~/features/darkMode/ThemeProvider";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,7 +24,7 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export const manager = createDragDropManager(HTML5Backend)
+export const manager = createDragDropManager(HTML5Backend);
 
 const ClientOnly = ({ children }: { children: ReactNode }) => {
   const [mounted, setMounted] = useState(false);
@@ -37,7 +34,7 @@ const ClientOnly = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return mounted ? children : null;
-}
+};
 
 export const loader = async () => {
   const resp = await fetch("http://localhost:8080/api/project");
@@ -66,38 +63,78 @@ const themeScript = `
 })();
 `;
 
-//TODO (NL): Nutno použít i tento Layout?
+// TODO (NL): Nutno použít i tento Layout?
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="cs" suppressHydrationWarning>
+    <html
+      lang="cs"
+      suppressHydrationWarning
+    >
     <head>
       <meta charSet="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1"
+      />
+      {/*<link rel="icon" href="/favicon.ico"/>*/}
       <Meta/>
       <Links/>
       <script dangerouslySetInnerHTML={{__html: themeScript}}/>
     </head>
     <body>
     {children}
-    <ScrollRestoration/>
-    <Scripts />
+    <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );
 }
 
+//TODO (NL): Upravit, až bude implementováno přihlašování
+function AuthLayout() {
+  return (
+      <ThemeProvider>
+        <div className="min-h-svh">
+          <Outlet />
+        </div>
+      </ThemeProvider>
+  );
+}
+
+function AppLayoutWrapper({ projects }: { projects: any[] }) {
+  return (
+      <ThemeProvider>
+        <DndProvider
+            manager={manager}
+            backend={HTML5Backend}
+        >
+          <AppLayout projects={projects}>
+            <Outlet />
+          </AppLayout>
+        </DndProvider>
+      </ThemeProvider>
+  );
+}
+
 export default function App() {
   const { projects } = useLoaderData<typeof loader>();
+  const location = useLocation();
+
+  const isAuthPage = location.pathname === "/login" ||
+      location.pathname === "/signup" ||
+      location.pathname === "/reset-password";
+
+  // TODO (NL): Upravit, až bude implementováno přihlašování
+  const searchParams = new URLSearchParams(location.search);
+  const isSimulatedLoggedIn = searchParams.get("simulateAuth") === "true";
 
   return (
       <ClientOnly>
-        <ThemeProvider>
-          <DndProvider manager={manager} backend={HTML5Backend}>
-            <AppLayout projects={projects}>
-              <Outlet />
-            </AppLayout>
-          </DndProvider>
-        </ThemeProvider>
+        {isAuthPage && !isSimulatedLoggedIn ? (
+            <AuthLayout />
+        ) : (
+            <AppLayoutWrapper projects={projects} />
+        )}
       </ClientOnly>
   );
 }

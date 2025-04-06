@@ -13,7 +13,7 @@ interface CardProps {
   onClick: (issue: IssueFull) => void;
 }
 
-const KanbanCard = ({ issue, onClick }: CardProps) => {
+export function KanbanCard({ issue, onClick }: CardProps){
   const { title, summary, code, state, tags, due_date } = issue;
 
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
@@ -135,6 +135,4 @@ const KanbanCard = ({ issue, onClick }: CardProps) => {
         </Card>
       </div>
   );
-};
-
-export default KanbanCard;
+}

@@ -61,3 +61,11 @@ export type LoaderData = {
 export type IssueState = 'new' | 'to_do' | 'in_progress' | 'done';
 
 export type CalendarViewType = 'month' | 'week' | 'day';
+
+/*Settings + auth*/
+
+export interface User {
+    name: string;
+    email: string;
+    avatar: string;
+}

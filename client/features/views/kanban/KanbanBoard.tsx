@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { IssueFull } from "~/types";
-import KanbanColumn from "./KanbanColumn";
-import KanbanIssueSidebar from "./KanbanIssueSidebar";
 import {ISSUE_STATES} from "~/lib/constants";
+import {KanbanIssueSidebar} from "~/features/views/kanban/KanbanIssueSidebar";
+import {KanbanColumn} from "~/features/views/kanban/KanbanColumn";
 
 interface BoardProps {
   projectCode: string;
   issues: IssueFull[];
 }
 
-const KanbanBoard = ({ projectCode, issues: initialIssues }: BoardProps) => {
+export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
   const [issues, setIssues] = useState<IssueFull[]>(initialIssues);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<IssueFull | null>(null);
@@ -129,6 +129,4 @@ const KanbanBoard = ({ projectCode, issues: initialIssues }: BoardProps) => {
         />
       </>
   );
-};
-
-export default KanbanBoard;
+}
