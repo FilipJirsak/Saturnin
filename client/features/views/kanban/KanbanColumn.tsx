@@ -1,6 +1,6 @@
 import { useDrop } from 'react-dnd';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import {IssueFull} from "~/types";
+import { IssueFull } from "~/types";
 import KanbanCard from "./KanbanCard";
 import {
   Card,
@@ -10,8 +10,8 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
-import { cn } from "~/lib/utils";
-import {ArrowUpToLine} from "lucide-react";
+import { cn } from "~/utils/helpers";
+import { ArrowUpToLine } from "lucide-react";
 
 interface ColumnProps {
   title: string;
@@ -19,9 +19,19 @@ interface ColumnProps {
   issues: IssueFull[];
   onMoveCard: (cardId: string, targetState: string) => void;
   projectCode: string;
+  onCardClick: (issue: IssueFull) => void;
+  onAddClick: (state: string) => void;
 }
 
-const KanbanColumn = ({ title, state, issues, onMoveCard, projectCode }: ColumnProps) => {
+const KanbanColumn = ({
+                        title,
+                        state,
+                        issues,
+                        onMoveCard,
+                        projectCode,
+                        onCardClick,
+                        onAddClick
+                      }: ColumnProps) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'CARD',
     drop: (item: { code: string }) => {
@@ -32,43 +42,26 @@ const KanbanColumn = ({ title, state, issues, onMoveCard, projectCode }: ColumnP
     }),
   }));
 
-  const handleAddIssue = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/project/${projectCode}/issue`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: `New Issue`,
-          state: state
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create issue');
-      }
-
-      window.location.reload();
-    } catch (error) {
-      console.error('Failed to create issue:', error);
-    }
+  const handleAddIssue = () => {
+    onAddClick(state);
   };
 
   return (
       <Card
           ref={drop}
           className={cn(
-              "flex w-80 flex-col border-none bg-surface-50 transition-colors dark:border-surface-700 dark:bg-surface-800/90",
-              isOver && "bg-primary/5 dark:bg-primary/10"
-              // isOver ? 'bg-surface-200/50 dark:bg-surface-700/50' : ''
+              "flex w-80 flex-shrink-0 flex-col border-none bg-muted/20 transition-colors",
+              isOver && "bg-primary/5"
           )}
       >
         <CardHeader className="px-4 pb-2 pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <CardTitle className="text-sm font-medium">{title}</CardTitle>
-              <Badge variant="secondary" className="rounded-full px-2 py-0 text-xs text-white bg-primary/50"
+              <Badge
+                  variant="secondary"
+                  className="rounded-full px-2 py-0 text-xs text-white bg-primary/50 hover:bg-primary/60"
+                  title={`${issues.length} issues`}
               >
                 {issues.length}
               </Badge>
@@ -85,19 +78,19 @@ const KanbanColumn = ({ title, state, issues, onMoveCard, projectCode }: ColumnP
         </CardHeader>
         <CardContent className="flex flex-col space-y-3 overflow-auto p-4 pt-0">
           {issues.length === 0 ? (
-              <div className="flex min-h-20 items-center justify-center rounded-md border border-dashed border-surface-300 p-4 text-center dark:border-surface-700">
-                <p className="text-xs text-surface-500 dark:text-surface-400">
-                  <ArrowUpToLine size="16"/>
+              /*TODO (NL): Tmavší border*/
+              <div className="flex min-h-20 items-center justify-center rounded-md border border-dashed p-4 text-center">
+                <p className="flex flex-col items-center text-xs text-muted-foreground">
+                  <ArrowUpToLine size={16} className="mb-1" />
+                  <span>Žádné issues</span>
                 </p>
               </div>
           ) : (
               issues.map((issue) => (
                   <KanbanCard
                       key={issue.code}
-                      title={issue.title || ""}
-                      summary={issue.summary}
-                      code={issue.code}
-                      state={issue.state}
+                      issue={issue}
+                      onClick={onCardClick}
                   />
               ))
           )}
@@ -106,4 +99,4 @@ const KanbanColumn = ({ title, state, issues, onMoveCard, projectCode }: ColumnP
   );
 };
 
-export default KanbanColumn
+export default KanbanColumn;

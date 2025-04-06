@@ -12,6 +12,7 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import {ReactNode, useEffect, useState} from "react";
 import {createDragDropManager} from "dnd-core";
 import AppLayout from "~/components/layout/AppLayout";
+import {ThemeProvider} from "~/features/darkMode/ThemeProvider";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -52,20 +53,34 @@ export const loader = async () => {
   });
 };
 
+const themeScript = `
+(function() {
+  const theme = localStorage.getItem('theme') || 'system';
+  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (theme === 'dark' || (theme === 'system' && prefersDarkMode)) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+})();
+`;
+
 //TODO (NL): Nutno použít i tento Layout?
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="cs">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+    <html lang="cs" suppressHydrationWarning>
+    <head>
+      <meta charSet="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <Meta/>
+      <Links/>
+      <script dangerouslySetInnerHTML={{__html: themeScript}}/>
+    </head>
+    <body>
+    {children}
+    <ScrollRestoration/>
+    <Scripts />
       </body>
     </html>
   );
@@ -76,11 +91,13 @@ export default function App() {
 
   return (
       <ClientOnly>
-        <DndProvider manager={manager} backend={HTML5Backend}>
-          <AppLayout projects={projects}>
-            <Outlet />
-          </AppLayout>
-        </DndProvider>
+        <ThemeProvider>
+          <DndProvider manager={manager} backend={HTML5Backend}>
+            <AppLayout projects={projects}>
+              <Outlet />
+            </AppLayout>
+          </DndProvider>
+        </ThemeProvider>
       </ClientOnly>
   );
 }

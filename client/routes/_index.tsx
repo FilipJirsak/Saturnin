@@ -1,110 +1,67 @@
-import { type MetaFunction } from "@remix-run/node";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Brain, GitFork, Activity, Clock, CheckSquare } from "lucide-react";
+import { useState } from "react";
+import { IssueFull } from "~/types";
+import { useProjects } from "~/hooks/useProjects";
+import { useToast } from "~/hooks/use-toast";
+import {InboxIssueForm} from "~/features/inbox/InboxIssueForm";
+import {InboxIssueList} from "~/features/inbox/InboxIssueList";
 
-export const meta: MetaFunction = () => {
-    return [
-        { title: "Saturnin - Správa znalostí" },
-        { name: "description", content: "Systém pro správu znalostí a projektů" },
-    ];
-};
+//TODO (NL): Nahradit issues reálnými daty z API
+const issues = [
+  { code: 'TEST1-1', title: 'Testovací issue 1', description: 'Popis issue 1', state: 'new', last_modified: "2025-03-15T10:30:00Z" },
+  { code: 'TEST1-2', title: 'Testovací issue 2', state: 'new', last_modified: "2025-03-26T18:30:00Z" },
+];
 
-//TODO (NL): Prozatím jen náhled, bude potřeba upravit
-export default function MainPage() {
+export default function InboxPage() {
+  const projects = useProjects();
+  const { toast } = useToast();
+
+  const [mockIssues, setMockIssues] = useState<IssueFull[]>(issues);
+
+
+  const handleIssueCreated = (newIssue: IssueFull) => {
+    setMockIssues(prevIssues => [newIssue, ...prevIssues]);
+  };
+
+  const handleIssueAssigned = async (issueCode: string, projectCode: string) => {
+    // TODO (NL): Nahradit reálným API voláním
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    setMockIssues(prevIssues => prevIssues.filter(issue => issue.code !== issueCode));
+
+    /*TODO (NL): Upravit variantu toastu?*/
+    toast({
+      title: "Issue přiřazeno",
+      description: `Issue bylo úspěšně přiřazeno k projektu ${projectCode}`,
+    });
+  };
+
+  const handleRefresh = async () => {
+    // TODO (NL): Nahradit reálným API voláním
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    /*TODO (NL): Upravit variantu toastu?*/
+    toast({
+      title: "Data aktualizována",
+      description: "Seznam issues byl úspěšně aktualizován",
+    });
+  };
+
   return (
-    <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Aktivní projekty
-            </CardTitle>
-            <GitFork className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">4</div>
-            <p className="text-xs text-muted-foreground">
-              +2 tento měsíc
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Znalostní báze
-            </CardTitle>
-            <Brain className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">246</div>
-            <p className="text-xs text-muted-foreground">
-              +20 tento týden
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Aktivní úkoly
-            </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              3 due today
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Dokončené
-            </CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">573</div>
-            <p className="text-xs text-muted-foreground">
-              +24 tento měsíc
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Nedávná aktivita</CardTitle>
-          <CardDescription>
-            Přehled vašich posledních aktivit napříč projekty
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Activity className="h-4 w-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">Aktualizován dokument: Teoretická část</p>
-                <p className="text-xs text-muted-foreground">před 2 hodinami</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Activity className="h-4 w-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">Vytvořen nový úkol: Implementace API</p>
-                <p className="text-xs text-muted-foreground">před 4 hodinami</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Activity className="h-4 w-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">Přidán nový tag: #research</p>
-                <p className="text-xs text-muted-foreground">před 6 hodinami</p>
-              </div>
-            </div>
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1">
+            <InboxIssueForm onIssueCreated={handleIssueCreated} />
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          <div className="lg:col-span-2">
+            <InboxIssueList
+                issues={mockIssues}
+                projects={projects}
+                onIssueAssigned={handleIssueAssigned}
+                onRefresh={handleRefresh}
+            />
+          </div>
+        </div>
+      </div>
   );
 }
