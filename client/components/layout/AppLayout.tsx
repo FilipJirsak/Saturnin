@@ -3,7 +3,8 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbList, BreadcrumbPage,
+  BreadcrumbList,
+  BreadcrumbPage,
   BreadcrumbSeparator
 } from "~/components/ui/breadcrumb";
 import {useLocation} from "@remix-run/react";
@@ -15,6 +16,7 @@ import {getBreadcrumbs} from "~/utils/helpers";
 import {sidebarItems} from "~/lib/data";
 import {Toaster} from "~/components/ui/toaster";
 import {ThemeToggle} from "~/features/darkMode/ThemeToggle";
+import {CommandSearch} from "~/features/search/CommandSearch";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -56,13 +58,14 @@ const AppLayout = ({ children, projects }: AppLayoutProps) => {
                     ))}
                   </BreadcrumbList>
                 </Breadcrumb>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-2">
+                  <CommandSearch projects={projects} />
                   <ThemeToggle/>
                 </div>
               </div>
             </header>
             <main className="flex-1 overflow-y-auto">
-            <div className="w-full p-6">
+              <div className="w-full p-6">
                 {children}
               </div>
             </main>
