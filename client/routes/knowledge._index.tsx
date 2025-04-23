@@ -1,8 +1,8 @@
-export default function KnowledgePage() {
+import { redirect } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { requireAuth } from "~/utils/authGuard";
 
-  return (
-      <div>
-        Knowledge Page
-      </div>
-  );
-}
+export const loader = async (args: LoaderFunctionArgs) => {
+  await requireAuth(args);
+  return redirect("/knowledge/library");
+};

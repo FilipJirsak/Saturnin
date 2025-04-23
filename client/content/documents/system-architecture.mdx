@@ -1,0 +1,50 @@
+---
+title: Architektura systému
+author: Nela Letochová
+tags: ["architektura", "systém", "dokumentace"]
+lastModified: 2025-04-01T14:30:00Z
+createdAt: 2025-03-15T09:00:00Z
+relatedIssues: ["PROJ-1", "PROJ-3"]
+---
+
+# Architektura systému
+
+## Úvod
+Tento dokument popisuje základní architekturu systému Second Brain. Cílem je poskytnutí přehledu o jednotlivých komponentách, jejich vzájemných vztazích a o datových tocích mezi nimi.
+
+<Card className="p-4 my-6 bg-muted/20">
+  <h3 className="text-lg font-bold">Důležité upozornění</h3>
+  <p>Toto je interaktivní komponenta uvnitř MDX dokumentu.</p>
+  <div className="mt-2 flex gap-2">
+    <Badge variant="secondary">React</Badge>
+    <Badge>MDX</Badge>
+    <Badge>Komponenty</Badge>
+  </div>
+</Card>
+
+## Základní komponenty
+
+### Frontend
+- **Framework**: Remix.js
+- **Styling**: TailwindCSS, shadcn/ui
+- **Stav aplikace**: Remix loaders/actions, místně useState
+
+### Backend
+- **Runtime**: Deno
+- **API**: REST + částečně GraphQL
+- **Databáze**: SurrealDB
+
+## Bezpečnostní model
+Systém implementuje následující bezpečnostní mechanismy:
+- JWT autentizace
+- Role-based access control
+- Šifrování citlivých dat
+
+## Integrace s externími systémy
+- GitHub API (PROJ-1)
+- Jira webhook
+- Slack notifikace
+
+## Související issues
+- PROJ-1: Implementace autentizace
+- PROJ-3: Optimalizace databáze

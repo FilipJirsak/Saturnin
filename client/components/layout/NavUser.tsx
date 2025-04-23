@@ -26,7 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
-import {useNavigate} from "react-router";
+import {useNavigate} from "@remix-run/react";
 import {getInitials} from "~/utils/helpers";
 
 export function NavUser({

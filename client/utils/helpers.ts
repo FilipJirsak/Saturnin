@@ -172,3 +172,14 @@ export const getInitials = (name: string): string => {
       .join('')
       .toUpperCase();
 };
+
+/**
+ * Truncates text to a specified length and adds ellipsis if necessary.
+ *
+ * @param text
+ * @param maxLength
+ */
+export const truncateText = (text: string, maxLength: number) => {
+  if (text.length <= maxLength) return text;
+  return `${text.substring(0, maxLength)}...`;
+};
