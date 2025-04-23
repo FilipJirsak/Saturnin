@@ -1,4 +1,4 @@
-import {getAllMdxDocuments} from "~/utils/knowledge/mdxUtils.server";
+import {getAllMdxDocuments} from "~/utils/knowledge/mdxUtils";
 import {DocumentItem, Folder, MdxDocument} from "~/types/knowledge";
 
 /**
