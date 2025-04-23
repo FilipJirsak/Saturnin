@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {ActionFunctionArgs, LoaderFunctionArgs, redirect} from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { requireAuth } from "~/utils/authGuard";
@@ -15,16 +15,16 @@ import { useToast } from "~/hooks/use-toast";
 import { useSearch } from "~/features/knowledge/KnowledgeLayout";
 import { KnowledgeSearchResults } from "~/features/knowledge/KnowledgeSearchResults";
 import { filterDocumentsBySearchTerm } from "~/utils/knowledge/documentSearchUtils";
-import { getAllMdxDocuments } from "~/utils/knowledge/mdxUtils";
+import {getAllMdxDocuments, createMdxDocument, deleteMdxDocument} from "~/utils/knowledge/mdxUtils";
 import { LibraryDocumentCard } from "~/features/knowledge/library/LibraryDocumentCard";
 import { useLibraryDocuments } from "~/hooks/useLibraryDocuments";
+import { moveDocumentToFolder } from "~/utils/knowledge/mdxUtils";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await requireAuth({ request } as LoaderFunctionArgs);
+export const loader = async (args: LoaderFunctionArgs) => {
+  await requireAuth(args);
 
   try {
     const mdxDocuments = await getAllMdxDocuments();
-
     return typedJson({
       documents: organizeDocumentsIntoFolders(mdxDocuments)
     });
@@ -34,10 +34,31 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 };
 
-// TODO (NL): Implementovat skutečné ukládání dokumentů a složek do backend API
-// TODO (NL): Přidat možnost hromadných operací (výběr více dokumentů)
-// TODO (NL): Implementovat lazy loading pro velké množství dokumentů
-// TODO (NL): Přidat filtrování dokumentů podle dalších kritérií (autor, datum, atd.)
+export const action = async ({ request, params, context }: ActionFunctionArgs) => {
+  await requireAuth({ request, params, context });
+
+  const formData = await request.formData();
+  const actionType = formData.get("action");
+
+  if (actionType === "delete") {
+    const documentId = formData.get("documentId") as string;
+
+    if (!documentId) {
+      return new Response("Document ID je vyžadováno", { status: 400 });
+    }
+
+    const ok = await deleteMdxDocument(documentId);
+
+    if (!ok) {
+      return new Response("Nepodařilo se smazat dokument", { status: 500 });
+    }
+
+    return redirect("/knowledge/library");
+  }
+
+  return new Response("Neznámá akce", { status: 400 });
+};
+
 export default function KnowledgeLibraryPage() {
   const { documents: initialDocuments } = useLoaderData<typeof loader>();
   const [isNewDocumentDialogOpen, setIsNewDocumentDialogOpen] = useState(false);
@@ -53,7 +74,8 @@ export default function KnowledgeLibraryPage() {
   const {
     documents,
     handleToggleFolder,
-    handleDocumentDrop
+    handleDocumentDrop,
+    resetFolderState
   } = useLibraryDocuments({
     initialDocuments,
     isSearching
@@ -67,16 +89,24 @@ export default function KnowledgeLibraryPage() {
     setIsLoading(prev => ({ ...prev, createDocument: true }));
 
     try {
-      console.log("Vytvářím nový dokument:", newDocument);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const createdDocument = await createMdxDocument(newDocument);
 
-      toast({
-        title: "Dokument vytvořen",
-        description: `Dokument "${newDocument.title}" byl úspěšně vytvořen.`,
-        variant: "success"
-      });
+      if (createdDocument) {
+        toast({
+          title: "Dokument vytvořen",
+          description: `Dokument "${newDocument.title}" byl úspěšně vytvořen.`,
+          variant: "success"
+        });
 
-      setIsNewDocumentDialogOpen(false);
+        setIsNewDocumentDialogOpen(false);
+
+      } else {
+        toast({
+          title: "Chyba při vytváření dokumentu",
+          description: "Dokument se nepodařilo vytvořit. Zkuste to prosím znovu.",
+          variant: "destructive"
+        });
+      }
     } catch (error) {
       console.error("Chyba při vytváření dokumentu:", error);
       toast({
@@ -93,7 +123,6 @@ export default function KnowledgeLibraryPage() {
     setIsLoading(prev => ({ ...prev, createFolder: true }));
 
     try {
-      // TODO (NL): Implementovat skutečné ukládání složky na server
       console.log("Vytvářím novou složku:", newFolder);
       await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -113,6 +142,36 @@ export default function KnowledgeLibraryPage() {
       });
     } finally {
       setIsLoading(prev => ({ ...prev, createFolder: false }));
+    }
+  };
+
+  const handleDocumentDropAction = async (draggedId: string, targetId: string) => {
+    handleDocumentDrop(draggedId, targetId);
+
+    try {
+      const folderTag = targetId.replace('folder-', '');
+      const result = await moveDocumentToFolder(draggedId, folderTag, true);
+
+      if (result) {
+        toast({
+          title: "Dokument přesunut",
+          description: `Dokument byl úspěšně přesunut do složky.`,
+          variant: "success"
+        });
+      } else {
+        toast({
+          title: "Chyba při přesouvání dokumentu",
+          description: "Dokument se nepodařilo přesunout. Změny se projeví po obnovení stránky.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Chyba při přesouvání dokumentu:", error);
+      toast({
+        title: "Chyba při přesouvání dokumentu",
+        description: "Dokument se nepodařilo přesunout. Zkuste to prosím znovu.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -175,7 +234,7 @@ export default function KnowledgeLibraryPage() {
                       index={index}
                       onToggleFolder={handleToggleFolder}
                       isDraggable={true}
-                      onDrop={handleDocumentDrop}
+                      onDrop={handleDocumentDropAction}
                   />
               ))}
             </div>

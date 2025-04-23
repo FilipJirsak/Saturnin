@@ -1,76 +1,126 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate, useLoaderData } from "@remix-run/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { useState, useEffect, useRef } from "react";
+import {
+  useLoaderData,
+  Form,
+  useNavigation,
+} from "@remix-run/react";
+import { redirect, LoaderFunction, ActionFunction} from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { FileText } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import { typedJson } from "~/utils/typedJson";
-import { getMdxDocumentBySlug, mdxToDocument } from "~/utils/knowledge/mdxUtils";
+import {
+  getMdxDocumentBySlug,
+  mdxToDocument,
+  updateMdxDocument,
+  deleteMdxDocument,
+} from "~/utils/knowledge/mdxUtils";
 import {
   DocumentDetailHeader,
   DocumentContent,
   DocumentSidebar,
-  DocumentFooter
+  DocumentFooter,
 } from "~/features/knowledge/library/LibraryCommonComponents";
 
-export const loader = async ({ params, request }: LoaderFunctionArgs) => {
-  await requireAuth({ request, params } as LoaderFunctionArgs);
-
+export const loader: LoaderFunction = async ({ request, params, context }) => {
+  await requireAuth({ request, params, context });
   const documentId = params.documentId;
-  if (!documentId) {
-    throw new Response("Document ID je vyžadováno", { status: 400 });
-  }
-
-  try {
-    const mdxDocument = await getMdxDocumentBySlug(documentId);
-
-    if (!mdxDocument) {
-      throw new Response("Dokument nenalezen", { status: 404 });
-    }
-
-    const document: Document = {
-      ...mdxToDocument(mdxDocument),
-      compiledSource: mdxDocument.compiledSource,
-      path: `/knowledge/library/${documentId}`
-    };
-
-    return typedJson(document);
-  } catch (error) {
-    console.error(`Chyba při načítání dokumentu ${documentId}:`, error);
-    throw new Response(
-        error instanceof Response ? error.statusText : "Došlo k chybě při načítání dokumentu",
-        { status: error instanceof Response ? error.status : 500 }
-    );
-  }
+  if (!documentId) throw new Response("Document ID je vyžadováno", { status: 400 });
+  const mdx = await getMdxDocumentBySlug(documentId);
+  if (!mdx) throw new Response("Dokument nenalezen", { status: 404 });
+  const document = {
+    ...mdxToDocument(mdx),
+    compiledSource: mdx.compiledSource,
+    path: `/knowledge/library/${documentId}`,
+  };
+  return typedJson(document);
 };
 
-// TODO (NL): Implementovat ukládání změn v dokumentu do backendu
+export const action: ActionFunction = async ({ request, params, context }) => {
+  await requireAuth({ request, params, context });
+  const documentId = params.documentId!;
+  const formData = await request.formData();
+  const actionType = formData.get("action");
+
+  if (actionType === "update") {
+    const updated = await updateMdxDocument(documentId, {
+      title: formData.get("title") as string,
+      content: formData.get("content") as string,
+      author: formData.get("author") as string,
+      tags: JSON.parse((formData.get("tags") as string) || "[]"),
+      relatedIssues: JSON.parse((formData.get("relatedIssues") as string) || "[]"),
+      isShared: formData.get("isShared") === "true",
+    });
+    if (!updated) {
+      return typedJson(
+          { success: false, error: "Nepodařilo se aktualizovat dokument" },
+          { status: 500 }
+      );
+    }
+    return redirect(`/knowledge/library/${updated.id}`);
+  }
+
+  if (actionType === "delete") {
+    const ok = await deleteMdxDocument(documentId);
+    if (!ok) {
+      return typedJson(
+          { success: false, error: "Nepodařilo se smazat dokument" },
+          { status: 500 }
+      );
+    }
+    return redirect("/knowledge/library");
+  }
+
+  return typedJson({ success: false, error: "Neznámá akce" }, { status: 400 });
+};
+
 // TODO (NL): Přidat systém pro verzování dokumentů
 // TODO (NL): Implementovat real-time spolupráci
 // TODO (NL): Přidat kontrolu oprávnění pro editaci/mazání
 // TODO (NL): Doplnit funkčnost pro relatedIssues - napojení na Issues API
 export default function KnowledgeDocumentDetailPage() {
-  const document = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const [editedDocument, setEditedDocument] = useState(loaderData);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedDocument, setEditedDocument] = useState(document);
-  const { documentId } = useParams();
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
+  const navigation = useNavigation();
+
+  const updateFormRef = useRef<HTMLFormElement>(null);
+  const deleteFormRef = useRef<HTMLFormElement>(null);
+  const lastActionRef = useRef<"update" | "delete" | null>(null);
+
+  const isSaving = (navigation.state === "submitting" && navigation.formData?.get("action") === "update") ||
+      (navigation.state === "loading" && lastActionRef.current === "update");
+  const isDeleting = (navigation.state === "submitting" && navigation.formData?.get("action") === "delete") ||
+      (navigation.state === "loading" && lastActionRef.current === "delete");
 
   useEffect(() => {
-    setEditedDocument(document);
-  }, [document]);
+    setEditedDocument(loaderData);
+    setIsEditing(false);
+    lastActionRef.current = null;
+  }, [loaderData]);
 
-  const handleSave = async () => {
-    // TODO (NL): Implementovat ukládání změn zpět do MDX souboru
-    console.log("Ukládám dokument:", editedDocument);
+  const handleSave = () => {
+    lastActionRef.current = "update";
+    updateFormRef.current?.requestSubmit();
     setIsEditing(false);
   };
 
   const handleDelete = () => {
-    // TODO (NL): Implementovat mazání dokumentu
-    console.log("Mažu dokument:", document.id);
-    navigate("/knowledge/library");
+    lastActionRef.current = "delete";
+    deleteFormRef.current?.requestSubmit();
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setActiveTab("edit");
   };
 
   return (
@@ -80,8 +130,10 @@ export default function KnowledgeDocumentDetailPage() {
             isEditing={isEditing}
             setIsEditing={setIsEditing}
             onSave={handleSave}
-            onUpdateDocument={setEditedDocument}
             onDelete={handleDelete}
+            isSaving={isSaving}
+            isDeleting={isDeleting}
+            onEdit={handleEdit}
         />
 
         <Card>
@@ -108,12 +160,14 @@ export default function KnowledgeDocumentDetailPage() {
                   document={editedDocument}
                   isEditing={isEditing}
                   onUpdateDocument={setEditedDocument}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
               />
-
               <DocumentSidebar
                   document={editedDocument}
                   isEditing={isEditing}
                   onUpdateDocument={setEditedDocument}
+                  activeTab={activeTab}
               />
             </div>
           </CardContent>
@@ -122,7 +176,20 @@ export default function KnowledgeDocumentDetailPage() {
             <DocumentFooter commentsCount={0} />
           </CardFooter>
         </Card>
+
+        <Form method="post" id="update-form" ref={updateFormRef} className="hidden">
+          <input type="hidden" name="action" value="update" />
+          <input type="hidden" name="title" value={editedDocument.title} />
+          <input type="hidden" name="content" value={editedDocument.content} />
+          <input type="hidden" name="author" value={editedDocument.author || ""} />
+          <input type="hidden" name="tags" value={JSON.stringify(editedDocument.tags || [])} />
+          <input type="hidden" name="relatedIssues" value={JSON.stringify(editedDocument.relatedIssues || [])} />
+          <input type="hidden" name="isShared" value={editedDocument.isShared ? "true" : "false"} />
+        </Form>
+
+        <Form method="post" id="delete-form" ref={deleteFormRef} className="hidden">
+          <input type="hidden" name="action" value="delete" />
+        </Form>
       </div>
   );
 }
-

@@ -1,79 +1,42 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { bundleMDX } from 'mdx-bundler';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import {MdxDocument} from "~/types/knowledge";
+import { MdxDocument, NewDocument } from "~/types/knowledge";
 
-// TODO (NL): Implementovat vytváření, ukládání a mazání MDX souborů
-// TODO (NL): Přidat podporu pro nahrávání obrázků a jejich správu v rámci MDX dokumentů
-// TODO (NL): Napojit na skutečné API/databázi namísto práce s lokálním souborovým systémem
-// TODO (NL): Přidat verzování dokumentů pro možnost návratu k předchozím verzím
-// TODO (NL): Implementovat efektivnější cachování pro zrychlení načítání dokumentů
+//TODO (NL): Pročistit!!!
 
 /**
  * Finds the MDX content directory and creates it if it doesn't exist.
  */
 function findContentDirectory() {
-  const contentDirectory = path.join(process.cwd(), 'client/content/documents');
+  const possiblePaths = [
+    path.join(process.cwd(), 'client/content/documents'),
+    path.join(process.cwd(), 'content/documents'),
+    path.join(process.cwd(), '../client/content/documents')
+  ];
 
-  try {
-    if (fs.existsSync(contentDirectory)) {
-      console.log(`✅ Nalezen adresář dokumentů: ${contentDirectory}`);
-      return contentDirectory;
+  for (const contentDirectory of possiblePaths) {
+    try {
+      if (fs.existsSync(contentDirectory)) {
+        console.log(`✅ Nalezen adresář dokumentů: ${contentDirectory}`);
+        return contentDirectory;
+      }
+    } catch (error) {
+      console.error(`Chyba při kontrole adresáře ${contentDirectory}:`, error);
     }
-
-    console.log(`Vytvářím adresář pro dokumenty: ${contentDirectory}`);
-    fs.mkdirSync(contentDirectory, { recursive: true });
-    return contentDirectory;
-  } catch (error) {
-    console.error(`Chyba při práci s adresářem ${contentDirectory}:`, error);
-    throw new Error(`Nelze najít ani vytvořit adresář pro dokumenty.`);
   }
+
+  const contentDirectory = possiblePaths[0];
+  console.log(`Vytvářím adresář pro dokumenty: ${contentDirectory}`);
+  fs.mkdirSync(contentDirectory, { recursive: true });
+  return contentDirectory;
 }
 
-const contentDirectory = findContentDirectory();
-
-/**
- * Compiles MDX content string into executable code and extracts frontmatter.
- * @param source - Raw MDX source text, including frontmatter.
- * @returns An object containing the compiled code and parsed frontmatter data.
- */
-export async function compileMdx(source: string) {
-  try {
-    const { data, content } = matter(source);
-
-    const result = await bundleMDX({
-      source: content,
-      mdxOptions(options) {
-        options.remarkPlugins = [...(options.remarkPlugins ?? []), remarkGfm];
-        options.rehypePlugins = [...(options.rehypePlugins ?? []), rehypeHighlight];
-        return options;
-      },
-      esbuildOptions(options) {
-        options.resolveExtensions = ['.js', '.jsx', '.ts', '.tsx', '.mdx'];
-        options.loader = {
-          ...options.loader,
-          '.js': 'jsx',
-          '.ts': 'tsx',
-        };
-        options.define = {
-          ...options.define,
-          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-        };
-        return options;
-      }
-    });
-
-    return {
-      code: result.code,
-      frontmatter: data
-    };
-  } catch (error) {
-    console.error("Chyba při kompilaci MDX:", error);
-    return { code: null, frontmatter: {} };
-  }
+let contentDirectory = '';
+if (typeof window === 'undefined') {
+  contentDirectory = findContentDirectory()
+} else {
+  console.warn('Běžíme v prohlížeči, fs operace nebudou fungovat')
 }
 
 /**
@@ -81,6 +44,11 @@ export async function compileMdx(source: string) {
  * @returns Array of MDX filenames (including extension).
  */
 export function getMdxFiles(): string[] {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn("getMdxFiles: Běžíme v prohlížeči, vracím prázdné pole");
+    return [];
+  }
+
   try {
     if (!fs.existsSync(contentDirectory)) {
       fs.mkdirSync(contentDirectory, { recursive: true });
@@ -99,11 +67,16 @@ export function getMdxFiles(): string[] {
 }
 
 /**
- * Loads and compiles a single MDX document identified by its slug.
+ * Loads and parses a single MDX document identified by its slug.
  * @param slug - Filename without the .mdx extension.
  * @returns The MDX document object or null if not found.
  */
 export async function getMdxDocumentBySlug(slug: string): Promise<MdxDocument | null> {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn(`getMdxDocumentBySlug: Běžíme v prohlížeči, nelze načíst dokument ${slug}`);
+    return null;
+  }
+
   try {
     const filePath = path.join(contentDirectory, `${slug}.mdx`);
 
@@ -114,8 +87,6 @@ export async function getMdxDocumentBySlug(slug: string): Promise<MdxDocument | 
 
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContent);
-
-    const compiledResult = await compileMdx(fileContent);
 
     return {
       id: slug,
@@ -129,7 +100,6 @@ export async function getMdxDocumentBySlug(slug: string): Promise<MdxDocument | 
       relatedIssues: data.relatedIssues || [],
       isShared: data.isShared || false,
       frontmatter: data,
-      compiledSource: compiledResult?.code || undefined
     };
   } catch (error) {
     console.error(`Chyba při načítání dokumentu ${slug}:`, error);
@@ -138,10 +108,15 @@ export async function getMdxDocumentBySlug(slug: string): Promise<MdxDocument | 
 }
 
 /**
- * Loads and compiles all MDX documents in the content directory.
- * @returns Array of all parsed and compiled MDX documents.
+ * Loads and parses all MDX documents in the content directory.
+ * @returns Array of all parsed MDX documents.
  */
 export async function getAllMdxDocuments(): Promise<MdxDocument[]> {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn("getAllMdxDocuments: Běžíme v prohlížeči, vracím prázdné pole");
+    return [];
+  }
+
   const mdxFiles = getMdxFiles();
 
   if (mdxFiles.length === 0) {
@@ -179,4 +154,214 @@ export function mdxToDocument(mdx: MdxDocument): any {
     relatedIssues: mdx.relatedIssues || [],
     isShared: mdx.isShared || false,
   };
+}
+
+/**
+ * Generates a unique slug for a new document based on its title.
+ * If a document with the same slug already exists, a number is appended.
+ * @param title - The document title used to generate the slug.
+ * @returns A unique slug for the MDX document.
+ */
+export function generateUniqueSlug(title: string): string {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn("generateUniqueSlug: Běžíme v prohlížeči, vracím základní slug");
+    return title
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+  }
+
+  const baseSlug = title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+
+  const mdxFiles = getMdxFiles();
+  const existingSlugs = new Set(mdxFiles.map(file => file.replace(/\.mdx$/, '')));
+
+  if (!existingSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  let counter = 1;
+  let newSlug = `${baseSlug}-${counter}`;
+
+  while (existingSlugs.has(newSlug)) {
+    counter++;
+    newSlug = `${baseSlug}-${counter}`;
+  }
+
+  return newSlug;
+}
+
+/**
+ * Creates a new MDX document based on the provided data.
+ * @param documentData - Data for the new document.
+ * @returns The created document object or null in case of error.
+ */
+export async function createMdxDocument(documentData: NewDocument): Promise<MdxDocument | null> {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn("createMdxDocument: Běžíme v prohlížeči, nelze vytvořit dokument");
+    return null;
+  }
+
+  try {
+    const now = new Date().toISOString();
+    const slug = generateUniqueSlug(documentData.title);
+
+    const body =
+        documentData.content ??
+        `# ${documentData.title}---
+
+# ${documentData.title}
+
+${documentData.summary || ''}
+
+## Obsah dokumentu
+
+Zde začni psát obsah tvého dokumentu...
+`;
+
+    const frontmatter = {
+      title:       documentData.title,
+      author:      documentData.author,
+      tags:        documentData.tags,
+      createdAt:   now,
+      lastModified: now,
+      relatedIssues: [],
+      isShared:      false
+    };
+
+    const fileStr = matter.stringify(body, frontmatter);
+    const filePath = path.join(contentDirectory, `${slug}.mdx`);
+    fs.writeFileSync(filePath, fileStr, "utf8");
+
+    return await getMdxDocumentBySlug(slug);
+  } catch (error) {
+    console.error('Chyba při vytváření MDX dokumentu:', error);
+    return null;
+  }
+}
+
+/**
+ * Updates an existing MDX document.
+ * @param slug - Identifier of the document to update.
+ * @param updatedData - Updated document data.
+ * @returns The updated document or null in case of error.
+ */
+export async function updateMdxDocument(
+    slug: string,
+    updatedData: Partial<MdxDocument>
+): Promise<MdxDocument | null> {
+  const existing = await getMdxDocumentBySlug(slug);
+  if (!existing) return null;
+
+  const now = new Date().toISOString();
+  const frontmatter = {
+    ...existing.frontmatter,
+    title:  updatedData.title ?? existing.title,
+    author: updatedData.author ?? existing.author,
+    tags:   updatedData.tags  ?? existing.tags,
+    relatedIssues: updatedData.relatedIssues ?? existing.relatedIssues,
+    isShared: updatedData.isShared ?? existing.isShared,
+    createdAt: existing.createdAt,
+    lastModified: now,
+  };
+
+  const content = updatedData.content ?? existing.content;
+
+  const yamlStr = matter.stringify(content, frontmatter);
+  const filePath = path.join(contentDirectory, `${slug}.mdx`);
+  fs.writeFileSync(filePath, yamlStr, "utf-8");
+
+  if (updatedData.title && updatedData.title !== existing.title) {
+    const newSlug = generateUniqueSlug(updatedData.title);
+    const newFilePath = path.join(contentDirectory, `${newSlug}.mdx`);
+    fs.renameSync(filePath, newFilePath);
+    return await getMdxDocumentBySlug(newSlug);
+  }
+
+  return await getMdxDocumentBySlug(slug);
+}
+
+
+/**
+ * Deletes an MDX document by its slug.
+ * @param slug - Identifier of the document to delete.
+ * @returns True on success, false on error.
+ */
+export async function deleteMdxDocument(slug: string): Promise<boolean> {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn(`deleteMdxDocument: Běžíme v prohlížeči, nelze smazat dokument ${slug}`);
+    return false;
+  }
+
+  try {
+    const filePath = path.join(contentDirectory, `${slug}.mdx`);
+
+    if (!fs.existsSync(filePath)) {
+      console.warn(`Soubor ${filePath} neexistuje, nelze smazat.`);
+      return false;
+    }
+
+    fs.unlinkSync(filePath);
+    console.log(`Dokument ${slug}.mdx byl úspěšně smazán.`);
+    return true;
+  } catch (error) {
+    console.error(`Chyba při mazání dokumentu ${slug}:`, error);
+    return false;
+  }
+}
+
+
+//TODO (NL): Opravit přesouvání dokumentů!!!
+
+/**
+ * Moves a document to another "folder" by updating its tags.
+ * @param slug - Identifier of the document to move.
+ * @param targetFolderTag - Tag of the target folder.
+ * @param keepExistingTags - Whether to keep existing tags (true) or replace them (false).
+ * @returns The updated document or null in case of error.
+ */
+export async function moveDocumentToFolder(
+    slug: string,
+    targetFolderTag: string,
+    keepExistingTags: boolean = true
+): Promise<MdxDocument | null> {
+  if (!contentDirectory || typeof fs === 'undefined' || !fs.existsSync) {
+    console.warn(`moveDocumentToFolder: Běžíme v prohlížeči, nelze přesunout dokument ${slug}`);
+    return null;
+  }
+
+  try {
+    const document = await getMdxDocumentBySlug(slug);
+
+    if (!document) {
+      console.error(`Dokument se slugem "${slug}" nebyl nalezen.`);
+      return null;
+    }
+
+    let updatedTags: string[];
+
+    if (keepExistingTags) {
+      updatedTags = document.tags || [];
+      if (!updatedTags.includes(targetFolderTag)) {
+        updatedTags.unshift(targetFolderTag);
+      } else {
+        updatedTags = updatedTags.filter(tag => tag !== targetFolderTag);
+        updatedTags.unshift(targetFolderTag);
+      }
+    } else {
+      updatedTags = [targetFolderTag];
+    }
+
+    return await updateMdxDocument(slug, { tags: updatedTags });
+  } catch (error) {
+    console.error(`Chyba při přesouvání dokumentu ${slug} do složky s tagem ${targetFolderTag}:`, error);
+    return null;
+  }
 }

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "@remix-run/react";
 import { useDrag, useDrop } from "react-dnd";
 import {
@@ -44,6 +44,7 @@ export function LibraryDocumentCard({
                                       index = 0,
                                       onDrop
                                     }: LibraryDocumentCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
   const isFolder = item.type === "folder";
   const itemUrl = isFolder ? `/knowledge/library/folder/${item.id}` : `/knowledge/library/${item.id}`;
   const ref = useRef<HTMLDivElement>(null);
@@ -146,6 +147,7 @@ export function LibraryDocumentCard({
                   item={item}
                   itemUrl={itemUrl}
                   onEdit={onEdit}
+                  isDeleting={isDeleting}
               />
             </div>
           </CardHeader>

@@ -1,4 +1,5 @@
 import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useNavigate } from "@remix-run/react";
 import { X, Save, Loader2 } from "lucide-react";
 import {
   Sheet,
@@ -14,7 +15,8 @@ import { Label } from "~/components/ui/label";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/utils/helpers";
 import { NewDocument } from "~/types/knowledge";
-import {KNOWLEDGE_AVAILABLE_TAGS} from "~/lib/constants";
+import { KNOWLEDGE_AVAILABLE_TAGS } from "~/lib/constants";
+import { useToast } from "~/hooks/use-toast";
 
 interface CreateDocumentDialogProps {
   isOpen: boolean;
@@ -26,13 +28,13 @@ interface CreateDocumentDialogProps {
 }
 
 export function LibraryCreateDocumentSidebar({
-                                         isOpen,
-                                         onClose,
-                                         onSave,
-                                         initialTag,
-                                         currentUser = "Uživatel",
-                                         isLoading = false
-                                       }: CreateDocumentDialogProps) {
+                                               isOpen,
+                                               onClose,
+                                               onSave,
+                                               initialTag,
+                                               currentUser = "Uživatel",
+                                               isLoading = false
+                                             }: CreateDocumentDialogProps) {
   const [formData, setFormData] = useState<NewDocument>({
     title: "",
     summary: "",
@@ -40,8 +42,12 @@ export function LibraryCreateDocumentSidebar({
     tags: initialTag ? [initialTag] : [],
     author: currentUser
   });
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
   const [newTag, setNewTag] = useState<string>("");
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
+  const [isLoadingState, setIsLoading] = useState(isLoading);
 
   useEffect(() => {
     if (isOpen) {
@@ -96,40 +102,49 @@ export function LibraryCreateDocumentSidebar({
     }, 500);
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-
+    const payload = {
+      ...formData,
+      content: formData.content || generateMdxContent(),
+    };
     try {
-      const documentToSave = {
-        ...formData,
-        content: formData.content || generateMdxContent()
-      };
+      setIsLoading(true);
+      const res = await fetch(`/api/knowledge/documents`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json();
+      if (!res.ok || !body.ok) throw new Error(body.error);
+      toast({ title: "Dokument vytvořen", variant: "success" });
+      navigate(`/knowledge/library/${body.id}`);
+      onClose();
+    } catch (err) {
+      console.error(err);
 
-      await onSave(documentToSave);
-    } catch (error) {
-      console.error("Nepodařilo se vytvořit dokument:", error);
+      const message = err instanceof Error
+          ? err.message
+          : 'Zkuste to znovu.'
+
+      toast({
+        title: "Chyba při vytváření dokumentu",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
 
-  const generateMdxContent = () => {
-    return `---
-title: ${formData.title}
-author: ${formData.author}
-tags: [${formData.tags.map(tag => `"${tag}"`).join(", ")}]
-lastModified: ${new Date().toISOString()}
-createdAt: ${new Date().toISOString()}
----
-
-# ${formData.title}
+  const generateMdxContent = () => `# ${formData.title}
 
 ${formData.summary}
 
 ## Obsah dokumentu
 
-Zde začněte psát obsah vašeho dokumentu...
-
+Zde začni psát obsah tvého dokumentu...
 `;
-  };
 
   return (
       <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>

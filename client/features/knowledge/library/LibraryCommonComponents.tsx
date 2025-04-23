@@ -1,5 +1,5 @@
-import { useState, KeyboardEvent } from "react";
-import { Link } from "@remix-run/react";
+import {useState, KeyboardEvent, useRef} from "react";
+import {Form, Link} from "@remix-run/react";
 import {
   Card
 } from "~/components/ui/card";
@@ -31,7 +31,7 @@ import {
   Clock,
   ChevronLeft,
   Save,
-  FilePlus
+  FilePlus, Loader2
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import { Textarea } from "~/components/ui/textarea";
@@ -85,22 +85,28 @@ export function DocumentActions({
                                   item,
                                   itemUrl,
                                   onDelete,
-                                  onEdit
+                                  onEdit,
+                                  isDeleting = false
                                 }: {
   item: DocumentItemBase,
   itemUrl: string,
   onDelete?: () => void,
-  onEdit?: () => void
+  onEdit?: () => void,
+  isDeleting?: boolean
 }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deleteFormRef = useRef<HTMLFormElement>(null);
 
-  const handleDelete = () => {
-    //TODO (NL): Implementovat smazání dokumentu
+  const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
   };
 
   const handleConfirmDelete = () => {
-    onDelete && onDelete();
+    if (onDelete) {
+      onDelete();
+    } else {
+      deleteFormRef.current?.requestSubmit();
+    }
     setShowDeleteConfirm(false);
   };
 
@@ -120,14 +126,14 @@ export function DocumentActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
+          {/*  <DropdownMenuItem asChild>
               <Link to={itemUrl} className="flex items-center">
                 <Eye className="mr-2 h-4 w-4" />
                 <span>Zobrazit</span>
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem>*/}
 
-            {onEdit ? (
+          {/*  {onEdit ? (
                 <DropdownMenuItem onClick={onEdit} className="flex items-center cursor-pointer">
                   <Edit className="mr-2 h-4 w-4" />
                   <span>Upravit</span>
@@ -139,7 +145,7 @@ export function DocumentActions({
                     <span>Upravit</span>
                   </Link>
                 </DropdownMenuItem>
-            )}
+            )}*/}
 
             <DropdownMenuItem>
               <Share2 className="mr-2 h-4 w-4" />
@@ -152,36 +158,55 @@ export function DocumentActions({
             <DropdownMenuSeparator />
             <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
-                onClick={() => handleDelete()}
+                onClick={handleDeleteClick}
             >
-              <Trash2 className="mr-2 h-4 w-4" />
-              <span>Smazat</span>
+              {isDeleting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <span>Mazání...</span>
+                  </>
+              ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Smazat</span>
+                  </>
+              )}
             </DropdownMenuItem>
-
-            {/*TODO (NL): Upravit!!!*/}
-            {showDeleteConfirm && (
-                <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Opravdu chcete smazat tento dokument?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Tato akce je nevratná a dokument bude trvale odstraněn.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Zrušit</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive">
-                        Smazat
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Opravdu chcete smazat tento dokument?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tato akce je nevratná a dokument bude trvale odstraněn.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Zrušit</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive">
+                Smazat
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <Form method="post" className="hidden" ref={deleteFormRef}>
+          <input type="hidden" name="documentId" value={item.id} />
+          <input type="hidden" name="action" value="delete" />
+        </Form>
       </div>
   );
 }
+
+interface ExtendedDocumentDetailHeaderProps extends Partial<DocumentDetailProps> {
+  backUrl?: string;
+  onDelete?: () => void;
+  isSaving?: boolean;
+  isDeleting?: boolean;
+}
+
 
 export function DocumentIcon({ type }: { type: "document" | "folder" }) {
   if (type === "folder") {
@@ -189,6 +214,15 @@ export function DocumentIcon({ type }: { type: "document" | "folder" }) {
   }
   return <FileText className="h-5 w-5 text-blue-500" />;
 }
+
+interface ExtendedDocumentDetailHeaderProps extends Partial<DocumentDetailProps> {
+  backUrl?: string;
+  onDelete?: () => void;
+  isSaving?: boolean;
+  isDeleting?: boolean;
+  onEdit?: () => void;
+}
+
 export function DocumentDetailHeader({
                                        document,
                                        isEditing,
@@ -196,11 +230,21 @@ export function DocumentDetailHeader({
                                        onSave,
                                        onUpdateDocument,
                                        onDelete,
-                                       backUrl = "/knowledge/library"
-                                     }: DocumentDetailProps & {
-  backUrl?: string;
-  onDelete?: () => void;
-}) {
+                                       onEdit,
+                                       backUrl = "/knowledge/library",
+                                       isSaving = false,
+                                       isDeleting = false
+                                     }: ExtendedDocumentDetailHeaderProps) {
+  if (!document || !setIsEditing) return null;
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit();
+    } else {
+      setIsEditing(true);
+    }
+  };
+
   return (
       <div className="flex items-center justify-between">
         <Button
@@ -222,31 +266,47 @@ export function DocumentDetailHeader({
                     variant="outline"
                     onClick={() => setIsEditing(false)}
                     className="gap-1"
+                    disabled={isSaving}
                 >
                   <X className="h-4 w-4" />
                   <span>Zrušit</span>
                 </Button>
-                <Button onClick={onSave} className="gap-1">
-                  <Save className="h-4 w-4" />
-                  <span>Uložit změny</span>
+                <Button
+                    onClick={onSave}
+                    className="gap-1"
+                    disabled={isSaving}
+                >
+                  {isSaving ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        <span>Ukládání...</span>
+                      </>
+                  ) : (
+                      <>
+                        <Save className="h-4 w-4" />
+                        <span>Uložit změny</span>
+                      </>
+                  )}
                 </Button>
               </>
           ) : (
               <>
                 <Button
                     variant="outline"
-                    onClick={() => setIsEditing(true)}
+                    onClick={handleEdit}
                     className="gap-1"
+                    disabled={isDeleting}
                 >
                   <Edit className="h-4 w-4" />
                   <span>Upravit</span>
                 </Button>
 
                 <DocumentActions
-                    item={document}
+                    item={document as DocumentItemBase}
                     itemUrl={document.path || `/knowledge/library/${document.id}`}
+                    onEdit={handleEdit}
                     onDelete={onDelete}
-                    onEdit={() => setIsEditing(true)}
+                    isDeleting={isDeleting}
                 />
               </>
           )}
@@ -258,25 +318,54 @@ export function DocumentDetailHeader({
 export function DocumentContent({
                                   document,
                                   isEditing,
-                                  onUpdateDocument
-                                }: Pick<DocumentDetailProps, "document" | "isEditing" | "onUpdateDocument">) {
-  const [activeTab, setActiveTab] = useState("preview");
+                                  onUpdateDocument,
+                                  activeTab,
+                                  setActiveTab
+                                }: Pick<DocumentDetailProps, "document" | "isEditing" | "onUpdateDocument"> & {
+  activeTab: "edit" | "preview",
+  setActiveTab: (tab: "edit" | "preview") => void
+}) {
+  if (!isEditing) {
+    return (
+        <div className="flex-1">
+          <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <Eye className="h-4 w-4" />
+            <span>Náhled dokumentu</span>
+          </div>
+
+          <MdxRenderer
+              content={document.content}
+              compiledSource={document.compiledSource}
+          />
+        </div>
+    );
+  }
 
   return (
       <div className="flex-1">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "edit" | "preview")}>
           <TabsList className="mb-4">
+            <TabsTrigger value="edit" className="flex items-center gap-1">
+              <Edit className="h-4 w-4" />
+              <span>Editace</span>
+            </TabsTrigger>
             <TabsTrigger value="preview" className="flex items-center gap-1">
               <Eye className="h-4 w-4" />
               <span>Náhled</span>
             </TabsTrigger>
-            {isEditing && (
-                <TabsTrigger value="edit" className="flex items-center gap-1">
-                  <Edit className="h-4 w-4" />
-                  <span>Editace</span>
-                </TabsTrigger>
-            )}
           </TabsList>
+
+          <TabsContent value="edit" className="mt-0">
+            <Textarea
+                className="min-h-96 font-mono text-sm"
+                value={document.content}
+                onChange={(e) => {
+                  const updatedDocument = { ...document, content: e.target.value };
+                  onUpdateDocument(updatedDocument);
+                }}
+                autoFocus
+            />
+          </TabsContent>
 
           <TabsContent value="preview" className="mt-0">
             <MdxRenderer
@@ -284,19 +373,6 @@ export function DocumentContent({
                 compiledSource={document.compiledSource}
             />
           </TabsContent>
-
-          {isEditing && (
-              <TabsContent value="edit" className="mt-0">
-                <Textarea
-                    className="min-h-96 font-mono text-sm"
-                    value={document.content}
-                    onChange={(e) => {
-                      const updatedDocument = { ...document, content: e.target.value };
-                      onUpdateDocument(updatedDocument);
-                    }}
-                />
-              </TabsContent>
-          )}
         </Tabs>
       </div>
   );
@@ -305,9 +381,14 @@ export function DocumentContent({
 export function DocumentSidebar({
                                   document,
                                   isEditing,
-                                  onUpdateDocument
-                                }: Pick<DocumentDetailProps, "document" | "isEditing" | "onUpdateDocument">) {
+                                  onUpdateDocument,
+                                  activeTab
+                                }: Pick<DocumentDetailProps, "document" | "isEditing" | "onUpdateDocument"> & {
+  activeTab: "edit" | "preview"
+}) {
   const [newTag, setNewTag] = useState("");
+
+  const canEdit = isEditing && activeTab === "edit";
 
   function handleAddTag() {
     if (newTag.trim() && !document.tags.includes(newTag.trim())) {
@@ -372,13 +453,31 @@ export function DocumentSidebar({
             <span>Tagy</span>
           </h3>
           <div>
-            <TagsList
-                tags={document.tags}
-                onRemoveTag={isEditing ? handleRemoveTag : undefined}
-                isEditable={isEditing}
-            />
+            {document.tags && document.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {document.tags.map(tag => (
+                      <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="px-2 py-0 h-5 flex items-center gap-1"
+                      >
+                        {tag}
+                        {canEdit && (
+                            <X
+                                className="h-3 w-3 cursor-pointer hover:text-destructive"
+                                onClick={() => handleRemoveTag(tag)}
+                            />
+                        )}
+                      </Badge>
+                  ))}
+                </div>
+            ) : (
+                <div className="text-sm text-muted-foreground text-center py-2">
+                  Žádné tagy
+                </div>
+            )}
 
-            {isEditing && (
+            {canEdit && (
                 <div className="flex gap-2 mt-3">
                   <Input
                       value={newTag}
@@ -418,7 +517,7 @@ export function DocumentSidebar({
                           <span className="font-mono">{issueCode}</span>
                         </Link>
 
-                        {isEditing && (
+                        {canEdit && (
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -437,7 +536,7 @@ export function DocumentSidebar({
                 </div>
             )}
 
-            {isEditing && (
+            {canEdit && (
                 <Button variant="outline" size="sm" className="w-full mt-3">
                   <Plus className="h-3 w-3 mr-1" />
                   Propojit issue
