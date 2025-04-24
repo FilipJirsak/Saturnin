@@ -62,8 +62,9 @@ function SimpleMarkdownRenderer({ content }: { content: string }) {
         .replace(/<Card.*?<\/Card>/gs, '<div class="p-4 my-4 border rounded-md bg-muted/20"><div class="font-bold">Důležité upozornění</div><div>Toto je interaktivní komponenta (nedostupná v jednoduchém zobrazení)</div></div>')
         .replace(/<Badge.*?>(.*?)<\/Badge>/g, '<span class="inline-block px-2 py-1 text-xs rounded-full bg-muted text-foreground">$1</span>')
         .replace(/<Button.*?>(.*?)<\/Button>/g, '<span class="inline-block px-3 py-1 text-sm rounded-md bg-primary text-primary-foreground">$1</span>')
-        .replace(/<[A-Z][^>]*>.*?<\/[A-Z][^>]*>/gs, '<div class="p-2 border border-dashed border-muted-foreground rounded-md text-xs italic text-muted-foreground">React komponenta (zobrazena jako text)</div>');
-
+        .replace(/<([A-Z][A-Za-z0-9]*)\s*\/>/g, (match, tag) => {
+          return `<div class="p-2 border border-dashed border-muted-foreground rounded-md text-xs italic text-muted-foreground">Komponenta <${tag} /> (zobrazena jako text)</div>`;
+        })
     const html = withoutJsxComponents
         .replace(/^# (.+)$/gm, "<h1 class='text-3xl font-bold mt-6 mb-4'>$1</h1>")
         .replace(/^## (.+)$/gm, "<h2 class='text-2xl font-bold mt-5 mb-3'>$1</h2>")

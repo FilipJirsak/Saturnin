@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect } from "react";
 import { Link } from "@remix-run/react";
 import { useDrag, useDrop } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
@@ -48,8 +48,8 @@ export function LibraryDocumentCard({
                                       index = 0,
                                       onDrop,
                                     }: Props) {
-  const [isDeleting, setIsDeleting] = useState(false);
   const isFolder = item.type === "folder";
+  const hasChildren = isFolder && item.children && item.children.length > 0;
   const itemUrl = isFolder
       ? `/knowledge/library/folder/${item.id}`
       : `/knowledge/library/${item.id}`;
@@ -110,7 +110,7 @@ export function LibraryDocumentCard({
           <CardHeader className={cn("p-4 pb-2", isFolder ? "pt-3" : "pt-4")}>
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
-                {isFolder && onToggleFolder && (
+                {isFolder && hasChildren && onToggleFolder && (
                     <Button
                         variant="ghost"
                         size="icon"
@@ -124,6 +124,9 @@ export function LibraryDocumentCard({
                           )}
                       />
                     </Button>
+                )}
+                {isFolder && !hasChildren && (
+                    <div className="w-6" />
                 )}
 
                 <DocumentIcon type={isFolder ? "folder" : "document"} />
@@ -151,7 +154,6 @@ export function LibraryDocumentCard({
                   item={item}
                   itemUrl={itemUrl}
                   onEdit={onEdit}
-                  isDeleting={isDeleting}
               />
             </div>
           </CardHeader>

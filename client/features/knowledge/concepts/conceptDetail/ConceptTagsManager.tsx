@@ -5,14 +5,14 @@ import { Badge } from "~/components/ui/badge";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 
-interface ConceptTagsManagerManagerProps {
+interface ConceptTagsManagerProps {
   tags: string[];
   isEditing: boolean;
   onAddTag: (tag: string) => void;
   onRemoveTag: (tag: string) => void;
 }
 
-export function ConceptTagsManager({ tags, isEditing, onAddTag, onRemoveTag }: ConceptTagsManagerManagerProps) {
+export function ConceptTagsManager({ tags, isEditing, onAddTag, onRemoveTag }: ConceptTagsManagerProps) {
   const [newTag, setNewTag] = useState("");
 
   const handleAddTag = () => {
