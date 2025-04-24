@@ -1,5 +1,150 @@
 import { Concept, RelatedConcept } from "~/types/knowledge";
 import { RELATION_TYPES } from "~/lib/constants";
+import { MOCK_CONCEPTS } from "~/lib/data";
+
+const CONCEPTS_STORAGE_KEY = "concepts";
+const isServer = typeof window === "undefined";
+
+/**
+ * Populate browser storage with mock data if it’s currently empty.
+ *
+ * Does nothing on the server side. Checks in-memory cache (`window.__CONCEPTS_DATA`),
+ * then `sessionStorage`/`localStorage`. If no concepts are found, writes `MOCK_CONCEPTS`
+ * to both storages and caches them on `window`.
+ */
+export const initializeConceptsIfEmpty = () => {
+  if (isServer) return;
+
+  const concepts = getConceptsFromLocalStorage();
+  if (concepts.length === 0) {
+    localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(MOCK_CONCEPTS));
+    sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(MOCK_CONCEPTS));
+    if (typeof window !== 'undefined') {
+      (window as any).__CONCEPTS_DATA = MOCK_CONCEPTS;
+    }
+  }
+};
+
+/**
+ * Add or update a Concept in browser storage.
+ *
+ * Reads the current list (defaults to `[]` on parse errors), inserts or replaces
+ * the provided concept, then writes the updated array back to both `localStorage`
+ * and `sessionStorage`, and updates `window.__CONCEPTS_DATA`.
+ *
+ * @param concept – the Concept object to save
+ */
+export const saveConceptToLocalStorage = (concept: Concept) => {
+  if (isServer) return;
+
+  let storedConcepts = [];
+  const storedJson = localStorage.getItem(CONCEPTS_STORAGE_KEY);
+
+  if (storedJson) {
+    try {
+      storedConcepts = JSON.parse(storedJson);
+    } catch (err) {
+      console.error("Error parsing data from localStorage:", err);
+      storedConcepts = [];
+    }
+  }
+
+  if (!Array.isArray(storedConcepts)) {
+    console.warn("Data in localStorage is not an array, resetting...");
+    storedConcepts = [];
+  }
+
+  const existingIndex = storedConcepts.findIndex(c => c.id === concept.id);
+
+  if (existingIndex >= 0) {
+    storedConcepts[existingIndex] = concept;
+  } else {
+    storedConcepts.unshift(concept);
+  }
+
+  localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(storedConcepts));
+  sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(storedConcepts));
+  if (typeof window !== 'undefined') {
+    (window as any).__CONCEPTS_DATA = storedConcepts;
+  }
+};
+
+/**
+ * Retrieve all Concept objects from browser storage.
+ *
+ * Lookup order:
+ * 1. In-memory cache (`window.__CONCEPTS_DATA`)
+ * 2. `sessionStorage`
+ * 3. `localStorage`
+ * Falls back to `MOCK_CONCEPTS` if none found.
+ */
+export const getConceptsFromLocalStorage = (): Concept[] => {
+  if (isServer) return MOCK_CONCEPTS;
+
+  if (typeof window !== 'undefined' && (window as any).__CONCEPTS_DATA) {
+    return (window as any).__CONCEPTS_DATA;
+  }
+
+  const sessionData = sessionStorage.getItem(CONCEPTS_STORAGE_KEY);
+  if (sessionData) {
+    try {
+      const parsed = JSON.parse(sessionData);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch (err) {
+      console.error("Error parsing sessionStorage data:", err);
+    }
+  }
+
+  const stored = localStorage.getItem(CONCEPTS_STORAGE_KEY);
+  const storedConcepts = stored ? JSON.parse(stored) : [];
+
+  return storedConcepts.length > 0 ? storedConcepts : MOCK_CONCEPTS;
+};
+
+/**
+ * Fetch a single Concept by its ID.
+ *
+ * Searches stored concepts first; if not found, falls back to `MOCK_CONCEPTS`.
+ *
+ * @param id – unique identifier of the Concept
+ */
+export const getConceptFromLocalStorage = (id: string): Concept | null => {
+  if (isServer) {
+    return MOCK_CONCEPTS.find(c => c.id === id) || null;
+  }
+
+  const concepts = getConceptsFromLocalStorage();
+  const concept = concepts.find(c => c.id === id);
+
+  if (!concept) {
+    return MOCK_CONCEPTS.find(c => c.id === id) || null;
+  }
+
+  return concept;
+};
+
+/**
+ * Remove a Concept by ID from storage.
+ *
+ * Filters out the matching ID, then writes the new array to both
+ * `localStorage` and `sessionStorage`, and updates the in-memory cache.
+ *
+ * @param id – unique identifier of the Concept to delete
+ */
+export const deleteConceptFromLocalStorage = (id: string) => {
+  if (isServer) return;
+
+  const concepts = getConceptsFromLocalStorage();
+  const filtered = concepts.filter(c => c.id !== id);
+
+  localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
+  sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
+  if (typeof window !== 'undefined') {
+    (window as any).__CONCEPTS_DATA = filtered;
+  }
+};
 
 /**
  * Retrieve a human-readable label for a given relation key.
@@ -17,29 +162,23 @@ export const getRelationLabel = (relation: string) => {
 };
 
 /**
- * Get the CSS background-color class for a specific relation type.
- *
- * Maps relation keys to Tailwind CSS background-color utility classes.
- * Provides a default gray background if the relation is unrecognized.
- *
- * @param relation - The relation key (e.g. "depends_on").
- * @returns A Tailwind CSS class for the background color.
+ * Get a color for a relation type
  */
 export const getRelationColor = (relation: string) => {
-  switch(relation) {
-    case "is_a": return "bg-blue-500";
-    case "has_a": return "bg-green-500";
-    case "part_of": return "bg-purple-500";
-    case "depends_on": return "bg-amber-500";
-    case "related_to": return "bg-slate-500";
-    default: return "bg-gray-500";
-  }
+  const colors: Record<string, string> = {
+    is_a: "#3b82f6",
+    has_a: "#10b981",
+    related_to: "#8b5cf6",
+    depends_on: "#f59e0b",
+    part_of: "#ec4899"
+  };
+  return colors[relation] || "#6b7280";
 };
 
 /**
  * Filter a list of concepts by a search term.
  *
- * Performs a case-insensitive search against each concept’s
+ * Performs a case-insensitive search against each concept's
  * title, description, and tags. If the searchTerm is an empty
  * string, the original array is returned unmodified.
  *
@@ -92,7 +231,7 @@ export const categorizeRelations = (relations: RelatedConcept[]) => {
  */
 export const createNewConcept = (newConcept: Partial<Concept>, currentUser: string): Concept => {
   const currentDate = new Date().toISOString();
-  return {
+  const concept = {
     id: `concept-${Date.now()}`,
     title: newConcept.title || "Nový koncept",
     description: newConcept.description || "",
@@ -102,4 +241,7 @@ export const createNewConcept = (newConcept: Partial<Concept>, currentUser: stri
     lastModified: currentDate,
     author: newConcept.author || currentUser,
   };
+
+  saveConceptToLocalStorage(concept);
+  return concept;
 };

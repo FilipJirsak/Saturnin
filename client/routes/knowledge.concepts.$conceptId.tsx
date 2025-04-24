@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useLoaderData, useNavigate, useLocation, Form } from "@remix-run/react";
-import { ActionFunctionArgs, redirect, LoaderFunction} from "@remix-run/node";
+import { useLoaderData, useNavigate, useLocation, Form, useParams } from "@remix-run/react";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import {
-  Network,
   ChevronLeft,
   Edit,
   Save,
@@ -12,7 +11,8 @@ import {
   Trash2,
   LinkIcon,
   Share2,
-  Copy
+  Copy,
+  Network
 } from "lucide-react";
 import {
   Card,
@@ -35,61 +35,104 @@ import { useToast } from "~/hooks/use-toast";
 
 import { requireAuth } from "~/utils/authGuard";
 import { typedJson } from "~/utils/typedJson";
-import { RelatedConcept } from "~/types/knowledge";
+import { RelatedConcept, Concept } from "~/types/knowledge";
 import { MOCK_CONCEPTS } from "~/lib/data";
 import {ConceptInfo} from "~/features/knowledge/concepts/conceptDetail/ConceptInfo";
 import {ConceptTagsManager} from "~/features/knowledge/concepts/conceptDetail/ConceptTagsManager";
 import {ConceptRelationManager} from "~/features/knowledge/concepts/conceptDetail/ConceptRelationManager";
+import { getConceptFromLocalStorage, saveConceptToLocalStorage, deleteConceptFromLocalStorage } from "~/utils/knowledge/conceptUtils";
 
-export const loader: LoaderFunction = async ({ request, params, context }) => {
-  await requireAuth({ request, params, context });
-  const { conceptId } = params;
+export const loader = async (args: LoaderFunctionArgs) => {
+  await requireAuth(args);
 
-  const concept = MOCK_CONCEPTS.find(c => c.id === conceptId);
-
-  if (!concept) {
-    throw new Response("Koncept nenalezen", { status: 404 });
+  const conceptId = args.params.conceptId;
+  if (!conceptId) {
+    throw new Response("Concept ID is required", { status: 400 });
   }
 
-  const availableConcepts = MOCK_CONCEPTS
-      .filter(c => c.id !== conceptId)
-      .map(c => ({ id: c.id, title: c.title }));
-
-  return typedJson({ concept, availableConcepts });
+  const mockConcept = MOCK_CONCEPTS.find(c => c.id === conceptId);
+  return typedJson({ concept: mockConcept ?? null });
 };
 
-export const action = async ({ request, params, context }: ActionFunctionArgs) => {
-  await requireAuth({ request, params, context });
-  const conceptId = params.conceptId;
-  const formData = await request.formData();
-  const actionType = formData.get("action");
+export const action = async (args: LoaderFunctionArgs) => {
+  await requireAuth(args);
 
-  if (actionType === "update") {
-    console.log("Aktualizuji koncept:", conceptId);
-    return typedJson({ success: true });
+  const conceptId = args.params.conceptId;
+  if (!conceptId) {
+    throw new Response("Concept ID is required", { status: 400 });
   }
 
-  if (actionType === "delete") {
-    console.log("Mažu koncept:", conceptId);
-    return redirect("/knowledge/concepts");
+  const formData = await args.request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "delete") {
+    try {
+      deleteConceptFromLocalStorage(conceptId);
+      return typedJson({ success: true });
+    } catch (error) {
+      return typedJson({ error: "Failed to delete concept" }, { status: 500 });
+    }
   }
 
-  return typedJson({ success: false, error: "Neznámá akce" }, { status: 400 });
+  if (intent === "update") {
+    try {
+      const title = formData.get("title") as string;
+      const description = formData.get("description") as string;
+      const tags = formData.getAll("tags") as string[];
+      const related = JSON.parse(formData.get("related") as string);
+
+      const concept = getConceptFromLocalStorage(conceptId);
+      if (!concept) {
+        throw new Response("Concept not found", { status: 404 });
+      }
+
+      const updatedConcept: Concept = {
+        ...concept,
+        title,
+        description,
+        tags,
+        related,
+        lastModified: new Date().toISOString()
+      };
+
+      saveConceptToLocalStorage(updatedConcept);
+      return typedJson({ concept: updatedConcept });
+    } catch (error) {
+      return typedJson({ error: "Failed to update concept" }, { status: 500 });
+    }
+  }
+
+  return typedJson({ error: "Invalid action" }, { status: 400 });
 };
 
 export default function ConceptDetailPage() {
-  const { concept, availableConcepts } = useLoaderData<typeof loader>();
+  const { concept: serverConcept } = useLoaderData<typeof loader>();
+  const { conceptId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+
+  const [concept, setConcept] = useState<Concept|null>(serverConcept);
   const [isEditing, setIsEditing] = useState(false);
   const [editedConcept, setEditedConcept] = useState(concept);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { toast } = useToast();
 
   const updateFormRef = useRef<HTMLFormElement>(null);
   const deleteFormRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (!serverConcept && conceptId) {
+      const localConcept = getConceptFromLocalStorage(conceptId);
+      if (localConcept) {
+        setConcept(localConcept);
+        setEditedConcept(localConcept);
+        return;
+      }
+      navigate("/404", { replace: true });
+    }
+  }, [serverConcept, conceptId, navigate]);
 
   useEffect(() => {
     if (location.state?.editing) {
@@ -101,28 +144,41 @@ export default function ConceptDetailPage() {
     setEditedConcept(concept);
   }, [concept]);
 
+  if (concept === null || editedConcept === null) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        Načítám koncept...
+      </div>
+    );
+  }
+
   const handleSaveConcept = async () => {
     setIsSaving(true);
     try {
-      updateFormRef.current?.requestSubmit();
+      const updatedConcept = {
+        ...editedConcept,
+        lastModified: new Date().toISOString()
+      };
 
-      setTimeout(() => {
-        setIsSaving(false);
-        setIsEditing(false);
-        toast({
-          title: "Koncept uložen",
-          description: "Změny byly úspěšně uloženy.",
-          variant: "success"
-        });
-      }, 1000);
+      saveConceptToLocalStorage(updatedConcept);
+      setConcept(updatedConcept);
+      setEditedConcept(updatedConcept);
+      setIsEditing(false);
+
+      toast({
+        title: "Koncept uložen",
+        description: "Změny byly úspěšně uloženy.",
+        variant: "success"
+      });
     } catch (error) {
       console.error("Chyba při ukládání konceptu:", error);
-      setIsSaving(false);
       toast({
         title: "Chyba při ukládání",
         description: "Nepodařilo se uložit změny. Zkuste to prosím znovu.",
         variant: "destructive"
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -166,7 +222,7 @@ export default function ConceptDetailPage() {
   };
 
   const handleAddRelation = (relationId: string, relationType: string) => {
-    const targetConcept = availableConcepts.find((c: RelatedConcept) => c.id === relationId);
+    const targetConcept = MOCK_CONCEPTS.find((c: Concept) => c.id === relationId);
     if (!targetConcept) return;
 
     const newRelation: RelatedConcept = {
@@ -331,7 +387,7 @@ export default function ConceptDetailPage() {
                   <ConceptRelationManager
                       relations={editedConcept.related}
                       isEditing={isEditing}
-                      availableConcepts={availableConcepts}
+                      availableConcepts={MOCK_CONCEPTS}
                       onRemoveRelation={handleRemoveRelation}
                       onAddRelation={handleAddRelation}
                   />
@@ -359,7 +415,7 @@ export default function ConceptDetailPage() {
         </AlertDialog>
 
         <Form method="post" ref={updateFormRef} className="hidden">
-          <input type="hidden" name="action" value="update" />
+          <input type="hidden" name="intent" value="update" />
           <input type="hidden" name="title" value={editedConcept.title} />
           <input type="hidden" name="description" value={editedConcept.description} />
           <input type="hidden" name="tags" value={JSON.stringify(editedConcept.tags)} />
@@ -367,7 +423,7 @@ export default function ConceptDetailPage() {
         </Form>
 
         <Form method="post" ref={deleteFormRef} className="hidden">
-          <input type="hidden" name="action" value="delete" />
+          <input type="hidden" name="intent" value="delete" />
           <input type="hidden" name="conceptId" value={editedConcept.id} />
         </Form>
       </div>

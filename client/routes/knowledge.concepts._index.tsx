@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
-import { Network, Plus, Search } from "lucide-react";
-import { Input } from "~/components/ui/input";
+import { type LoaderFunctionArgs } from "@remix-run/node";
+import { Network, Plus } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { requireAuth } from "~/utils/authGuard";
@@ -14,21 +13,27 @@ import { ConceptListItem } from "~/features/knowledge/concepts/ConceptListItem";
 import { ConceptEmptyState } from "~/features/knowledge/concepts/ConceptEmptyState";
 import { ConceptCreationSidebar } from "~/features/knowledge/concepts/ConceptCreationSidebar";
 import { MOCK_CONCEPTS } from "~/lib/data";
-import {filterConcepts} from "~/utils/knowledge/conceptUtils";
+import { filterConcepts, getConceptsFromLocalStorage } from "~/utils/knowledge/conceptUtils";
 
 export const loader = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);
-  return typedJson({ concepts: MOCK_CONCEPTS });
+  const concepts = getConceptsFromLocalStorage();
+  
+  if (concepts.length === 0) {
+    return typedJson({ concepts: MOCK_CONCEPTS });
+  }
+  
+  return typedJson({ concepts });
 };
 
 export default function KnowledgeConceptsPage() {
   const { concepts: initialConcepts } = useLoaderData<typeof loader>();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [localSearchQuery, setLocalSearchQuery] = useState("");
   const { searchTerm } = useSearch();
   const [currentUser] = useState("Nela Letochová"); // TODO (NL): Získat aktuálního uživatele z API
   const {
     concepts,
+    setConcepts,
     isCreatingConcept,
     setIsCreatingConcept,
     isLoading,
@@ -39,8 +44,29 @@ export default function KnowledgeConceptsPage() {
     currentUser
   });
 
-  const effectiveSearchTerm = searchTerm || localSearchQuery;
-  const filteredConcepts = filterConcepts(concepts, effectiveSearchTerm);
+  useEffect(() => {
+    const refreshConcepts = () => {
+      const storedConcepts = getConceptsFromLocalStorage();
+      if (storedConcepts.length > 0) {
+        setConcepts(storedConcepts);
+      }
+    };
+
+    refreshConcepts();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refreshConcepts();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [setConcepts]);
+
+  const filteredConcepts = filterConcepts(concepts, searchTerm);
 
   return (
       <div className="space-y-6">
@@ -50,75 +76,61 @@ export default function KnowledgeConceptsPage() {
             Koncepty
           </h2>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            {!searchTerm && (
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                      placeholder="Hledat koncepty..."
-                      value={localSearchQuery}
-                      onChange={(e) => setLocalSearchQuery(e.target.value)}
-                      className="pl-8"
-                  />
-                </div>
-            )}
+          <div className="flex gap-2">
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "grid" | "list")}>
+              <TabsList className="h-9">
+                <TabsTrigger value="grid" className="px-3">
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                  >
+                    <rect width="7" height="7" x="3" y="3" rx="1" />
+                    <rect width="7" height="7" x="14" y="3" rx="1" />
+                    <rect width="7" height="7" x="14" y="14" rx="1" />
+                    <rect width="7" height="7" x="3" y="14" rx="1" />
+                  </svg>
+                </TabsTrigger>
+                <TabsTrigger value="list" className="px-3">
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                  >
+                    <line x1="8" x2="21" y1="6" y2="6" />
+                    <line x1="8" x2="21" y1="12" y2="12" />
+                    <line x1="8" x2="21" y1="18" y2="18" />
+                    <line x1="3" x2="3.01" y1="6" y2="6" />
+                    <line x1="3" x2="3.01" y1="12" y2="12" />
+                    <line x1="3" x2="3.01" y1="18" y2="18" />
+                  </svg>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
-            <div className="flex gap-2">
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "grid" | "list")}>
-                <TabsList className="h-9">
-                  <TabsTrigger value="grid" className="px-3">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="h-4 w-4"
-                    >
-                      <rect width="7" height="7" x="3" y="3" rx="1" />
-                      <rect width="7" height="7" x="14" y="3" rx="1" />
-                      <rect width="7" height="7" x="14" y="14" rx="1" />
-                      <rect width="7" height="7" x="3" y="14" rx="1" />
-                    </svg>
-                  </TabsTrigger>
-                  <TabsTrigger value="list" className="px-3">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="h-4 w-4"
-                    >
-                      <line x1="8" x2="21" y1="6" y2="6" />
-                      <line x1="8" x2="21" y1="12" y2="12" />
-                      <line x1="8" x2="21" y1="18" y2="18" />
-                      <line x1="3" x2="3.01" y1="6" y2="6" />
-                      <line x1="3" x2="3.01" y1="12" y2="12" />
-                      <line x1="3" x2="3.01" y1="18" y2="18" />
-                    </svg>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-
-              <Button
-                  className="flex items-center gap-1"
-                  onClick={() => setIsCreatingConcept(true)}
-              >
-                <Plus className="h-4 w-4" />
-                <span>Nový koncept</span>
-              </Button>
-            </div>
+            <Button
+                className="flex items-center gap-1"
+                onClick={() => setIsCreatingConcept(true)}
+            >
+              <Plus className="h-4 w-4" />
+              <span>Nový koncept</span>
+            </Button>
           </div>
         </div>
 
         {filteredConcepts.length === 0 ? (
             <ConceptEmptyState
-                searchTerm={effectiveSearchTerm}
+                searchTerm={searchTerm}
                 onCreateClick={() => setIsCreatingConcept(true)}
             />
         ) : (

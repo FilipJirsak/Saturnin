@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "@remix-run/react";
 import { Concept } from "~/types/knowledge";
-import { createNewConcept } from "~/utils/knowledge/conceptUtils";
 import { useToast } from "~/hooks/use-toast";
+import {
+  createNewConcept,
+  saveConceptToLocalStorage,
+  getConceptsFromLocalStorage,
+  deleteConceptFromLocalStorage
+} from "~/utils/knowledge/conceptUtils";
 
 interface UseConceptProps {
   initialConcepts?: Concept[];
@@ -15,6 +20,13 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const storedConcepts = getConceptsFromLocalStorage();
+    if (storedConcepts.length > 0) {
+      setConcepts(storedConcepts);
+    }
+  }, []);
 
   const toggleConceptExpand = (conceptId: string) => {
     setConcepts(prevConcepts =>
@@ -31,7 +43,7 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
     setIsLoading(true);
     try {
       const createdConcept = createNewConcept(newConcept, currentUser);
-
+      saveConceptToLocalStorage(createdConcept);
       setConcepts([createdConcept, ...concepts]);
       setIsCreatingConcept(false);
 
@@ -66,6 +78,7 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
         lastModified: updatedDate
       };
 
+      saveConceptToLocalStorage(conceptToUpdate);
       setConcepts(prevConcepts =>
           prevConcepts.map(concept =>
               concept.id === conceptToUpdate.id ? conceptToUpdate : concept
@@ -95,6 +108,7 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
   const handleDeleteConcept = async (conceptId: string) => {
     setIsLoading(true);
     try {
+      deleteConceptFromLocalStorage(conceptId);
       setConcepts(prevConcepts =>
           prevConcepts.filter(concept => concept.id !== conceptId)
       );
