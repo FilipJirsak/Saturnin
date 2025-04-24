@@ -58,6 +58,7 @@
     "embla-carousel-react": "^8.5.2",
     "esbuild": "^0.25.2",
     "gray-matter": "^4.0.3",
+    "html-to-image": "^1.11.13",
     "input-otp": "^1.4.2",
     "isbot": "^4.1.0",
     "lucide-react": "^0.475.0",

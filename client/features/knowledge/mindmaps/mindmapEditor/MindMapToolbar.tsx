@@ -1,7 +1,13 @@
 import { useRef, KeyboardEvent } from 'react';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
-import { Plus, Link2, Save, Download, X } from 'lucide-react';
+import { Plus, Link2, Save, Download, X, Share2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 
 interface MindMapToolbarProps {
   isCreatingNode: boolean;
@@ -14,65 +20,116 @@ interface MindMapToolbarProps {
   onToggleConnect: () => void;
   hasUnsavedChanges: boolean;
   onSave: () => void;
+  onExport?: (format: 'png' | 'json' | 'svg') => void;
+  onShare?: () => void;
+  isPublic?: boolean;
 }
 
 export function MindMapToolbar({
-                                 isCreatingNode, nodeName, onNodeNameChange,
-                                 onAddNode, onCancelCreate, isConnecting, canConnect,
-                                 onToggleConnect, hasUnsavedChanges, onSave
-                               }: MindMapToolbarProps) {
+  isCreatingNode,
+  nodeName,
+  onNodeNameChange,
+  onAddNode,
+  onCancelCreate,
+  isConnecting,
+  canConnect,
+  onToggleConnect,
+  hasUnsavedChanges,
+  onSave,
+  onExport,
+  onShare,
+  isPublic
+}: MindMapToolbarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onAddNode();
+    } else if (e.key === 'Escape') {
+      onCancelCreate();
+    }
+  };
+
   return (
-      <div className="p-2 border-b bg-muted/20 flex items-center gap-2 flex-wrap">
-        {isCreatingNode ? (
-            <div className="flex items-center gap-2">
-              <Input
-                  ref={inputRef}
-                  value={nodeName}
-                  onChange={e => onNodeNameChange(e.target.value)}
-                  placeholder="Název uzlu"
-                  className="w-48"
-                  autoFocus
-                  onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && onAddNode()}
-              />
-              <Button size="sm" variant="default" onClick={onAddNode} disabled={!nodeName}>
-                <Plus className="h-4 w-4 mr-1" /> Přidat
-              </Button>
-              <Button size="sm" variant="ghost" onClick={onCancelCreate}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-        ) : (
-            <Button size="sm" variant="outline" onClick={onCancelCreate}>
-              <Plus className="h-4 w-4 mr-1" /> Přidat uzel
+    <div className="p-2 border-b flex items-center gap-2">
+      {isCreatingNode ? (
+        <>
+          <Input
+            ref={inputRef}
+            value={nodeName}
+            onChange={(e) => onNodeNameChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Název uzlu..."
+            className="w-48"
+            autoFocus
+          />
+          <Button size="sm" onClick={onAddNode} disabled={!nodeName}>
+            <Plus className="h-4 w-4 mr-1" />
+            Přidat
+          </Button>
+          <Button size="sm" variant="ghost" onClick={onCancelCreate}>
+            <X className="h-4 w-4" />
+          </Button>
+        </>
+      ) : (
+        <Button size="sm" onClick={() => { onCancelCreate(); inputRef.current?.focus(); }}>
+          <Plus className="h-4 w-4 mr-1" />
+          Nový uzel
+        </Button>
+      )}
+
+      <div className="h-6 w-px bg-border mx-1" />
+
+      <Button
+        size="sm"
+        variant={isConnecting ? "secondary" : "outline"}
+        onClick={onToggleConnect}
+        disabled={!canConnect}
+      >
+        <Link2 className="h-4 w-4 mr-1" />
+        Propojit
+      </Button>
+
+      <div className="h-6 w-px bg-border mx-1" />
+
+      <Button size="sm" variant="outline" onClick={onSave} disabled={!hasUnsavedChanges}>
+        <Save className="h-4 w-4 mr-1" />
+        Uložit
+      </Button>
+
+      {onExport && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" variant="outline">
+              <Download className="h-4 w-4 mr-1" />
+              Exportovat
             </Button>
-        )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => onExport('png')}>
+              Exportovat jako PNG
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport('svg')}>
+              Exportovat jako SVG
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport('json')}>
+              Exportovat jako JSON
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
-        <Button
-            size="sm"
-            variant={isConnecting ? 'default' : 'outline'}
-            onClick={onToggleConnect}
-            disabled={!canConnect}
-            className={!canConnect ? 'opacity-50 cursor-not-allowed' : ''}
+      {onShare && (
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={onShare}
+          className="ml-auto"
         >
-          <Link2 className="h-4 w-4 mr-1" />
-          Propojit uzly {isConnecting && '(aktivní)'}
+          <Share2 className="h-4 w-4 mr-1" />
+          {isPublic ? 'Sdíleno' : 'Sdílet'}
         </Button>
-
-        <Button
-            size="sm"
-            variant="outline"
-            onClick={onSave}
-            className="ml-auto"
-            disabled={!hasUnsavedChanges}
-        >
-          <Save className="h-4 w-4 mr-1" /> Uložit {hasUnsavedChanges && '*'}
-        </Button>
-
-        <Button size="sm" variant="outline" onClick={() => console.log('Export diagramu')}>
-          <Download className="h-4 w-4 mr-1" /> Export
-        </Button>
-      </div>
+      )}
+    </div>
   );
 }

@@ -1,17 +1,17 @@
-import { ReactFlowProvider } from 'reactflow';
-import { InnerMindMapEditor } from './InnerMindMapEditor';
 import { MindMap } from '~/types/knowledge';
+import { InnerMindMapEditor } from './InnerMindMapEditor';
+import { ReactFlowProvider } from 'reactflow';
 
 interface MindMapEditorProps {
   mindmap: MindMap;
-  onSave: (updated: MindMap) => void;
+  onSave: (updatedMindmap: MindMap) => void;
   readOnly?: boolean;
 }
 
-export function MindMapEditor({ mindmap, onSave, readOnly }: MindMapEditorProps) {
+export function MindMapEditor(props: MindMapEditorProps) {
   return (
-      <ReactFlowProvider>
-        <InnerMindMapEditor mindmap={mindmap} onSave={onSave} readOnly={readOnly} />
-      </ReactFlowProvider>
+    <ReactFlowProvider>
+      <InnerMindMapEditor {...props} />
+    </ReactFlowProvider>
   );
 }

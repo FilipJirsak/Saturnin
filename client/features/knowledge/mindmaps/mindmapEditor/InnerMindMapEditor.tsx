@@ -13,6 +13,7 @@ import ReactFlow, {
   Connection
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { toPng, toSvg } from 'html-to-image';
 import { MindMap, MindMapNode as MindMapNodeType, MindMapConnection } from '~/types/knowledge';
 import { TextNode } from './TextNode';
 import { EdgeCreationDialog } from './EdgeCreationDialog';
@@ -20,6 +21,7 @@ import { MindMapToolbar } from './MindMapToolbar';
 import { NodePanel } from './NodePanel';
 import { EdgePanel } from './EdgePanel';
 import { NODE_COLORS } from '~/lib/constants';
+import { useToast } from '~/hooks/use-toast';
 
 interface InnerMindMapEditorProps {
   mindmap: MindMap;
@@ -42,6 +44,7 @@ export function InnerMindMapEditor({
                                    }: InnerMindMapEditorProps) {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const { toast } = useToast();
 
   const initialNodes = mindmap.nodes.map((n: MindMapNodeType) => ({
     id: n.id,
@@ -99,6 +102,65 @@ export function InnerMindMapEditor({
       if (updated) setSelectedEdge(updated);
     }
   }, [edges, selectedEdge]);
+
+  const handleExport = async (format: 'png' | 'json' | 'svg') => {
+    if (!reactFlowWrapper.current || !reactFlowInstance) return;
+
+    try {
+      if (format === 'json') {
+        const data = {
+          nodes: nodes,
+          edges: edges,
+        };
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${mindmap.title}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+        reactFlowInstance.fitView({ duration: 0, padding: 0.2 });
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const exportFunction = format === 'png' ? toPng : toSvg;
+        const dataUrl = await exportFunction(reactFlowWrapper.current, {
+          backgroundColor: '#ffffff',
+          quality: 1,
+          width: reactFlowWrapper.current.offsetWidth,
+          height: reactFlowWrapper.current.offsetHeight,
+          style: {
+            width: '100%',
+            height: '100%'
+          },
+          filter: (node) => {
+            return !node.classList?.contains('react-flow__minimap');
+          }
+        });
+
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${mindmap.title}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      toast({
+        title: 'Export úspěšný',
+        description: `Mindmapa byla exportována ve formátu ${format.toUpperCase()}`,
+      });
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast({
+        title: 'Export selhal',
+        description: 'Nepodařilo se exportovat mindmapu',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const onAddNode = useCallback(() => {
     if (!nodeName || !reactFlowInstance) return;
@@ -288,63 +350,64 @@ export function InnerMindMapEditor({
   }, []);
 
   return (
-      <div className="flex flex-col h-full border rounded-lg overflow-hidden">
-        <MindMapToolbar
-            isCreatingNode={isCreatingNode}
-            nodeName={nodeName}
-            onNodeNameChange={setNodeName}
-            onAddNode={onAddNode}
-            onCancelCreate={() => { setIsCreatingNode(!isCreatingNode); setNodeName(''); }}
-            isConnecting={isConnecting}
-            canConnect={canConnect}
-            onToggleConnect={() => setIsConnecting(!isConnecting)}
-            hasUnsavedChanges={hasUnsavedChanges}
-            onSave={handleSave}
-        />
+    <div className="flex flex-col h-full border rounded-lg overflow-hidden">
+      <MindMapToolbar
+        isCreatingNode={isCreatingNode}
+        nodeName={nodeName}
+        onNodeNameChange={setNodeName}
+        onAddNode={onAddNode}
+        onCancelCreate={() => { setIsCreatingNode(!isCreatingNode); setNodeName(''); }}
+        isConnecting={isConnecting}
+        canConnect={canConnect}
+        onToggleConnect={() => setIsConnecting(!isConnecting)}
+        hasUnsavedChanges={hasUnsavedChanges}
+        onSave={handleSave}
+        onExport={handleExport}
+      />
 
-        <div ref={reactFlowWrapper} className="flex-1 relative">
-          <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={changes => { onNodesChange(changes); setHasUnsavedChanges(true); }}
-              onEdgesChange={changes => { onEdgesChange(changes); setHasUnsavedChanges(true); }}
-              onConnect={canConnect ? onConnect : undefined}
-              onNodeClick={handleNodeClick}
-              onEdgeClick={handleEdgeClick}
-              onPaneClick={handlePaneClick}
-              nodeTypes={nodeTypes}
-              onInit={setReactFlowInstance}
-              fitView
-              attributionPosition="bottom-left"
-              snapToGrid
-              snapGrid={[15, 15]}
-              defaultEdgeOptions={{
-                type: 'smoothstep',
-                animated: true,
-                markerEnd: { type: MarkerType.ArrowClosed }
-              }}
-              proOptions={{ hideAttribution: true }}
-              selectNodesOnDrag={false}
-              zoomOnDoubleClick={!readOnly}
-              zoomOnScroll={!readOnly}
-              panOnScroll={!readOnly}
-              nodesDraggable={!readOnly}
-              nodesConnectable={!readOnly && isConnecting}
-              elementsSelectable={!readOnly}
-              connectOnClick={isConnecting}
-          >
-            <Controls />
-            <MiniMap />
-            <Background gap={16} size={1} />
-            {isConnecting && (
-                <Panel position="bottom-center" className="bg-background/80 p-2 rounded-md shadow-md z-10 text-sm">
-                  Klikněte na zdrojový uzel a poté na cílový uzel pro vytvoření spojení
-                </Panel>
-            )}
-          </ReactFlow>
-        </div>
+      <div ref={reactFlowWrapper} className="flex-1 relative">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={changes => { onNodesChange(changes); setHasUnsavedChanges(true); }}
+          onEdgesChange={changes => { onEdgesChange(changes); setHasUnsavedChanges(true); }}
+          onConnect={canConnect ? onConnect : undefined}
+          onNodeClick={handleNodeClick}
+          onEdgeClick={handleEdgeClick}
+          onPaneClick={handlePaneClick}
+          nodeTypes={nodeTypes}
+          onInit={setReactFlowInstance}
+          fitView
+          attributionPosition="bottom-left"
+          snapToGrid
+          snapGrid={[15, 15]}
+          defaultEdgeOptions={{
+            type: 'smoothstep',
+            animated: true,
+            markerEnd: { type: MarkerType.ArrowClosed }
+          }}
+          proOptions={{ hideAttribution: true }}
+          selectNodesOnDrag={false}
+          zoomOnDoubleClick={!readOnly}
+          zoomOnScroll={!readOnly}
+          panOnScroll={!readOnly}
+          nodesDraggable={!readOnly}
+          nodesConnectable={!readOnly && isConnecting}
+          elementsSelectable={!readOnly}
+          connectOnClick={isConnecting}
+        >
+          <Controls />
+          <MiniMap />
+          <Background gap={16} size={1} />
+          {isConnecting && (
+            <Panel position="bottom-center" className="bg-background/80 p-2 rounded-md shadow-md z-10 text-sm">
+              Klikni na zdrojový uzel a poté na cílový uzel pro vytvoření spojení
+            </Panel>
+          )}
+        </ReactFlow>
+      </div>
 
-        {selectedNode && !readOnly && (
+      {selectedNode && !readOnly && (
             <NodePanel
                 selectedNode={selectedNode}
                 newNodeName={newNodeName}
@@ -388,6 +451,6 @@ export function InnerMindMapEditor({
             onClose={() => { setIsEdgeDialogOpen(false); setPendingConnection(null); }}
             onConfirm={handleConfirmEdgeCreation}
         />
-      </div>
+    </div>
   );
 }
