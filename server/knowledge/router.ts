@@ -45,15 +45,18 @@ router.get("/documents/:slug", async (c) => {
     let fm = {};
     let body = raw;
     if (match) {
+      const validLines = match[1]
+          .split("\n")
+          .filter(line => line.trim() && line.includes(": "));
+
       fm = Object.fromEntries(
-          match[1]
-              .split("\n")
-              .map((line) => {
-                const [k, ...rest] = line.split(": ");
-                let v = rest.join(": ");
-                try { v = JSON.parse(v); } catch {}
-                return [k, v];
-              })
+          validLines.map((line) => {
+            const colonIndex = line.indexOf(": ");
+            const k = line.substring(0, colonIndex).trim();
+            let v = line.substring(colonIndex + 2).trim();
+            try { v = JSON.parse(v); } catch {}
+            return [k, v];
+          })
       );
       body = raw.slice(match[0].length);
     }
@@ -106,17 +109,25 @@ router.put("/documents/:slug", async (c) => {
   const match = raw.match(/^---\n([\s\S]*?)---\n\n/);
   let fm: Record<string, any> = {};
   let body = raw;
+
   if (match) {
+    const validLines = match[1]
+        .split("\n")
+        .filter(line => {
+          const trimmed = line.trim();
+          return trimmed && trimmed.includes(": ");
+        });
+
     fm = Object.fromEntries(
-        match[1]
-            .split("\n")
-            .map((line) => {
-              const [k, ...rest] = line.split(": ");
-              let v = rest.join(": ");
-              try { v = JSON.parse(v); } catch {}
-              return [k, v];
-            })
+        validLines.map((line) => {
+          const colonIndex = line.indexOf(": ");
+          const k = line.substring(0, colonIndex).trim();
+          let v = line.substring(colonIndex + 2).trim();
+          try { v = JSON.parse(v); } catch {}
+          return [k, v];
+        })
     );
+
     body = raw.slice(match[0].length);
   }
 
@@ -125,9 +136,13 @@ router.put("/documents/:slug", async (c) => {
   if (newTags) fm.tags = newTags;
   fm.lastModified = new Date().toISOString();
 
+  const cleanFrontmatter = Object.fromEntries(
+      Object.entries(fm).filter(([k]) => k.trim())
+  );
+
   const updatedFront =
       "---\n" +
-      Object.entries(fm)
+      Object.entries(cleanFrontmatter)
           .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
           .join("\n") +
       "\n---\n\n";
@@ -146,6 +161,77 @@ router.delete("/documents/:slug", async (c) => {
   } catch {
     return c.json({ ok: false, error: "Dokument nenalezen nebo nelze smazat" }, 404);
   }
+});
+
+router.put("/documents/:slug/move", async (c) => {
+  const slug = c.req.param("slug");
+  const filePath = `${CONTENT_DIR}/${slug}.mdx`;
+
+  try {
+    await Deno.stat(filePath);
+  } catch {
+    return c.json({ ok: false, error: "Dokument nenalezen" }, 404);
+  }
+
+  const data = await c.req.json();
+  const targetFolderTag = data.targetFolderTag as string;
+  const keepTags = Boolean(data.keepTags);
+
+  if (!targetFolderTag) {
+    return c.json({ ok: false, error: "Je požadován cílový tag složky" }, 400);
+  }
+
+  const raw = await Deno.readTextFile(filePath);
+  const match = raw.match(/^---\n([\s\S]*?)---\n\n/);
+  let fm: Record<string, any> = {};
+  let body = raw;
+
+  if (match) {
+    const validLines = match[1]
+        .split("\n")
+        .filter(line => {
+          const trimmed = line.trim();
+          return trimmed && trimmed.includes(": ");
+        });
+
+    fm = Object.fromEntries(
+        validLines.map((line) => {
+          const colonIndex = line.indexOf(": ");
+          const k = line.substring(0, colonIndex).trim();
+          let v = line.substring(colonIndex + 2).trim();
+          try { v = JSON.parse(v); } catch {}
+          return [k, v];
+        })
+    );
+
+    body = raw.slice(match[0].length);
+  }
+
+  let updatedTags: string[];
+
+  if (keepTags) {
+    updatedTags = Array.isArray(fm.tags) ? fm.tags.filter(tag => tag !== targetFolderTag) : [];
+    updatedTags.unshift(targetFolderTag);
+  } else {
+    updatedTags = [targetFolderTag];
+  }
+
+  fm.tags = updatedTags;
+  fm.lastModified = new Date().toISOString();
+
+  const cleanFrontmatter = Object.fromEntries(
+      Object.entries(fm).filter(([k]) => k.trim())
+  );
+
+  const updatedFront =
+      "---\n" +
+      Object.entries(cleanFrontmatter)
+          .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+          .join("\n") +
+      "\n---\n\n";
+
+  await Deno.writeTextFile(filePath, updatedFront + body);
+  return c.json({ ok: true });
 });
 
 export default router;

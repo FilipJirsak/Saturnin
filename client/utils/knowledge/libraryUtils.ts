@@ -13,12 +13,39 @@ import {DocumentItem, Folder, MdxDocument} from "~/types/knowledge";
  * @returns Array of DocumentItem objects representing the folder structure
  */
 export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]) {
-  // TODO (NL): Implementovat cachování výsledků pro zlepšení výkonu při opakovaném volání
-  // TODO (NL): Přidat možnost definovat vlastní pravidla organizace (ne jen podle prvního tagu)
   const documents: DocumentItem[] = [];
   const foldersByTag: Record<string, DocumentItem> = {};
+  const folderDocumentIds = new Set<string>();
 
   for (const doc of mdxDocuments) {
+    const isFolder = doc.tags && doc.tags.includes('_system_folder');
+
+    if (isFolder && doc.tags && doc.tags.length > 0) {
+      folderDocumentIds.add(doc.id);
+
+      const folderTag = doc.tags.find(tag => tag !== '_system_folder');
+
+      if (folderTag && !foldersByTag[folderTag]) {
+        foldersByTag[folderTag] = {
+          id: folderTag,
+          type: "folder" as const,
+          title: doc.title,
+          description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, ' '),
+          lastModified: doc.lastModified || doc.createdAt || new Date().toISOString(),
+          path: `/knowledge/library/folder/${folderTag}`,
+          children: [],
+          isExpanded: false,
+          tags: doc.tags
+        };
+      }
+    }
+  }
+
+  for (const doc of mdxDocuments) {
+    if (folderDocumentIds.has(doc.id)) {
+      continue;
+    }
+
     const documentItem: DocumentItem = {
       id: doc.id,
       type: "document" as const,
@@ -31,37 +58,37 @@ export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]) {
       path: `/knowledge/library/${doc.id}`
     };
 
+    let assignedToFolder = false;
+
     if (doc.tags && doc.tags.length > 0) {
-      const primaryTag = doc.tags[0];
+      for (const tag of doc.tags) {
+        if (tag && foldersByTag[tag]) {
+          foldersByTag[tag].children = foldersByTag[tag].children || [];
 
-      if (!foldersByTag[primaryTag]) {
-        foldersByTag[primaryTag] = {
-          id: `${primaryTag}`,
-          type: "folder" as const,
-          title: formatTagName(primaryTag),
-          description: `Dokumenty s tagem: ${primaryTag}`,
-          lastModified: documentItem.lastModified,
-          path: `/knowledge/library/folder/${primaryTag}`,
-          children: [],
-          isExpanded: false,
-          tags: []
-        };
+          foldersByTag[tag].children.push(documentItem); //TODO (NL): Opravit TS chybu
 
-        documents.push(foldersByTag[primaryTag]);
-      }
+          if (new Date(documentItem.lastModified) > new Date(foldersByTag[tag].lastModified)) {
+            foldersByTag[tag].lastModified = documentItem.lastModified;
+          }
 
-      if (foldersByTag[primaryTag].children) {
-        foldersByTag[primaryTag].children.push(documentItem);
+          assignedToFolder = true;
+          break;
+        }
       }
-      if (new Date(documentItem.lastModified) > new Date(foldersByTag[primaryTag].lastModified)) {
-        foldersByTag[primaryTag].lastModified = documentItem.lastModified;
-      }
-    } else {
+    }
+
+    if (!assignedToFolder) {
       documents.push(documentItem);
     }
   }
 
-  return documents;
+  Object.values(foldersByTag).forEach(folder => {
+    documents.push(folder);
+  });
+
+  return documents.sort((a, b) =>
+      new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime()
+  );
 }
 
 /**

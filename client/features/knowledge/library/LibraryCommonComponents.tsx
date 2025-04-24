@@ -110,6 +110,8 @@ export function DocumentActions({
     setShowDeleteConfirm(false);
   };
 
+  const isFolder = item.tags && item.tags.includes('_system_folder');
+
   return (
       <div className="flex items-center gap-2">
         {item.isShared && (
@@ -118,22 +120,22 @@ export function DocumentActions({
             </Badge>
         )}
 
-        <DropdownMenu>
+        {!isFolder && <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-4 w-4"/>
               <span className="sr-only">Akce</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-          {/*  <DropdownMenuItem asChild>
+            {/*  <DropdownMenuItem asChild>
               <Link to={itemUrl} className="flex items-center">
                 <Eye className="mr-2 h-4 w-4" />
                 <span>Zobrazit</span>
               </Link>
             </DropdownMenuItem>*/}
 
-          {/*  {onEdit ? (
+            {/*  {onEdit ? (
                 <DropdownMenuItem onClick={onEdit} className="flex items-center cursor-pointer">
                   <Edit className="mr-2 h-4 w-4" />
                   <span>Upravit</span>
@@ -148,32 +150,32 @@ export function DocumentActions({
             )}*/}
 
             <DropdownMenuItem>
-              <Share2 className="mr-2 h-4 w-4" />
+              <Share2 className="mr-2 h-4 w-4"/>
               <span>Sdílet</span>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Copy className="mr-2 h-4 w-4" />
+              <Copy className="mr-2 h-4 w-4"/>
               <span>Duplikovat</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator/>
             <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={handleDeleteClick}
             >
               {isDeleting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                     <span>Mazání...</span>
                   </>
               ) : (
                   <>
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="mr-2 h-4 w-4"/>
                     <span>Smazat</span>
                   </>
               )}
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu>}
 
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
@@ -434,11 +436,11 @@ export function DocumentSidebar({
           <div className="text-sm space-y-2">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Vytvořeno:</span>
-              <span>{formatDate(document.createdAt)}</span>
+              <span>{formatDate(document.createdAt || 'Neznámé datum')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Aktualizováno:</span>
-              <span>{formatDate(document.lastModified)}</span>
+              <span>{formatDate(document.lastModified || 'Neznámé datum')}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Autor:</span>
@@ -449,7 +451,7 @@ export function DocumentSidebar({
 
         <div className="bg-muted/30 rounded-md p-4 space-y-3">
           <h3 className="font-medium flex items-center gap-2">
-            <Tag className="h-4 w-4 text-muted-foreground" />
+            <Tag className="h-4 w-4 text-muted-foreground"/>
             <span>Tagy</span>
           </h3>
           <div>

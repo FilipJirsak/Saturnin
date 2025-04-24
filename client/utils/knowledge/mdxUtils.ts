@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { MdxDocument, NewDocument } from "~/types/knowledge";
+import {MdxDocument, NewDocument, NewFolder} from "~/types/knowledge";
 
 //TODO (NL): Pročistit!!!
 
@@ -227,13 +227,13 @@ Zde začni psát obsah tvého dokumentu...
 `;
 
     const frontmatter = {
-      title:       documentData.title,
-      author:      documentData.author,
-      tags:        documentData.tags,
-      createdAt:   now,
+      title: documentData.title,
+      author: documentData.author,
+      tags: documentData.tags,
+      createdAt: now,
       lastModified: now,
       relatedIssues: [],
-      isShared:      false
+      isShared: false
     };
 
     const fileStr = matter.stringify(body, frontmatter);
@@ -348,20 +348,54 @@ export async function moveDocumentToFolder(
     let updatedTags: string[];
 
     if (keepExistingTags) {
-      updatedTags = document.tags || [];
-      if (!updatedTags.includes(targetFolderTag)) {
-        updatedTags.unshift(targetFolderTag);
-      } else {
-        updatedTags = updatedTags.filter(tag => tag !== targetFolderTag);
-        updatedTags.unshift(targetFolderTag);
-      }
+      updatedTags = [...(document.tags || [])];
+
+      updatedTags = updatedTags.filter(tag => tag !== targetFolderTag);
     } else {
-      updatedTags = [targetFolderTag];
+      updatedTags = [];
     }
+
+    updatedTags.unshift(targetFolderTag);
+
+    console.log(`Přesouvám dokument "${slug}" do složky s tagem "${targetFolderTag}" s tagy:`, updatedTags);
 
     return await updateMdxDocument(slug, { tags: updatedTags });
   } catch (error) {
     console.error(`Chyba při přesouvání dokumentu ${slug} do složky s tagem ${targetFolderTag}:`, error);
+    return null;
+  }
+}
+
+//TODO (NL): Má se vytvořit dokument, který reprezentuje složku?
+
+/**
+ * Creates a new folder as a special MDX document with a specified tag.
+ *
+ * @param folderData - Data for the new folder
+ * @returns The created folder document or null in case of error
+ */
+export async function createFolder(folderData: NewFolder): Promise<MdxDocument | null> {
+  try {
+    const folderContent = `# ${folderData.title}
+
+${folderData.description || 'Složka pro organizaci dokumentů.'}
+
+---
+
+*Toto je systémový dokument reprezentující složku. Do této složky můžete přetahovat další dokumenty v knihovně.*
+`;
+
+    const folderDocument: NewDocument = {
+      title: folderData.title,
+      content: folderContent,
+      tags: [folderData.tag, '_system_folder'],
+      author: "Systém",
+      summary: folderData.description
+    };
+
+    return await createMdxDocument(folderDocument);
+  } catch (error) {
+    console.error("Chyba při vytváření složky:", error);
     return null;
   }
 }

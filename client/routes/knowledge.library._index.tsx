@@ -19,7 +19,9 @@ import {getAllMdxDocuments, createMdxDocument, deleteMdxDocument} from "~/utils/
 import { LibraryDocumentCard } from "~/features/knowledge/library/LibraryDocumentCard";
 import { useLibraryDocuments } from "~/hooks/useLibraryDocuments";
 import { moveDocumentToFolder } from "~/utils/knowledge/mdxUtils";
+import {LibraryCustomDragLayer} from "~/features/knowledge/library/LibraryCustomDragLayer";
 
+//TODO (NL): Vyčistit!!!
 export const loader = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);
 
@@ -56,7 +58,93 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
     return redirect("/knowledge/library");
   }
 
-  return new Response("Neznámá akce", { status: 400 });
+  if (actionType === "move") {
+    const documentId = formData.get("documentId") as string;
+    const targetFolderId = formData.get("targetFolderId") as string;
+    const keepTags = formData.get("keepTags") === "true";
+
+    if (!documentId) {
+      return typedJson({ ok: false, error: "Document ID je vyžadováno" }, { status: 400 });
+    }
+
+    if (!targetFolderId) {
+      return typedJson({ ok: false, error: "Target Folder ID je vyžadováno" }, { status: 400 });
+    }
+
+    console.log(`Zpracovávám požadavek na přesun dokumentu ${documentId} do složky ${targetFolderId}`);
+
+    try {
+      const updatedDoc = await moveDocumentToFolder(documentId, targetFolderId, keepTags);
+
+      if (!updatedDoc) {
+        return typedJson({
+          ok: false,
+          error: "Nepodařilo se přesunout dokument"
+        }, { status: 500 });
+      }
+
+      return typedJson({
+        ok: true,
+        message: "Dokument byl úspěšně přesunut",
+        document: updatedDoc
+      });
+    } catch (error) {
+      console.error("Chyba při přesouvání dokumentu:", error);
+      return typedJson({
+        ok: false,
+        error: "Došlo k chybě při přesouvání dokumentu"
+      }, { status: 500 });
+    }
+  }
+
+  if (actionType === "create-folder") {
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const tag = formData.get("tag") as string;
+    const systemTag = formData.get("systemTag") as string || "_system_folder";
+
+    if (!title || !tag) {
+      return typedJson({ ok: false, error: "Název a tag složky jsou vyžadovány" }, { status: 400 });
+    }
+
+    const folderDocument = {
+      title,
+      content: `# ${title}\n\n${description || 'Složka pro organizaci dokumentů.'}\n\n_Toto je systémový dokument reprezentující složku. Do této složky můžete přetahovat další dokumenty v knihovně._`,
+      tags: [tag, systemTag],
+      author: "Systém",
+      summary: description
+    };
+
+    try {
+      const createdDocument = await createMdxDocument(folderDocument);
+
+      if (!createdDocument) {
+        return typedJson({
+          ok: false,
+          error: "Nepodařilo se vytvořit složku"
+        }, { status: 500 });
+      }
+
+      return typedJson({
+        ok: true,
+        message: "Složka byla úspěšně vytvořena",
+        folder: {
+          id: tag,
+          title,
+          description,
+          documentId: createdDocument.id
+        }
+      });
+    } catch (error) {
+      console.error("Chyba při vytváření složky:", error);
+      return typedJson({
+        ok: false,
+        error: "Došlo k chybě při vytváření složky"
+      }, { status: 500 });
+    }
+  }
+
+  return typedJson({ ok: false, error: "Neznámá akce" }, { status: 400 });
 };
 
 export default function KnowledgeLibraryPage() {
@@ -74,8 +162,7 @@ export default function KnowledgeLibraryPage() {
   const {
     documents,
     handleToggleFolder,
-    handleDocumentDrop,
-    resetFolderState
+    handleDocumentDropAction,
   } = useLibraryDocuments({
     initialDocuments,
     isSearching
@@ -124,15 +211,60 @@ export default function KnowledgeLibraryPage() {
 
     try {
       console.log("Vytvářím novou složku:", newFolder);
-      await new Promise(resolve => setTimeout(resolve, 800));
 
-      toast({
-        title: "Složka vytvořena",
-        description: `Složka "${newFolder.title}" byla úspěšně vytvořena.`,
-        variant: "success"
+      const formattedTag = newFolder.tag.toLowerCase().replace(/\s+/g, '-');
+
+      const folderData = {
+        title: newFolder.title,
+        content: `# ${newFolder.title}\n\n${newFolder.description || 'Složka pro organizaci dokumentů.'}\n\n_Toto je systémový dokument reprezentující složku._`,
+        author: "Systém",
+        tags: [formattedTag, "_system_folder"]
+      };
+
+      const response = await fetch("/api/knowledge/documents", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(folderData)
       });
 
-      setIsNewFolderDialogOpen(false);
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.ok) {
+          toast({
+            title: "Složka vytvořena",
+            description: `Složka "${newFolder.title}" byla úspěšně vytvořena.`,
+            variant: "success"
+          });
+
+          setIsNewFolderDialogOpen(false);
+          window.location.reload();
+        } else {
+          toast({
+            title: "Chyba při vytváření složky",
+            description: data.error || "Složku se nepodařilo vytvořit. Zkuste to prosím znovu.",
+            variant: "destructive"
+          });
+        }
+      } else {
+        try {
+          const errorData = await response.json();
+          toast({
+            title: "Chyba při vytváření složky",
+            description: errorData.error || `Server vrátil chybu (${response.status}). Zkuste to prosím znovu.`,
+            variant: "destructive"
+          });
+        } catch (e) {
+          toast({
+            title: "Chyba při vytváření složky",
+            description: `Server vrátil chybu (${response.status}). Zkuste to prosím znovu.`,
+            variant: "destructive"
+          });
+        }
+      }
     } catch (error) {
       console.error("Chyba při vytváření složky:", error);
       toast({
@@ -145,38 +277,10 @@ export default function KnowledgeLibraryPage() {
     }
   };
 
-  const handleDocumentDropAction = async (draggedId: string, targetId: string) => {
-    handleDocumentDrop(draggedId, targetId);
-
-    try {
-      const folderTag = targetId.replace('folder-', '');
-      const result = await moveDocumentToFolder(draggedId, folderTag, true);
-
-      if (result) {
-        toast({
-          title: "Dokument přesunut",
-          description: `Dokument byl úspěšně přesunut do složky.`,
-          variant: "success"
-        });
-      } else {
-        toast({
-          title: "Chyba při přesouvání dokumentu",
-          description: "Dokument se nepodařilo přesunout. Změny se projeví po obnovení stránky.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error("Chyba při přesouvání dokumentu:", error);
-      toast({
-        title: "Chyba při přesouvání dokumentu",
-        description: "Dokument se nepodařilo přesunout. Zkuste to prosím znovu.",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
       <div className="space-y-6">
+        <LibraryCustomDragLayer />
+
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <Book className="h-5 w-5 text-primary" />

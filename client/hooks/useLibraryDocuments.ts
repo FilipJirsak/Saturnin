@@ -10,7 +10,7 @@ interface UseLibraryDocumentsProps {
 interface UseLibraryDocumentsReturn {
   documents: DocumentItem[];
   handleToggleFolder: (folderId: string) => void;
-  handleDocumentDrop: (draggedId: string, targetId: string) => void;
+  handleDocumentDropAction: (draggedId: string, targetId: string) => void;
   resetFolderState: () => void;
 }
 
@@ -20,6 +20,10 @@ export function useLibraryDocuments({
                                     }: UseLibraryDocumentsProps): UseLibraryDocumentsReturn {
   const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setDocuments(initialDocuments);
+  }, [initialDocuments]);
 
   useEffect(() => {
     if (!isSearching) {
@@ -96,7 +100,7 @@ export function useLibraryDocuments({
         if (item.type === "folder" && item.children) {
           return {
             ...item,
-            children: processItems(item.children),
+            children: item.children.filter(child => child.id !== draggedId),
             isExpanded: item.id === targetId ? true : item.isExpanded
           };
         }
@@ -107,7 +111,7 @@ export function useLibraryDocuments({
         if (item.id === targetId && item.type === "folder") {
           return {
             ...item,
-            children: [...item.children, { ...draggedDocument!, recentlyMoved: true }],
+            children: [...(item.children || []), { ...draggedDocument!, recentlyMoved: true }],
             isExpanded: true
           };
         }
@@ -150,18 +154,75 @@ export function useLibraryDocuments({
     setTimeout(() => {
       setDocuments(currentDocs => removeHighlight(currentDocs));
     }, 2000);
+  }, [documents]);
 
-    toast({
-      title: "Dokument přesunut",
-      description: `Dokument "${draggedDocument.title}" byl přesunut do složky "${targetFolder.title}".`,
-      variant: "success"
-    });
-  }, [documents, toast]);
+  const handleDocumentDropAction = useCallback(async (draggedId: string, targetId: string) => {
+    handleDocumentDrop(draggedId, targetId);
+
+    try {
+      const folderTag = targetId.replace(/^folder-/, '');
+
+      console.log(`Přesouvám dokument ${draggedId} do složky s tagem ${folderTag}`);
+
+      const docResponse = await fetch(`/api/knowledge/documents/${draggedId}`);
+      if (!docResponse.ok) {
+        throw new Error(`Nepodařilo se načíst dokument (status: ${docResponse.status})`);
+      }
+
+      const docData = await docResponse.json();
+      if (!docData.ok) {
+        throw new Error(docData.error || "Nepodařilo se načíst dokument");
+      }
+
+      const doc = docData.document;
+
+      let updatedTags = [...(doc.frontmatter.tags || [])];
+      updatedTags = updatedTags.filter(tag => tag !== folderTag);
+      updatedTags.unshift(folderTag);
+
+      const updateResponse = await fetch(`/api/knowledge/documents/${draggedId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          tags: updatedTags,
+          content: doc.content
+        })
+      });
+
+      if (updateResponse.ok) {
+        const updateData = await updateResponse.json();
+
+        if (updateData.ok) {
+          toast({
+            title: "Dokument přesunut",
+            description: `Dokument byl úspěšně přesunut do složky.`,
+            variant: "success"
+          });
+        } else {
+          throw new Error(updateData.error || "Nepodařilo se přesunout dokument");
+        }
+      } else {
+        throw new Error(`Server vrátil chybu (${updateResponse.status})`);
+      }
+    } catch (error) {
+      console.error("Chyba při přesouvání dokumentu:", error);
+      toast({
+        title: "Chyba při přesouvání dokumentu",
+        description: error instanceof Error ? error.message : "Dokument se nepodařilo přesunout. Zkuste to prosím znovu.",
+        variant: "destructive"
+      });
+
+      resetFolderState();
+    }
+  }, [documents, handleDocumentDrop, resetFolderState, toast]);
 
   return {
     documents,
     handleToggleFolder,
-    handleDocumentDrop,
+    handleDocumentDropAction,
     resetFolderState,
   };
 }
