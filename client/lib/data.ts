@@ -10,7 +10,7 @@ import {
   Settings,
   Users
 } from "lucide-react";
-import {MindMap} from "~/types/knowledge";
+import {Concept, KnowledgeTag, MindMap} from "~/types/knowledge";
 
 export const sidebarItems = {
   user: {
@@ -352,4 +352,183 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-8", sourceId: "node-3", targetId: "node-4", label: "volá", color: "#888", thickness: 1 },
     ]
   },
+];
+
+export const MOCK_CONCEPTS: Concept[] = [
+  {
+    id: "concept-1",
+    title: "Architektura MVC",
+    description: "Model-View-Controller je návrhový vzor používaný pro vývoj software, který odděluje aplikační logiku od uživatelského rozhraní.",
+    tags: ["architektura", "návrhový vzor", "software"],
+    related: [
+      { id: "concept-2", title: "Frontend", relation: "is_a" },
+      { id: "concept-3", title: "Backend", relation: "related_to" },
+    ],
+    lastModified: "2025-03-28T15:30:00Z",
+    createdAt: "2025-03-10T09:30:00Z",
+    author: "Nela Letochová",
+  },
+  {
+    id: "concept-2",
+    title: "Frontend",
+    description: "Frontend je část aplikace, která běží na straně klienta a zajišťuje interakci s uživatelem.",
+    tags: ["webová aplikace", "uživatelské rozhraní"],
+    related: [
+      { id: "concept-1", title: "Architektura MVC", relation: "part_of" },
+      { id: "concept-4", title: "React", relation: "has_a" },
+      { id: "concept-3", title: "Backend", relation: "depends_on" },
+    ],
+    lastModified: "2025-03-20T10:15:00Z",
+    createdAt: "2025-03-10T09:30:00Z",
+    author: "Nela Letochová",
+  },
+  {
+    id: "concept-3",
+    title: "Backend",
+    description: "Backend je serverová část aplikace, která zpracovává business logiku a pracuje s databází.",
+    tags: ["server", "api", "databáze"],
+    related: [
+      { id: "concept-2", title: "Frontend", relation: "related_to" },
+      { id: "concept-5", title: "Databáze", relation: "has_a" },
+    ],
+    lastModified: "2025-03-15T09:45:00Z",
+    createdAt: "2025-03-10T09:30:00Z",
+    author: "Nela Letochová",
+  },
+  {
+    id: "concept-4",
+    title: "React",
+    description: "React je JavaScriptová knihovna pro tvorbu uživatelských rozhraní.",
+    tags: ["frontend", "javascript", "knihovna"],
+    related: [
+      { id: "concept-2", title: "Frontend", relation: "part_of" },
+    ],
+    lastModified: "2025-04-02T14:00:00Z",
+    createdAt: "2025-03-10T09:30:00Z",
+    author: "Nela Letochová",
+  },
+  {
+    id: "concept-5",
+    title: "Databáze",
+    description: "Databáze je organizovaná kolekce dat, která je přístupná, spravovatelná a aktualizovatelná.",
+    tags: ["backend", "data", "storage"],
+    related: [
+      { id: "concept-3", title: "Backend", relation: "part_of" },
+    ],
+    lastModified: "2025-03-10T11:20:00Z",
+    createdAt: "2025-03-10T09:30:00Z",
+    author: "Nela Letochová",
+  },
+];
+
+// TODO (NL): Zařídit, aby se mock data načítala jen jednou na začátku aplikace?
+export const MOCK_TAGS: KnowledgeTag[] = [
+  {
+    id: "tag-1",
+    name: "architektura",
+    description: "Dokumenty a koncepty týkající se architektury systému",
+    color: "#8b5cf6",
+    count: {
+      documents: 5,
+      concepts: 3,
+      mindmaps: 1,
+    },
+    createdAt: "2025-03-10T09:30:00Z",
+  },
+  {
+    id: "tag-2",
+    name: "databáze",
+    description: "Materiály o databázích, jejich správě a optimalizaci",
+    color: "#3b82f6",
+    count: {
+      documents: 3,
+      concepts: 2,
+      mindmaps: 1,
+    },
+    createdAt: "2025-03-12T11:15:00Z",
+  },
+  {
+    id: "tag-3",
+    name: "frontend",
+    description: "Vše o frontendu, UI komponentách a uživatelském rozhraní",
+    color: "#10b981",
+    count: {
+      documents: 7,
+      concepts: 4,
+      mindmaps: 0,
+    },
+    createdAt: "2025-03-15T14:45:00Z",
+  },
+  {
+    id: "tag-4",
+    name: "backend",
+    description: "Materiály týkající se backendu, API a serverových služeb",
+    color: "#f59e0b",
+    count: {
+      documents: 6,
+      concepts: 3,
+      mindmaps: 0,
+    },
+    createdAt: "2025-03-18T10:20:00Z",
+  },
+  {
+    id: "tag-5",
+    name: "bezpečnost",
+    description: "Dokumenty a koncepty o zabezpečení, autentizaci a autorizaci",
+    color: "#ef4444",
+    count: {
+      documents: 2,
+      concepts: 1,
+      mindmaps: 1,
+    },
+    createdAt: "2025-03-20T09:10:00Z",
+  },
+  {
+    id: "tag-6",
+    name: "výkon",
+    description: "Optimalizace výkonu, škálování a benchmark",
+    color: "#ec4899",
+    count: {
+      documents: 3,
+      concepts: 2,
+      mindmaps: 0,
+    },
+    createdAt: "2025-03-25T16:30:00Z",
+  },
+  {
+    id: "tag-7",
+    name: "dokumentace",
+    description: "Veškerá dokumentace projektu, API, komponent a systému",
+    color: "#6366f1",
+    count: {
+      documents: 12,
+      concepts: 0,
+      mindmaps: 2,
+    },
+    createdAt: "2025-03-05T08:45:00Z",
+  },
+  {
+    id: "tag-8",
+    name: "testování",
+    description: "Materiály o testování, testovacích strategiích a nástrojích",
+    color: "#a855f7",
+    count: {
+      documents: 4,
+      concepts: 2,
+      mindmaps: 1,
+    },
+    createdAt: "2025-03-28T13:20:00Z",
+  },
+];
+
+export const COLOR_PRESETS = [
+  "#8b5cf6",
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#ec4899",
+  "#6366f1",
+  "#a855f7",
+  "#64748b",
 ];

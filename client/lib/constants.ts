@@ -95,3 +95,11 @@ export const KNOWLEDGE_AVAILABLE_TAGS = [
   "model",
   "mikroslužby"
 ];
+
+export const RELATION_TYPES = [
+  { value: "is_a", label: "je typ" },
+  { value: "has_a", label: "má" },
+  { value: "related_to", label: "souvisí s" },
+  { value: "depends_on", label: "závisí na" },
+  { value: "part_of", label: "je součástí" },
+];
