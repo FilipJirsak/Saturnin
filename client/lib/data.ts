@@ -11,6 +11,12 @@ import {
   Users
 } from "lucide-react";
 import {Concept, KnowledgeTag, MindMap} from "~/types/knowledge";
+import {
+  ACTIVITY_TYPES,
+  ACTIVITY_STATUSES,
+  STATISTICS_PERIODS
+} from '~/lib/constants';
+import {Activity, ActivityChartData, PieChartData, StatCardData, StatisticsPeriod} from "~/types/dashboard";
 
 export const sidebarItems = {
   user: {
@@ -532,3 +538,192 @@ export const COLOR_PRESETS = [
   "#a855f7",
   "#64748b",
 ];
+
+export const mockActivities: Activity[] = [
+  {
+    id: '1',
+    type: ACTIVITY_TYPES.ISSUE,
+    title: 'Implementace nového API endpointu',
+    description: 'Přidán nový endpoint pro správu uživatelských rolí',
+    timestamp: '2024-04-25T10:30:00',
+    user: {
+      name: 'Jan Novák',
+      avatar: '/avatars/jan.jpg'
+    },
+    status: ACTIVITY_STATUSES.IN_PROGRESS,
+    priority: 'high'
+  },
+  {
+    id: '2',
+    type: ACTIVITY_TYPES.DOCUMENT,
+    title: 'Aktualizace dokumentace API',
+    description: 'Přidána dokumentace pro nové endpointy',
+    timestamp: '2024-04-25T09:15:00',
+    user: {
+      name: 'Petra Svobodová'
+    }
+  },
+  {
+    id: '3',
+    type: ACTIVITY_TYPES.CONCEPT,
+    title: 'Nový koncept: Microservices architektura',
+    description: 'Vytvořen nový koncept pro budoucí rozšíření systému',
+    timestamp: '2024-04-25T08:45:00',
+    user: {
+      name: 'Martin Dvořák'
+    }
+  },
+  {
+    id: '4',
+    type: ACTIVITY_TYPES.MINDMAP,
+    title: 'Aktualizace myšlenkové mapy projektu',
+    description: 'Přidány nové větve pro plánované funkce',
+    timestamp: '2024-04-24T16:20:00',
+    user: {
+      name: 'Eva Králová'
+    }
+  },
+  {
+    id: '5',
+    type: ACTIVITY_TYPES.MESSAGE,
+    title: 'Nová zpráva v inboxu',
+    description: 'Přijata nová zpráva od klienta ohledně požadavků na projekt',
+    timestamp: '2024-04-24T15:30:00',
+    user: {
+      name: 'Tomáš Malý'
+    }
+  }
+];
+
+export const mockActivityChartData: Record<StatisticsPeriod, ActivityChartData[]> = {
+  [STATISTICS_PERIODS.WEEK]: [
+    { name: 'Po', issues: 4, documents: 2, concepts: 1 },
+    { name: 'Út', issues: 6, documents: 3, concepts: 2 },
+    { name: 'St', issues: 8, documents: 4, concepts: 3 },
+    { name: 'Čt', issues: 5, documents: 5, concepts: 2 },
+    { name: 'Pá', issues: 7, documents: 3, concepts: 4 },
+    { name: 'So', issues: 2, documents: 1, concepts: 1 },
+    { name: 'Ne', issues: 1, documents: 0, concepts: 0 },
+  ],
+  [STATISTICS_PERIODS.MONTH]: [
+    { name: '1. týden', issues: 20, documents: 10, concepts: 5 },
+    { name: '2. týden', issues: 25, documents: 15, concepts: 8 },
+    { name: '3. týden', issues: 18, documents: 12, concepts: 6 },
+    { name: '4. týden', issues: 22, documents: 14, concepts: 7 },
+  ],
+  [STATISTICS_PERIODS.QUARTER]: [
+    { name: 'Leden', issues: 80, documents: 40, concepts: 20 },
+    { name: 'Únor', issues: 90, documents: 45, concepts: 25 },
+    { name: 'Březen', issues: 85, documents: 42, concepts: 22 },
+  ],
+  [STATISTICS_PERIODS.YEAR]: [
+    { name: 'Q1', issues: 255, documents: 127, concepts: 67 },
+    { name: 'Q2', issues: 280, documents: 140, concepts: 75 },
+    { name: 'Q3', issues: 265, documents: 132, concepts: 70 },
+    { name: 'Q4', issues: 290, documents: 145, concepts: 78 },
+  ],
+};
+
+export const mockIssuesData: Record<StatisticsPeriod, PieChartData[]> = {
+  [STATISTICS_PERIODS.WEEK]: [
+    { name: 'Otevřené', value: 45 },
+    { name: 'V řešení', value: 35 },
+    { name: 'Uzavřené', value: 20 },
+  ],
+  [STATISTICS_PERIODS.MONTH]: [
+    { name: 'Otevřené', value: 40 },
+    { name: 'V řešení', value: 35 },
+    { name: 'Uzavřené', value: 25 },
+  ],
+  [STATISTICS_PERIODS.QUARTER]: [
+    { name: 'Otevřené', value: 35 },
+    { name: 'V řešení', value: 40 },
+    { name: 'Uzavřené', value: 25 },
+  ],
+  [STATISTICS_PERIODS.YEAR]: [
+    { name: 'Otevřené', value: 30 },
+    { name: 'V řešení', value: 45 },
+    { name: 'Uzavřené', value: 25 },
+  ],
+};
+
+export const mockKnowledgeData: Record<StatisticsPeriod, PieChartData[]> = {
+  [STATISTICS_PERIODS.WEEK]: [
+    { name: 'Dokumenty', value: 60 },
+    { name: 'Koncepty', value: 25 },
+    { name: 'Myšlenkové mapy', value: 15 },
+  ],
+  [STATISTICS_PERIODS.MONTH]: [
+    { name: 'Dokumenty', value: 55 },
+    { name: 'Koncepty', value: 30 },
+    { name: 'Myšlenkové mapy', value: 15 },
+  ],
+  [STATISTICS_PERIODS.QUARTER]: [
+    { name: 'Dokumenty', value: 50 },
+    { name: 'Koncepty', value: 35 },
+    { name: 'Myšlenkové mapy', value: 15 },
+  ],
+  [STATISTICS_PERIODS.YEAR]: [
+    { name: 'Dokumenty', value: 45 },
+    { name: 'Koncepty', value: 40 },
+    { name: 'Myšlenkové mapy', value: 15 },
+  ],
+};
+
+export const mockSearchData: Record<StatisticsPeriod, PieChartData[]> = {
+  [STATISTICS_PERIODS.WEEK]: [
+    { name: 'Úspěšné', value: 92 },
+    { name: 'Částečné', value: 5 },
+    { name: 'Neúspěšné', value: 3 },
+  ],
+  [STATISTICS_PERIODS.MONTH]: [
+    { name: 'Úspěšné', value: 90 },
+    { name: 'Částečné', value: 7 },
+    { name: 'Neúspěšné', value: 3 },
+  ],
+  [STATISTICS_PERIODS.QUARTER]: [
+    { name: 'Úspěšné', value: 88 },
+    { name: 'Částečné', value: 8 },
+    { name: 'Neúspěšné', value: 4 },
+  ],
+  [STATISTICS_PERIODS.YEAR]: [
+    { name: 'Úspěšné', value: 85 },
+    { name: 'Částečné', value: 10 },
+    { name: 'Neúspěšné', value: 5 },
+  ],
+};
+
+export const mockStatCards: StatCardData[] = [
+  {
+    title: 'Issues',
+    icon: 'AlertCircle',
+    value: 156,
+    change: '+12% oproti minulému měsíci',
+    progressLabel: 'Otevřené',
+    progressValue: 45,
+  },
+  {
+    title: 'Dokumenty',
+    icon: 'Book',
+    value: 234,
+    change: '+8% oproti minulému měsíci',
+    progressLabel: 'Nové',
+    progressValue: 28,
+  },
+  {
+    title: 'Myšlenkové mapy',
+    icon: 'Map',
+    value: 45,
+    change: '+5 nových tento měsíc',
+    progressLabel: 'Aktivní',
+    progressValue: 82,
+  },
+  {
+    title: 'Vyhledávání',
+    icon: 'Search',
+    value: 1234,
+    change: '+15% oproti minulému měsíci',
+    progressLabel: 'Úspěšné',
+    progressValue: 92,
+  },
+]

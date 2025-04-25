@@ -22,7 +22,6 @@ export function IssueSettings({ editedIssue, setEditedIssue }: IssueSettingsProp
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Stav */}
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Badge variant="outline" className="rounded-md bg-muted/50 h-5 w-5 p-0 flex items-center justify-center">
@@ -48,7 +47,6 @@ export function IssueSettings({ editedIssue, setEditedIssue }: IssueSettingsProp
             </Select>
           </div>
 
-          {/* Přiřazená osoba */}
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Avatar className="h-5 w-5 text-xs">
@@ -79,7 +77,6 @@ export function IssueSettings({ editedIssue, setEditedIssue }: IssueSettingsProp
             </Select>
           </div>
 
-          {/* Termín dokončení */}
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
