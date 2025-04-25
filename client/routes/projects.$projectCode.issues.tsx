@@ -15,19 +15,31 @@ import {
   TableCaption
 } from "~/components/ui/table";
 import { Input } from "~/components/ui/input";
-import { Search, ArrowUpDown, Edit, Eye, Filter } from "lucide-react";
+import { Search, ArrowUpDown, Edit, Eye, Filter, X } from "lucide-react";
 import { useState, useMemo } from "react";
-import {ISSUE_STATES} from "~/lib/constants";
+import { ISSUE_STATES, ISSUE_TEAM_MEMBERS } from "~/lib/constants";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import { Label } from "~/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 type ProjectContext = {
   project: ProjectWithIssues;
   issues: IssueFull[];
 };
 
+type Filters = {
+  state: string | null;
+  assignee: string | null;
+};
+
 export default function ProjectIssuesView() {
   const { project, issues } = useOutletContext<ProjectContext>();
   const { projectCode } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<Filters>({
+    state: null,
+    assignee: null
+  });
   const [sortConfig, setSortConfig] = useState<{
     key: keyof IssueFull | null;
     direction: 'asc' | 'desc';
@@ -36,7 +48,6 @@ export default function ProjectIssuesView() {
     direction: 'asc'
   });
 
-  //TODO (NL): Přesunout do utils
   const requestSort = (key: keyof IssueFull) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -48,6 +59,7 @@ export default function ProjectIssuesView() {
   const filteredAndSortedIssues = useMemo(() => {
     let filteredIssues = [...issues];
 
+    // Apply search filter
     if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
       filteredIssues = filteredIssues.filter(issue =>
@@ -57,6 +69,17 @@ export default function ProjectIssuesView() {
       );
     }
 
+    // Apply state filter
+    if (filters.state) {
+      filteredIssues = filteredIssues.filter(issue => issue.state === filters.state);
+    }
+
+    // Apply assignee filter
+    if (filters.assignee) {
+      filteredIssues = filteredIssues.filter(issue => issue.assignee === filters.assignee);
+    }
+
+    // Apply sorting
     if (sortConfig.key) {
       filteredIssues.sort((a, b) => {
         const aValue = a[sortConfig.key as keyof IssueFull];
@@ -81,7 +104,7 @@ export default function ProjectIssuesView() {
     }
 
     return filteredIssues;
-  }, [issues, searchTerm, sortConfig]);
+  }, [issues, searchTerm, filters, sortConfig]);
 
   const getStateLabel = (stateValue: string) => {
     const stateObj = ISSUE_STATES.find(s => s.value === stateValue);
@@ -103,6 +126,15 @@ export default function ProjectIssuesView() {
     }
   };
 
+  const resetFilters = () => {
+    setFilters({
+      state: null,
+      assignee: null
+    });
+  };
+
+  const hasActiveFilters = filters.state !== null || filters.assignee !== null;
+
   return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -117,11 +149,72 @@ export default function ProjectIssuesView() {
                   onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            {/*TODO (NL): Přidat filtrační funkcionalitu*/}
-            <Button variant="outline" size="sm">
-              <Filter className="mr-2 h-4 w-4" />
-              Filtrovat
-            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant={hasActiveFilters ? "default" : "outline"} size="sm" className="gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filtrovat
+                  {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-1">
+                        {Object.values(filters).filter(Boolean).length}
+                      </Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="grid gap-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium leading-none">Filtry</h4>
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" className="h-8 px-2" onClick={resetFilters}>
+                          <X className="h-4 w-4 mr-2" />
+                          Reset
+                        </Button>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <div className="grid gap-1">
+                      <Label htmlFor="state">Stav</Label>
+                      <Select
+                          value={filters.state || ""}
+                          onValueChange={(value) => setFilters(prev => ({ ...prev, state: value || null }))}
+                      >
+                        <SelectTrigger id="state">
+                          <SelectValue placeholder="Všechny stavy" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Všechny stavy</SelectItem>
+                          {ISSUE_STATES.map((state) => (
+                              <SelectItem key={state.value} value={state.value}>
+                                {state.label}
+                              </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-1">
+                      <Label htmlFor="assignee">Přiřazená osoba</Label>
+                      <Select
+                          value={filters.assignee || ""}
+                          onValueChange={(value) => setFilters(prev => ({ ...prev, assignee: value || null }))}
+                      >
+                        <SelectTrigger id="assignee">
+                          <SelectValue placeholder="Všechny osoby" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Všechny osoby</SelectItem>
+                          {ISSUE_TEAM_MEMBERS.map((member) => (
+                              <SelectItem key={member.value} value={member.value}>
+                                {member.label}
+                              </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardHeader>
         <CardContent>

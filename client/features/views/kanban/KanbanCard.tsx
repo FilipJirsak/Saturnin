@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
 import { IssueFull } from "~/types";
 import { format } from "date-fns";
-import { MouseEvent } from "react"
+import { MouseEvent, useRef } from "react"
 
 interface CardProps {
   issue: IssueFull;
@@ -15,8 +15,9 @@ interface CardProps {
 
 export function KanbanCard({ issue, onClick }: CardProps){
   const { title, summary, code, state, tags, due_date } = issue;
+  const dragStartTimeRef = useRef<number>(0);
 
-  const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'CARD',
     item: { code, state },
     collect: (monitor) => ({
@@ -25,37 +26,29 @@ export function KanbanCard({ issue, onClick }: CardProps){
   }));
 
   const handleCardClick = (e: MouseEvent) => {
-    if (!isDragging) {
+    const dragEndTime = Date.now();
+    // Only trigger click if the drag duration was less than 200ms (indicating a click rather than a drag)
+    if (dragEndTime - dragStartTimeRef.current < 200) {
       onClick(issue);
     }
   };
 
-  const DragHandle = () => (
-      <div
-          className="absolute right-2 top-2 cursor-move h-5 w-5 flex items-center justify-center rounded-full hover:bg-muted"
-          ref={drag}
-      >
-        <svg
-            className="h-3 w-3 text-muted-foreground"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-        </svg>
-      </div>
-  );
+  const handleDragStart = () => {
+    dragStartTimeRef.current = Date.now();
+  };
 
   return (
-      <div ref={dragPreview} className={cn(isDragging ? 'opacity-50' : 'opacity-100')}>
+      <div
+        ref={drag}
+        className={cn(isDragging ? 'opacity-50' : 'opacity-100')}
+        onMouseDown={handleDragStart}
+      >
         <Card
             className={cn(
                 'relative transition-all duration-200 hover:shadow-md cursor-pointer',
             )}
             onClick={handleCardClick}
         >
-          <DragHandle />
-
           <CardHeader className="p-4">
             <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground">
@@ -76,30 +69,26 @@ export function KanbanCard({ issue, onClick }: CardProps){
           <CardFooter className="p-3 border-t flex flex-wrap justify-between">
             <div className="flex items-center space-x-3">
               {/*TODO (NL): Budeme mít i komentáře?*/}
-              {(issue.comments_count !== undefined) && (
-                  <div className="flex items-center text-muted-foreground">
-                    <ChatBubbleLeftIcon className="mr-1.5 h-3.5 w-3.5"/>
-                    <span className="text-xs">
-                  {issue.comments_count}
-                </span>
-                  </div>
-              )}
+                <div className="flex items-center text-muted-foreground">
+                  <ChatBubbleLeftIcon className="mr-1.5 h-3.5 w-3.5"/>
+                  <span className="text-xs">
+                    {issue.comments_count || 0}
+                  </span>
+                </div>
 
-              {(issue.attachments_count !== undefined && issue.attachments_count > 0) && (
-                  <div className="flex items-center text-muted-foreground">
-                    <PaperClipIcon className="mr-1.5 h-3.5 w-3.5"/>
-                    <span className="text-xs">
-                  {issue.attachments_count}
-                </span>
-                  </div>
-              )}
+                <div className="flex items-center text-muted-foreground">
+                  <PaperClipIcon className="mr-1.5 h-3.5 w-3.5"/>
+                  <span className="text-xs">
+                    {issue.attachments_count || 0}
+                  </span>
+                </div>
 
               {due_date && (
                   <div className="flex items-center text-muted-foreground">
                     <CalendarIcon className="mr-1.5 h-3.5 w-3.5"/>
                     <span className="text-xs">
-                  {format(new Date(due_date), "dd.MM")}
-                </span>
+                      {format(new Date(due_date), "dd.MM")}
+                    </span>
                   </div>
               )}
             </div>

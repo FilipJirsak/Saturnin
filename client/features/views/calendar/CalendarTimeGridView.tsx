@@ -1,15 +1,18 @@
 import {Fragment, useEffect, useRef} from "react";
 import {CalendarDay, getLocalDateString, getWeekDays} from "~/utils/calendarUtils";
 import {cn} from "~/utils/helpers";
+import { IssueFull } from "~/types";
 
 interface TimeGridViewProps {
   viewType: 'day' | 'week';
   currentDate: Date;
   days: CalendarDay[];
+  issues: IssueFull[];
   onSelectDay?: (date: string) => void;
+  onIssueSelect: (issue: IssueFull) => void;
 }
 
-export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay }: TimeGridViewProps) {
+export function CalendarTimeGridView({ viewType, currentDate, days, issues, onSelectDay, onIssueSelect }: TimeGridViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerNavRef = useRef<HTMLDivElement>(null);
   const containerOffsetRef = useRef<HTMLDivElement>(null);
@@ -209,15 +212,18 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                                         gridColumn: `${colIndex + 1}`
                                       }}
                                   >
-                                    <a
-                                        href={event.href}
-                                        className={`group absolute inset-1 flex flex-col overflow-hidden rounded-lg p-2 text-xs ${event.colorClass}`}
+                                    <button
+                                        onClick={() => {
+                                          const issue = issues.find(i => i.code === event.id);
+                                          if (issue) onIssueSelect(issue);
+                                        }}
+                                        className={`group text-start absolute inset-1 flex flex-col overflow-hidden rounded-lg p-2 text-xs ${event.colorClass} hover:opacity-90`}
                                     >
                                       <p className="order-1 font-semibold truncate">{event.name}</p>
                                       <p className="text-xs opacity-70">
                                         <time dateTime={event.datetime}>{event.time}</time>
                                       </p>
-                                    </a>
+                                    </button>
                                   </li>
                               );
                             } catch (e) {
@@ -229,7 +235,6 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                   ) : (
                       eventsToShow.map((event, eventIdx) => {
                         try {
-                          /*TODO (NL): Přehodit do hooku/utils*/
                           const eventDate = new Date(event.datetime);
                           const hour = eventDate.getHours();
                           const minute = eventDate.getMinutes();
@@ -247,15 +252,18 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                                   className="relative mt-px flex"
                                   style={{gridRow: `${gridRow} / span ${duration}`}}
                               >
-                                <a
-                                    href={event.href}
-                                    className={`group absolute inset-1 flex flex-col overflow-hidden rounded-lg p-2 text-xs ${event.colorClass}`}
+                                <button
+                                    onClick={() => {
+                                      const issue = issues.find(i => i.code === event.id);
+                                      if (issue) onIssueSelect(issue);
+                                    }}
+                                    className={`group text-start absolute inset-1 flex flex-col overflow-hidden rounded-lg p-2 text-xs ${event.colorClass} hover:opacity-90`}
                                 >
                                   <p className="order-1 font-semibold truncate">{event.name}</p>
                                   <p className="text-xs opacity-70">
                                     <time dateTime={event.datetime}>{event.time}</time>
                                   </p>
-                                </a>
+                                </button>
                               </li>
                           );
                         } catch (e) {

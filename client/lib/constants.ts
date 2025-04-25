@@ -1,5 +1,10 @@
 /*NAVIGATION*/
 
+export interface TeamMember {
+  value: string;
+  label: string;
+}
+
 export const PATH_TRANSLATIONS: Record<string, string> = {
   'settings': 'Nastavení',
   'profile': 'Profil',
@@ -33,7 +38,7 @@ export const ISSUE_STATES = [
 ];
 
 //TODO (NL): Nutno udělat konfigurovatelné
-export const ISSUE_TEAM_MEMBERS = [
+export const ISSUE_TEAM_MEMBERS: TeamMember[] = [
   { value: 'Nela Letochová', label: 'Nela Letochová' },
   { value: 'Jan Novák', label: 'Jan Novák' },
   { value: 'Eva Černá', label: 'Eva Černá' },

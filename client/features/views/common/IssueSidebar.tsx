@@ -25,15 +25,14 @@ interface IssueSidebarProps {
   isNew?: boolean;
 }
 
-/*TODO (NL): Rozdělit do obecných komponent*/
-export function KanbanIssueSidebar({
-                                       isOpen,
-                                       issue,
-                                       projectCode,
-                                       onClose,
-                                       onSave,
-                                       isNew = false
-                                     }: IssueSidebarProps) {
+export function IssueSidebar({
+                               isOpen,
+                               issue,
+                               projectCode,
+                               onClose,
+                               onSave,
+                               isNew = false
+                             }: IssueSidebarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<IssueFull>>({});
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -201,157 +200,107 @@ export function KanbanIssueSidebar({
 
             <div className="flex-grow overflow-y-auto py-4 px-2 custom-scrollbar">
               <div className="grid gap-6">
-                <div className="grid gap-3">
-                  <Label htmlFor="title">Název</Label>
-                  <Input
-                      id="title"
-                      name="title"
-                      placeholder="Zadej název úkolu"
-                      value={formData.title || ""}
-                      onChange={handleInputChange}
-                      required
-                  />
-                </div>
-
-                <div className="grid gap-3">
-                  <Label htmlFor="state">Stav</Label>
-                  <Select
-                      value={formData.state || "new"}
-                      onValueChange={handleSelectChange}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Vyberte stav" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ISSUE_STATES.map((state) => (
-                          <SelectItem key={state.value} value={state.value}>
-                            {state.label}
-                          </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid gap-3">
-                  <Label htmlFor="summary">Shrnutí</Label>
-                  <Input
-                      id="summary"
-                      name="summary"
-                      placeholder="Krátké shrnutí úkolu"
-                      value={formData.summary || ""}
-                      onChange={handleInputChange}
-                  />
-                </div>
-
-                <div className="grid gap-3">
-                  <Label htmlFor="description">Popis</Label>
-                  <Textarea
-                      id="description"
-                      name="description"
-                      placeholder="Podrobný popis úkolu"
-                      rows={5}
-                      value={formData.description || ""}
-                      onChange={handleInputChange}
-                  />
-                </div>
-
-                <div className="grid gap-3">
-                  <div className="flex items-center gap-2">
-                    <Link className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="link">Odkaz</Label>
-                  </div>
-                  <Input
-                      id="link"
-                      placeholder="Odkaz (volitelné)"
-                      value={link}
-                      onChange={(e) => setLink(e.target.value)}
-                  />
-                </div>
-
-                <div
-                  className={cn(
-                    "border-2 border-dashed rounded-lg p-4 text-center",
-                    isDragging ? "border-primary bg-primary/5" : "border-muted"
-                  )}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <Upload className="h-6 w-6 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">
-                      Přetáhněte soubory sem nebo klikněte pro výběr
-                    </p>
-                    <input
-                      type="file"
-                      multiple
-                      className="hidden"
-                      id="file-upload"
-                      onChange={handleFileInput}
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="title">Název</Label>
+                    <Input
+                        id="title"
+                        name="title"
+                        placeholder="Zadej název úkolu"
+                        value={formData.title || ""}
+                        onChange={handleInputChange}
+                        required
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                    >
-                      Vybrat soubory
-                    </Button>
                   </div>
-                  {attachedFiles.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-sm font-medium mb-2">Připojené soubory:</p>
-                      <ul className="space-y-1">
-                        {attachedFiles.map((file, index) => (
-                          <li key={index} className="text-sm text-muted-foreground">
-                            {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                          </li>
+
+                  <div className="grid gap-3">
+                    <Label htmlFor="state">Stav</Label>
+                    <Select
+                        value={formData.state || "new"}
+                        onValueChange={handleSelectChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Vyberte stav" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ISSUE_STATES.map((state) => (
+                            <SelectItem key={state.value} value={state.value}>
+                              {state.label}
+                            </SelectItem>
                         ))}
-                      </ul>
-                    </div>
-                  )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid gap-3">
+                    <Label htmlFor="summary">Shrnutí</Label>
+                    <Input
+                        id="summary"
+                        name="summary"
+                        placeholder="Krátké shrnutí úkolu"
+                        value={formData.summary || ""}
+                        onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <div className="grid gap-3">
+                    <Label htmlFor="description">Popis</Label>
+                    <Textarea
+                        id="description"
+                        name="description"
+                        placeholder="Podrobný popis úkolu"
+                        value={formData.description || ""}
+                        onChange={handleInputChange}
+                        className="min-h-[100px]"
+                    />
+                  </div>
                 </div>
 
-                <Separator />
+                <Separator className="bg-primary-50" />
 
-                <div className="grid gap-3">
-                  <Label>Termín dokončení</Label>
-                  <DatePicker
-                      selected={dueDate}
-                      onSelect={handleDateChange}
-                  />
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="assignee">Přiřazená osoba</Label>
+                    <Select
+                        value={formData.assignee || ""}
+                        onValueChange={handleAssigneeChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Vyberte osobu" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Nikdo</SelectItem>
+                        {ISSUE_TEAM_MEMBERS.map((member) => (
+                            <SelectItem key={member.value} value={member.value}>
+                              {member.label}
+                            </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {formData.assignee && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-xs">{getInitials(formData.assignee)}</AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm">{formData.assignee}</span>
+                        </div>
+                    )}
+                  </div>
+
+                  <div className="grid gap-3">
+                    <Label htmlFor="due-date">Termín</Label>
+                    <DatePicker
+                        selected={dueDate}
+                        onSelect={handleDateChange}
+                    />
+                  </div>
                 </div>
 
-                <div className="grid gap-3">
-                  <Label>Přiřazeno</Label>
-                  <Select
-                      value={formData.assignee || ""}
-                      onValueChange={handleAssigneeChange}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Vyberte osobu" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ISSUE_TEAM_MEMBERS.map((member) => (
-                          <SelectItem key={member.value} value={member.value}>
-                            {member.label}
-                          </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formData.assignee && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">{getInitials(formData.assignee)}</AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm">{formData.assignee}</span>
-                      </div>
-                  )}
-                </div>
+                <Separator className="bg-primary-50" />
 
                 <div className="grid gap-3">
                   <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
+                    <Tag className="h-4 w-4 text-muted-foreground"/>
                     <Label>Tagy</Label>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -359,28 +308,25 @@ export function KanbanIssueSidebar({
                         <Badge
                             key={tag}
                             variant={selectedTags.includes(tag) ? "default" : "outline"}
-                            className={`cursor-pointer ${selectedTags.includes(tag) ? "bg-primary" : ""}`}
+                            className={cn(
+                                "cursor-pointer transition-colors",
+                                selectedTags.includes(tag) ? "hover:bg-primary/80" : "hover:bg-muted"
+                            )}
                             onClick={() => handleTagsChange(tag)}
                         >
-                            {tag}
+                          {tag}
                         </Badge>
                     ))}
                   </div>
-
-                  <div className="flex gap-2 mt-2">
+                  <div className="flex gap-2">
                     <Input
                         placeholder="Vlastní tag"
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
                         className="flex-1"
                     />
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleAddCustomTag}
-                        disabled={!newTag.trim()}
-                    >
-                        Přidat
+                    <Button variant="outline" size="icon" onClick={handleAddCustomTag}>
+                      <Tag className="h-4 w-4"/>
                     </Button>
                   </div>
 
@@ -405,16 +351,103 @@ export function KanbanIssueSidebar({
                       </div>
                   )}
                 </div>
+
+                <Separator className="bg-primary-50"/>
+
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <div className="flex items-center gap-2">
+                      <Link className="h-4 w-4 text-muted-foreground"/>
+                      <Label htmlFor="link">Odkaz</Label>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                          id="link"
+                          type="url"
+                          placeholder="https://example.com"
+                          value={link}
+                          onChange={(e) => setLink(e.target.value)}
+                          className="flex-1"
+                      />
+                      {link && (
+                          <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              asChild
+                          >
+                            <a href={link} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4"/>
+                            </a>
+                          </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div
+                      className={cn(
+                          "grid gap-3 p-4 border-2 border-dashed rounded-lg transition-colors",
+                          isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/20"
+                      )}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                  >
+                    <div className="flex items-center justify-center">
+                      <Label
+                          htmlFor="file-upload"
+                          className="cursor-pointer text-center"
+                      >
+                        <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+                        <span className="text-sm text-muted-foreground">
+                          Přetáhněte soubory sem nebo klikněte pro výběr
+                        </span>
+                        <Input
+                            id="file-upload"
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileInput}
+                            multiple
+                        />
+                      </Label>
+                    </div>
+                    {attachedFiles.length > 0 && (
+                        <div className="grid gap-2">
+                          {attachedFiles.map((file, index) => (
+                              <div
+                                  key={index}
+                                  className="flex items-center justify-between p-2 bg-muted rounded"
+                              >
+                                <span className="text-sm truncate">{file.name}</span>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={() => setAttachedFiles(files => files.filter((_, i) => i !== index))}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                          ))}
+                        </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <SheetFooter className="flex-shrink-0 border-t pt-4">
+            <SheetFooter className="flex-shrink-0 gap-2 pt-4">
               <Button
-                  type="submit"
-                  className="w-full"
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
                   disabled={isLoading}
               >
-                {isLoading ? "Ukládání..." : isNew ? "Vytvořit issue" : "Uložit změny"}
+                Zrušit
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Ukládání..." : "Uložit"}
               </Button>
             </SheetFooter>
           </form>
