@@ -1,4 +1,4 @@
-import { format, formatDistance, isAfter, subDays } from "date-fns";
+import { format, formatDistance, isAfter, subDays, isValid } from "date-fns";
 import { cs } from "date-fns/locale";
 
 /**
@@ -8,8 +8,10 @@ import { cs } from "date-fns/locale";
  * @param locale - Optional locale object for formatting (defaults to Czech)
  * @returns Formatted date string (e.g. "23. března 2025")
  */
-export const formatDate = (dateString: string, locale = cs): string => {
+export const formatDate = (dateString: string | undefined | null, locale = cs): string => {
+  if (!dateString) return "Není nastaveno";
   const date = new Date(dateString);
+  if (!isValid(date)) return "Neplatné datum";
   return format(date, "d. MMMM yyyy", { locale });
 };
 
@@ -20,8 +22,10 @@ export const formatDate = (dateString: string, locale = cs): string => {
  * @param locale - Optional locale object for formatting (defaults to Czech)
  * @returns Formatted relative time (e.g. "před 2 dny", "před 5 minutami")
  */
-export const formatRelativeTime = (dateString: string, locale = cs): string => {
+export const formatRelativeTime = (dateString: string | undefined | null, locale = cs): string => {
+  if (!dateString) return "Není nastaveno";
   const date = new Date(dateString);
+  if (!isValid(date)) return "Neplatné datum";
   return formatDistance(date, new Date(), { addSuffix: true, locale });
 };
 
@@ -32,8 +36,10 @@ export const formatRelativeTime = (dateString: string, locale = cs): string => {
  * @param days - Number of days to look back (defaults to 7)
  * @returns Boolean indicating if the date is within the specified period
  */
-export const isWithinLastDays = (dateString: string, days = 7): boolean => {
+export const isWithinLastDays = (dateString: string | undefined | null, days = 7): boolean => {
+  if (!dateString) return false;
   const date = new Date(dateString);
+  if (!isValid(date)) return false;
   const cutoffDate = subDays(new Date(), days);
   return isAfter(date, cutoffDate);
 };

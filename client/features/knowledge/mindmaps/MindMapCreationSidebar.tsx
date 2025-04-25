@@ -125,7 +125,7 @@ export function MindMapCreationSidebar({
                   <Input
                       id="title"
                       name="title"
-                      placeholder="Zadejte název myšlenkové mapy"
+                      placeholder="Zadej název myšlenkové mapy"
                       value={formData.title}
                       onChange={handleInputChange}
                       required

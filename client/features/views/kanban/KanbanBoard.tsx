@@ -3,6 +3,7 @@ import { IssueFull } from "~/types";
 import {ISSUE_STATES} from "~/lib/constants";
 import {KanbanIssueSidebar} from "~/features/views/kanban/KanbanIssueSidebar";
 import {KanbanColumn} from "~/features/views/kanban/KanbanColumn";
+import {useToast} from "~/hooks/use-toast";
 
 interface BoardProps {
   projectCode: string;
@@ -15,6 +16,7 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
   const [selectedIssue, setSelectedIssue] = useState<IssueFull | null>(null);
   const [isNewIssue, setIsNewIssue] = useState(false);
   const [newIssueState, setNewIssueState] = useState<string>('new');
+  const { toast } = useToast();
 
   useEffect(() => {
     setIssues(initialIssues);
@@ -41,11 +43,16 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
 
   const handleAddClick = (state: string) => {
     setNewIssueState(state);
-    // Vytvoření prázdného issue se stavem
+    const timestamp = new Date().toISOString();
+    const newIssueNumber = issues.length + 1;
+
     setSelectedIssue({
       state,
-      // TODO (NL): Generování dočasného kódu (později bude generován serverem)
-      code: `${projectCode}-NEW-${Math.floor(Math.random() * 1000)}`,
+      code: `${projectCode}-${newIssueNumber}`,
+      title: '',
+      summary: '',
+      last_modified: timestamp,
+      created_at: timestamp,
     } as IssueFull);
     setIsNewIssue(true);
     setIsDetailsOpen(true);
@@ -59,16 +66,14 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
   const handleSaveIssue = async (issue: Partial<IssueFull>) => {
     try {
       if (isNewIssue) {
-        // TODO (NL): Vytvoření nového issue (zatím pouze lokálně)
         const timestamp = new Date().toISOString();
-        const newIssueNumber = issues.length + 1;
         const newIssue: IssueFull = {
           ...issue,
-          code: `${projectCode}-${newIssueNumber}`,
+          code: selectedIssue?.code || `${projectCode}-${issues.length + 1}`,
           state: newIssueState || 'new',
           last_modified: timestamp,
           created_at: timestamp,
-          title: issue.title || `Nový úkol ${newIssueNumber}`,
+          title: issue.title || `Nový úkol ${issues.length + 1}`,
           summary: issue.summary || '',
           description: issue.description || '',
           tags: issue.tags || [],
@@ -76,9 +81,12 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
         } as IssueFull;
 
         setIssues((prev) => [...prev, newIssue]);
-        console.log("Created new issue (locally):", newIssue);
+        toast({
+          title: "Úkol vytvořen",
+          description: `Úkol ${newIssue.code} byl úspěšně vytvořen.`,
+          variant: "success"
+        });
       } else if (selectedIssue?.code) {
-        // TODO (NL): Aktualizace existujícího issue (zatím pouze lokálně)
         const updatedIssue: IssueFull = {
           ...selectedIssue,
           ...issue,
@@ -99,6 +107,11 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
       setSelectedIssue(null);
     } catch (error) {
       console.error('Failed to save issue:', error);
+      toast({
+        title: "Chyba",
+        description: "Nepodařilo se uložit úkol.",
+        variant: "destructive",
+      });
     }
   };
 

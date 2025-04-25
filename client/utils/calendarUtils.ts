@@ -50,7 +50,6 @@ export function getLocalDateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-//TODO (NL): Upravit, aby se používalo datum vytvoření issue + upravit href
 /**
  * Converts an issue to a calendar event
  *
@@ -59,10 +58,10 @@ export function getLocalDateString(date: Date): string {
  */
 export function issueToEvent(issue: IssueFull): CalendarEvent {
   const stateColorMap: Record<string, string> = {
-    'new': 'bg-blue-50 text-blue-700 hover:bg-blue-100 group-hover:text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30 dark:group-hover:text-blue-200',
-    'to_do': 'bg-amber-50 text-amber-700 hover:bg-amber-100 group-hover:text-amber-700 dark:bg-amber-900/20 dark:text-amber-300 dark:hover:bg-amber-900/30 dark:group-hover:text-amber-200',
-    'in_progress': 'bg-purple-50 text-purple-700 hover:bg-purple-100 group-hover:text-purple-700 dark:bg-purple-900/20 dark:text-purple-300 dark:hover:bg-purple-900/30 dark:group-hover:text-purple-200',
-    'done': 'bg-green-50 text-green-700 hover:bg-green-100 group-hover:text-green-700 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/30 dark:group-hover:text-green-200',
+    'new': 'bg-blue-50 text-blue-700 hover:bg-blue-100 group-hover:text-blue-800',
+    'to_do': 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100 group-hover:text-yellow-800',
+    'in_progress': 'bg-purple-50 text-purple-700 hover:bg-purple-100 group-hover:text-purple-800',
+    'done': 'bg-green-50 text-green-700 hover:bg-green-100 group-hover:text-green-800'
   };
 
   try {
@@ -71,13 +70,9 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
 
     if (issue.last_modified && !isNaN(new Date(issue.last_modified).getTime())) {
       date = new Date(issue.last_modified);
-
-      const fixedHour = 9;
-      const fixedMinute = 0;
-
-      time = `${fixedHour.toString().padStart(2, '0')}:${fixedMinute.toString().padStart(2, '0')}`;
-
-      date.setHours(fixedHour, fixedMinute, 0, 0);
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     } else {
       date = new Date();
       date.setHours(9, 0, 0, 0);

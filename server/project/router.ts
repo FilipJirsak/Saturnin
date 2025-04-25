@@ -1,7 +1,7 @@
 import {type Context, Hono} from "@hono/hono";
 import {HTTPException} from '@hono/hono/http-exception'
 import {create, list, merge, patch, read, remove, update} from "./db.ts";
-import {listProject as issueProjectList, create as createIssue} from "../issue/db.ts";
+import {listProject as issueProjectList, create as createIssue, get as getIssue} from "../issue/db.ts";
 
 const router = new Hono();
 
@@ -51,6 +51,10 @@ router
     })
     .post(async (c) => {
         const result = await createIssue(c.req.param("code"), await c.req.json());
+        return response(c, result);
+    })
+    .get("/:code{[A-Z][A-Z0-9_]*}/issue/:issueCode", async (c) => {
+        const result = await getIssue(c.req.param("code"), c.req.param("issueCode"));
         return response(c, result);
     });
 

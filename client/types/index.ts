@@ -21,10 +21,15 @@ export interface ProjectWithIssues extends ProjectFull {
     issues: IssueFull[];
 }
 
+export interface IssueData {
+  attachments?: Array<{ name: string; size: number; type?: string }>;
+  link?: string;
+}
+
 export type Issue = TitleOrSummary & {
     description?: string;
     state?: string;
-    data?: unknown;
+    data?: IssueData;
     tags?: string[];
     due_date?: string;
     comments_count?: number;

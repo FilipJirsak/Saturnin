@@ -1,5 +1,5 @@
-import {useState, useEffect, ChangeEvent, FormEvent} from "react";
-import { ExternalLink, X, Tag } from "lucide-react";
+import {useState, useEffect, ChangeEvent, FormEvent, useCallback, DragEvent} from "react";
+import { ExternalLink, X, Tag, Link, Upload } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -8,12 +8,13 @@ import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Badge } from "~/components/ui/badge";
-import { IssueFull } from "~/types";
+import { IssueFull, IssueData } from "~/types";
 import {cn, getInitials} from "~/utils/helpers";
 import { format } from "date-fns";
 import { DatePicker } from "~/components/ui/DatePicker";
 import {Avatar, AvatarFallback} from "~/components/ui/avatar";
 import {ISSUE_AVAILABLE_TAGS, ISSUE_STATES, ISSUE_TEAM_MEMBERS} from "~/lib/constants";
+import { useToast } from "~/hooks/use-toast";
 
 interface IssueSidebarProps {
   isOpen: boolean;
@@ -38,6 +39,10 @@ export function KanbanIssueSidebar({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [newTag, setNewTag] = useState<string>("");
+  const [link, setLink] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (issue && isOpen) {
@@ -45,13 +50,49 @@ export function KanbanIssueSidebar({
       setFormData(issue);
       setSelectedTags(issue.tags || []);
       setDueDate(issue.due_date ? new Date(issue.due_date) : undefined);
+      setLink(issue.data?.link || "");
     } else if (!isOpen) {
       setFormData({});
       setSelectedTags([]);
       setDueDate(undefined);
       setNewTag("");
+      setLink("");
+      setAttachedFiles([]);
     }
   }, [issue, isOpen]);
+
+  const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer?.files || []);
+    setAttachedFiles(prev => [...prev, ...files]);
+
+    toast({
+      title: "Soubory přidány",
+      description: `Přidáno ${files.length} souborů`,
+    });
+  }, [toast]);
+
+  const handleFileInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setAttachedFiles(prev => [...prev, ...files]);
+
+    toast({
+      title: "Soubory přidány",
+      description: `Přidáno ${files.length} souborů`,
+    });
+  }, [toast]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -96,10 +137,25 @@ export function KanbanIssueSidebar({
     e.preventDefault();
     setIsLoading(true);
     try {
+      const issueData: IssueData = {
+        ...formData.data,
+        link: link.trim() || undefined,
+        attachments: [
+          ...(formData.data?.attachments || []),
+          ...attachedFiles.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type
+          }))
+        ]
+      };
+
       await onSave({
         ...formData,
         tags: selectedTags,
-        due_date: dueDate ? dueDate.toISOString() : undefined
+        due_date: dueDate ? dueDate.toISOString() : undefined,
+        attachments_count: (formData.data?.attachments?.length || 0) + attachedFiles.length,
+        data: issueData
       });
     } catch (error) {
       console.error("Failed to save issue:", error);
@@ -134,14 +190,6 @@ export function KanbanIssueSidebar({
                         <ExternalLink className="h-4 w-4" />
                       </Button>
                   )}
-                  {/*<Button
-                      variant="outline"
-                      size="icon"
-                      type="button"
-                      onClick={onClose}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>*/}
                 </div>
               </div>
               {!isNew && issue?.created_at && (
@@ -158,7 +206,7 @@ export function KanbanIssueSidebar({
                   <Input
                       id="title"
                       name="title"
-                      placeholder="Zadejte název úkolu"
+                      placeholder="Zadej název úkolu"
                       value={formData.title || ""}
                       onChange={handleInputChange}
                       required
@@ -207,6 +255,63 @@ export function KanbanIssueSidebar({
                   />
                 </div>
 
+                <div className="grid gap-3">
+                  <div className="flex items-center gap-2">
+                    <Link className="h-4 w-4 text-muted-foreground" />
+                    <Label htmlFor="link">Odkaz</Label>
+                  </div>
+                  <Input
+                      id="link"
+                      placeholder="Odkaz (volitelné)"
+                      value={link}
+                      onChange={(e) => setLink(e.target.value)}
+                  />
+                </div>
+
+                <div
+                  className={cn(
+                    "border-2 border-dashed rounded-lg p-4 text-center",
+                    isDragging ? "border-primary bg-primary/5" : "border-muted"
+                  )}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="h-6 w-6 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      Přetáhněte soubory sem nebo klikněte pro výběr
+                    </p>
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      id="file-upload"
+                      onChange={handleFileInput}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                      Vybrat soubory
+                    </Button>
+                  </div>
+                  {attachedFiles.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium mb-2">Připojené soubory:</p>
+                      <ul className="space-y-1">
+                        {attachedFiles.map((file, index) => (
+                          <li key={index} className="text-sm text-muted-foreground">
+                            {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
                 <Separator />
 
                 <div className="grid gap-3">
@@ -245,19 +350,19 @@ export function KanbanIssueSidebar({
                 </div>
 
                 <div className="grid gap-3">
-                  <Label>Tagy</Label>
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    <Label>Tagy</Label>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {ISSUE_AVAILABLE_TAGS.map((tag) => (
                         <Badge
                             key={tag}
                             variant={selectedTags.includes(tag) ? "default" : "outline"}
-                            className={cn(
-                                "cursor-pointer",
-                                selectedTags.includes(tag) ? "bg-primary" : ""
-                            )}
+                            className={`cursor-pointer ${selectedTags.includes(tag) ? "bg-primary" : ""}`}
                             onClick={() => handleTagsChange(tag)}
                         >
-                          {tag}
+                            {tag}
                         </Badge>
                     ))}
                   </div>
@@ -275,7 +380,7 @@ export function KanbanIssueSidebar({
                         onClick={handleAddCustomTag}
                         disabled={!newTag.trim()}
                     >
-                      Přidat
+                        Přidat
                     </Button>
                   </div>
 

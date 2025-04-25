@@ -163,7 +163,7 @@ Zde začni psát obsah tvého dokumentu...
                   <Input
                       id="title"
                       name="title"
-                      placeholder="Zadejte název dokumentu"
+                      placeholder="Zadej název dokumentu"
                       value={formData.title}
                       onChange={handleInputChange}
                       required

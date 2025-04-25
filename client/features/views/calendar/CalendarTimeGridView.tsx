@@ -1,4 +1,4 @@
-import {Fragment, useRef} from "react";
+import {Fragment, useEffect, useRef} from "react";
 import {CalendarDay, getLocalDateString, getWeekDays} from "~/utils/calendarUtils";
 import {cn} from "~/utils/helpers";
 
@@ -13,6 +13,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
   const containerRef = useRef<HTMLDivElement>(null);
   const containerNavRef = useRef<HTMLDivElement>(null);
   const containerOffsetRef = useRef<HTMLDivElement>(null);
+  const timeIndicatorRef = useRef<HTMLDivElement>(null);
 
   const todayString = getLocalDateString(new Date());
   const currentDateString = getLocalDateString(currentDate);
@@ -26,18 +27,57 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
           day.events.map(event => ({ ...event, day }))
       );
 
-  /* TODO (NL): Přidat scroll na aktuální čas*/
+  const calculateTimePosition = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const totalMinutes = hours * 60 + minutes;
+
+    return (totalMinutes / 1440) * 100;
+  };
+
+  const updateTimeIndicator = () => {
+    if (!timeIndicatorRef.current) return;
+
+    const position = calculateTimePosition();
+    timeIndicatorRef.current.style.top = `calc(${position}% + 3rem)`;
+  };
+
+  const scrollToCurrentTime = () => {
+    if (!containerRef.current || !isToday) return;
+
+    const position = calculateTimePosition();
+    const containerHeight = containerRef.current.clientHeight;
+    const scrollPosition = (position / 100) * containerRef.current.scrollHeight - containerHeight / 2;
+
+    containerRef.current.scrollTo({
+      top: scrollPosition,
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    updateTimeIndicator();
+    if (isToday) {
+      setTimeout(scrollToCurrentTime, 300);
+    }
+
+    const interval = setInterval(() => {
+      updateTimeIndicator();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [currentDate, viewType, isToday]);
 
   return (
       <div className="relative h-full">
-
         <div ref={containerRef}
              className="isolate flex flex-auto flex-col overflow-auto bg-card rounded-lg border border-border">
           <div style={viewType === 'week' ? {width: '165%'} : {}}
                className="flex max-w-full flex-none flex-col sm:max-w-none md:max-w-full">
             <div
                 ref={containerNavRef}
-                className={cn("sticky top-0 z-30 flex-none bg-card shadow-sm border-b border-border sm:pr-8")}
+                className={cn("sticky top-0 z-30 flex-none bg-card shadow-sm border-b border-border")}
             >
               {viewType === 'week' ? (
                   <>
@@ -60,7 +100,6 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                       ))}
                     </div>
 
-                    {/*TODO (NL): Upravit paddingy*/}
                     <div
                         className="-mr-px hidden grid-cols-7 divide-x divide-border border-r border-border text-sm text-muted-foreground sm:grid">
                       <div className="col-end-1 w-14"/>
@@ -84,7 +123,7 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                   </>
               ) : (
                   <span
-                      className="flex justify-center border-b border-border items-center gap-2 px-4 py-3 rounded-full font-medium text-foreground">
+                      className="flex justify-center items-center gap-2 px-4 py-5 rounded-full font-medium text-foreground">
                   {currentDate.toLocaleDateString('cs-CZ', {weekday: 'long'})}
                 </span>
               )}
@@ -123,34 +162,30 @@ export function CalendarTimeGridView({ viewType, currentDate, days, onSelectDay 
                       <div className="col-start-5 row-span-full"/>
                       <div className="col-start-6 row-span-full"/>
                       <div className="col-start-7 row-span-full"/>
-                      <div className="col-start-8 row-span-full w-8"/>
                     </div>
                 )}
 
-                {/*TODO (NL): Nutno upravit (aktuálně je čas trošku posunutý) - vymyslet, jak to lépe počítat + odlišit pro denní a týdenní zobrazení*/}
                 {isToday && (
-                  <div
-                      className="absolute left-0 right-0 pointer-events-none z-40"
-                      style={{
-                        top: `calc(${((new Date().getHours() * 60 + new Date().getMinutes()) / 1440) * 100}% + 3rem)`
-                      }}
-                  >
                     <div
-                        className="absolute left-0 -mt-1.5 -ml-1.5 h-3 w-3 rounded-full border-2 border-primary bg-background"/>
-                    <div className="h-px bg-primary"/>
-                  </div>
+                        ref={timeIndicatorRef}
+                        className="absolute left-0 right-0 pointer-events-none z-40"
+                    >
+                      <div
+                          className="absolute left-0 -mt-1.5 -ml-1.5 h-3 w-3 rounded-full border-2 border-primary bg-background"/>
+                      <div className="h-px bg-primary"/>
+                    </div>
                 )}
+
                 <ol
                     className={cn(
                         "col-start-1 col-end-2 row-start-1 grid",
-                        viewType === 'week' ? 'grid-cols-1 sm:grid-cols-7 sm:pr-8' : 'grid-cols-1'
+                        viewType === 'week' ? 'grid-cols-1 sm:grid-cols-7' : 'grid-cols-1'
                     )}
                     style={{gridTemplateRows: '1.75rem repeat(288, minmax(0, 1fr)) auto'}}
                 >
                   {viewType === 'week' ? (
                       days.filter(day => daysOfWeek.some(d => d.date === day.date)).map((day) => (
                           day.events.map((event, eventIdx) => {
-                            /*TODO (NL): Přehodit do hooku/utils*/
                             try {
                               const eventDate = new Date(event.datetime);
                               const hour = eventDate.getHours();

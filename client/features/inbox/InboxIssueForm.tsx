@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import {FormEvent, useState, useCallback, ChangeEvent, DragEvent} from "react";
 import {
   Card,
   CardHeader,
@@ -10,9 +10,10 @@ import {
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
-import { Plus, Loader2, Inbox } from "lucide-react";
+import { Plus, Loader2, Inbox, Link, Upload } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 import { IssueFull } from "~/types";
+import { cn } from "~/utils/helpers";
 
 interface IssueFormProps {
   onIssueCreated: (issue: IssueFull) => void;
@@ -22,9 +23,45 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [link, setLink] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
   const isValid = title.trim() !== "" || description.trim() !== "";
+
+  const handleDragOver = useCallback((e: DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    setAttachedFiles(prev => [...prev, ...files]);
+
+    toast({
+      title: "Soubory přidány",
+      description: `Přidáno ${files.length} souborů`,
+    });
+  }, [toast]);
+
+  const handleFileInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setAttachedFiles(prev => [...prev, ...files]);
+
+    toast({
+      title: "Soubory přidány",
+      description: `Přidáno ${files.length} souborů`,
+    });
+  }, [toast]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,15 +86,25 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
         title: title.trim() || "Bez názvu",
         description: description.trim() || undefined,
         state: "new",
-        last_modified: new Date().toISOString()
+        last_modified: new Date().toISOString(),
+        attachments_count: attachedFiles.length,
+        data: {
+          link: link.trim() || undefined,
+          attachments: attachedFiles.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type
+          }))
+        }
       };
 
       onIssueCreated(newIssue);
 
       setTitle("");
       setDescription("");
+      setLink("");
+      setAttachedFiles([]);
 
-      /*TODO (NL): Upravit variantu toastu?*/
       toast({
         title: "Issue bylo vytvořeno",
         description: "Issue bylo úspěšně přidáno do inboxu",
@@ -102,6 +149,59 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
               />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Link className="h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Odkaz (volitelné)"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                />
+              </div>
+            </div>
+            <div
+              className={cn(
+                "border-2 border-dashed rounded-lg p-4 text-center",
+                isDragging ? "border-primary bg-primary/5" : "border-muted"
+              )}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <div className="flex flex-col items-center gap-2">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Přetáhni soubory sem nebo klikni pro výběr
+                </p>
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  id="file-upload"
+                  onChange={handleFileInput}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                >
+                  Vybrat soubory
+                </Button>
+              </div>
+              {attachedFiles.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm font-medium mb-2">Připojené soubory:</p>
+                  <ul className="space-y-1">
+                    {attachedFiles.map((file, index) => (
+                      <li key={index} className="text-sm text-muted-foreground">
+                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </CardContent>
           <CardFooter>

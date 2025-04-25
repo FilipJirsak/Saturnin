@@ -113,7 +113,7 @@ export function ConceptCreationSidebar({
                   <Input
                       id="title"
                       name="title"
-                      placeholder="Zadejte název konceptu"
+                      placeholder="Zadej název konceptu"
                       value={formData.title}
                       onChange={handleInputChange}
                       required
