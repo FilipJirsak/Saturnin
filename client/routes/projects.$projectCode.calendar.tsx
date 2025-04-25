@@ -29,6 +29,12 @@ export default function ProjectCalendarView() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // TODO (NL): Implementovat přetahování issues mezi dny
+  // TODO (NL): Implementovat možnost nastavení času pro issues
+  // TODO (NL): Implementovat možnost zobrazení více issues ve stejném čase
+  // TODO (NL): Implementovat možnost filtrování issues v kalendáři
+  // TODO (NL): Implementovat možnost zobrazení opakujících se issues
+
   const handleNavigate = (direction: 'prev' | 'next') => {
     try {
       setIsLoading(true);

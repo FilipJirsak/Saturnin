@@ -26,6 +26,12 @@ export default function IssueDetailsPage() {
   const initialIssue = useLoaderData<typeof loader>();
   const [currentIssue, setCurrentIssue] = useState<IssueFull>(initialIssue);
 
+  // TODO (NL): Implementovat možnost sledování změn v issue
+  // TODO (NL): Implementovat možnost přidávání odkazů na související issues
+  // TODO (NL): Implementovat možnost přidávání checklistů
+  // TODO (NL): Implementovat možnost přidávání odhadu času
+  // TODO (NL): Implementovat možnost přidávání milníků
+
   //TODO (NL): Implementovat úpravu issues
   const handleSave = async (updatedIssue: IssueFull) => {
     setCurrentIssue(updatedIssue);

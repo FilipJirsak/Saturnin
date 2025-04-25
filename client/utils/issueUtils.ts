@@ -88,6 +88,16 @@ export const filterAndSortIssues = (
     filters: { state: string | null; assignee: string | null },
     sortConfig: { key: keyof IssueFull | null; direction: 'asc' | 'desc' }
 ): IssueFull[] => {
+  // TODO (NL): Implementovat validaci vstupních dat
+  // TODO (NL): Implementovat error handling pro API volání
+  // TODO (NL): Implementovat loading stavy pro asynchronní operace
+  // TODO (NL): Implementovat offline podporu
+  // TODO (NL): Implementovat real-time aktualizace
+  // TODO (NL): Implementovat optimalizaci pro velké množství issues
+  // TODO (NL): Implementovat lazy loading pro dlouhé seznamy
+  // TODO (NL): Implementovat caching pro často používaná data
+  // TODO (NL): Implementovat debouncing pro vyhledávání a filtrování
+
   let filteredIssues = [...issues];
 
   if (searchTerm) {

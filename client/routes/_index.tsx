@@ -15,6 +15,11 @@ export default function InboxPage() {
   const projects = useProjects();
   const { toast } = useToast();
 
+  // TODO (NL): Implementovat možnost filtrování a řazení issues v inboxu
+  // TODO (NL): Implementovat možnost hromadného přiřazování issues
+  // TODO (NL): Implementovat možnost přidávání poznámek k issues před přiřazením
+  // TODO (NL): Implementovat možnost označování issues jako spam nebo duplicitní
+
   const [mockIssues, setMockIssues] = useState<IssueFull[]>(issues);
 
 

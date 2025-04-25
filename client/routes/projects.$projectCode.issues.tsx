@@ -91,6 +91,12 @@ export default function ProjectIssuesView() {
   const areFiltersActive = hasActiveFilters(activeFilters);
   const hasChangedFilters = JSON.stringify(tempFilters) !== JSON.stringify(activeFilters);
 
+  // TODO (NL): Implementovat možnost hromadných operací s issues
+  // TODO (NL): Implementovat možnost exportu issues do různých formátů
+  // TODO (NL): Implementovat možnost importu issues
+  // TODO (NL): Implementovat možnost přidávání vlastních sloupců do tabulky
+  // TODO (NL): Implementovat možnost ukládání vlastních filtrů a pohledů
+
   return (
       <Card className="bg-card text-card-foreground">
         <CardHeader className="flex flex-row items-center justify-between">

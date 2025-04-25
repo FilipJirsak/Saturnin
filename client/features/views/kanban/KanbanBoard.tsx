@@ -17,6 +17,13 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
   const [isNewIssue, setIsNewIssue] = useState(false);
   const { toast } = useToast();
 
+  // TODO (NL): Implementovat drag-and-drop funkcionalitu pro přesouvání karet mezi sloupci
+  // TODO (NL): Přidat validaci při vytváření nových issues
+  // TODO (NL): Implementovat možnost přidávání příloh k issues
+  // TODO (NL): Implementovat možnost přiřazování více osob k jednomu issue
+  // TODO (NL): Implementovat možnost nastavení priority issues
+  // TODO (NL): Implementovat možnost filtrování a řazení issues v rámci sloupce
+
   useEffect(() => {
     setIssues(initialIssues);
   }, [initialIssues]);
