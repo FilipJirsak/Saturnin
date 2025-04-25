@@ -34,8 +34,9 @@ export function SignUpForm({
   const handleOAuthSignup = (provider: string) => {
     setLoading(true);
 
-    console.log(`Simulace registrace přes ${provider}...`);
-
+    if (process.env.NODE_ENV === "development") {
+      console.log(`Simulace registrace přes ${provider}...`);
+    }
     setTimeout(() => {
       navigate(`${redirectTo}?simulateAuth=true`);
     }, 1000);
