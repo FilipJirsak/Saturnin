@@ -176,7 +176,7 @@ export function IssueSidebar({
             <SheetHeader className="flex-shrink-0">
               <div className="flex items-center justify-between">
                 <SheetTitle>
-                  {isNew ? "Nový úkol" : issue?.code || "Detail úkolu"}
+                  {isNew ? "Nové issue" : issue?.code || "Detail issue"}
                 </SheetTitle>
                 <div className="flex space-x-2 mr-4">
                   {!isNew && issue?.code && (
@@ -206,7 +206,7 @@ export function IssueSidebar({
                     <Input
                         id="title"
                         name="title"
-                        placeholder="Zadej název úkolu"
+                        placeholder="Zadej název issue"
                         value={formData.title || ""}
                         onChange={handleInputChange}
                         required
@@ -237,7 +237,7 @@ export function IssueSidebar({
                     <Input
                         id="summary"
                         name="summary"
-                        placeholder="Krátké shrnutí úkolu"
+                        placeholder="Krátké shrnutí issue"
                         value={formData.summary || ""}
                         onChange={handleInputChange}
                     />
@@ -248,7 +248,7 @@ export function IssueSidebar({
                     <Textarea
                         id="description"
                         name="description"
-                        placeholder="Podrobný popis úkolu"
+                        placeholder="Podrobný popis issue"
                         value={formData.description || ""}
                         onChange={handleInputChange}
                         className="min-h-[100px]"

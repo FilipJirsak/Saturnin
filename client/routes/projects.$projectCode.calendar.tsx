@@ -77,15 +77,15 @@ export default function ProjectCalendarView() {
 
   const handleSaveIssue = async (issue: Partial<IssueFull>) => {
     try {
-      // TODO: Implement actual save functionality
+      // TODO (NL): Implementovat uložení issue
       console.log("Saving issue:", issue);
-      
+
       toast({
-        title: "Úkol uložen",
+        title: "Issue uloženo",
         description: "Změny byly úspěšně uloženy.",
         variant: "success"
       });
-      
+
       setIsSidebarOpen(false);
     } catch (error) {
       console.error("Failed to save issue:", error);
