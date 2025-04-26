@@ -132,8 +132,18 @@ export const getConceptFromLocalStorage = (id: string): Concept | null => {
 export const deleteConceptFromLocalStorage = (id: string) => {
   if (typeof window === "undefined") return;
 
-  const concepts = getConceptsFromLocalStorage();
-  const filtered = concepts.filter(c => c.id !== id);
+  const storedJson = localStorage.getItem(CONCEPTS_STORAGE_KEY);
+  let storedConcepts: Concept[] = [];
+  if (storedJson) {
+    try {
+      storedConcepts = JSON.parse(storedJson);
+    } catch (err) {
+      console.error("Error parsing data from localStorage:", err);
+      storedConcepts = [];
+    }
+  }
+
+  const filtered = storedConcepts.filter(c => c.id !== id);
 
   localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
   sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
