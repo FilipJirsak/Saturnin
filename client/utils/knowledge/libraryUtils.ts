@@ -12,7 +12,7 @@ import {DocumentItem, Folder, MdxDocument} from "~/types/knowledge";
  * @param mdxDocuments - Array of MDX documents to organize
  * @returns Array of DocumentItem objects representing the folder structure
  */
-export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]) {
+export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]): DocumentItem[] {
   const documents: DocumentItem[] = [];
   const foldersByTag: Record<string, DocumentItem> = {};
   const folderDocumentIds = new Set<string>();

@@ -3,25 +3,25 @@ import { RELATION_TYPES } from "~/lib/constants";
 import { MOCK_CONCEPTS } from "~/lib/data";
 
 const CONCEPTS_STORAGE_KEY = "concepts";
-const isServer = typeof window === "undefined";
 
 /**
- * Populate browser storage with mock data if it’s currently empty.
+ * Populate browser storage with mock data if it's currently empty.
  *
  * Does nothing on the server side. Checks in-memory cache (`window.__CONCEPTS_DATA`),
  * then `sessionStorage`/`localStorage`. If no concepts are found, writes `MOCK_CONCEPTS`
  * to both storages and caches them on `window`.
  */
 export const initializeConceptsIfEmpty = () => {
-  if (isServer) return;
+  if (typeof window === "undefined") return;
 
-  const concepts = getConceptsFromLocalStorage();
-  if (concepts.length === 0) {
+  const session = sessionStorage.getItem(CONCEPTS_STORAGE_KEY);
+  const local = localStorage.getItem(CONCEPTS_STORAGE_KEY);
+  const inMem = (window as any).__CONCEPTS_DATA;
+
+  if (!inMem && !session && !local) {
     localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(MOCK_CONCEPTS));
     sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(MOCK_CONCEPTS));
-    if (typeof window !== 'undefined') {
-      (window as any).__CONCEPTS_DATA = MOCK_CONCEPTS;
-    }
+    (window as any).__CONCEPTS_DATA = MOCK_CONCEPTS;
   }
 };
 
@@ -35,19 +35,19 @@ export const initializeConceptsIfEmpty = () => {
  * @param concept – the Concept object to save
  */
 export const saveConceptToLocalStorage = (concept: Concept) => {
-  if (isServer) return;
+  if (typeof window === "undefined") return;
 
-  let storedConcepts = [];
   const storedJson = localStorage.getItem(CONCEPTS_STORAGE_KEY);
-
-  if (storedJson) {
-    try {
-      storedConcepts = JSON.parse(storedJson);
-    } catch (err) {
-      console.error("Error parsing data from localStorage:", err);
-      storedConcepts = [];
-    }
-  }
+  let storedConcepts: Concept[] = storedJson
+      ? (() => {
+        try {
+          return JSON.parse(storedJson);
+        } catch (err) {
+          console.error("Error parsing data from localStorage:", err);
+          return [];
+        }
+      })()
+      : getConceptsFromLocalStorage();
 
   if (!Array.isArray(storedConcepts)) {
     console.warn("Data in localStorage is not an array, resetting...");
@@ -55,18 +55,12 @@ export const saveConceptToLocalStorage = (concept: Concept) => {
   }
 
   const existingIndex = storedConcepts.findIndex(c => c.id === concept.id);
-
-  if (existingIndex >= 0) {
-    storedConcepts[existingIndex] = concept;
-  } else {
-    storedConcepts.unshift(concept);
-  }
+  if (existingIndex >= 0) storedConcepts[existingIndex] = concept;
+  else storedConcepts.unshift(concept);
 
   localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(storedConcepts));
   sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(storedConcepts));
-  if (typeof window !== 'undefined') {
-    (window as any).__CONCEPTS_DATA = storedConcepts;
-  }
+  (window as any).__CONCEPTS_DATA = storedConcepts;
 };
 
 /**
@@ -79,9 +73,9 @@ export const saveConceptToLocalStorage = (concept: Concept) => {
  * Falls back to `MOCK_CONCEPTS` if none found.
  */
 export const getConceptsFromLocalStorage = (): Concept[] => {
-  if (isServer) return MOCK_CONCEPTS;
+  if (typeof window === "undefined") return MOCK_CONCEPTS;
 
-  if (typeof window !== 'undefined' && (window as any).__CONCEPTS_DATA) {
+  if ((window as any).__CONCEPTS_DATA) {
     return (window as any).__CONCEPTS_DATA;
   }
 
@@ -89,18 +83,23 @@ export const getConceptsFromLocalStorage = (): Concept[] => {
   if (sessionData) {
     try {
       const parsed = JSON.parse(sessionData);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
+      if (Array.isArray(parsed)) return parsed;
     } catch (err) {
       console.error("Error parsing sessionStorage data:", err);
     }
   }
 
   const stored = localStorage.getItem(CONCEPTS_STORAGE_KEY);
-  const storedConcepts = stored ? JSON.parse(stored) : [];
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (err) {
+      console.error("Error parsing localStorage data:", err);
+    }
+  }
 
-  return storedConcepts.length > 0 ? storedConcepts : MOCK_CONCEPTS;
+  return MOCK_CONCEPTS;
 };
 
 /**
@@ -111,18 +110,15 @@ export const getConceptsFromLocalStorage = (): Concept[] => {
  * @param id – unique identifier of the Concept
  */
 export const getConceptFromLocalStorage = (id: string): Concept | null => {
-  if (isServer) {
+  if (typeof window === "undefined") {
     return MOCK_CONCEPTS.find(c => c.id === id) || null;
   }
 
   const concepts = getConceptsFromLocalStorage();
-  const concept = concepts.find(c => c.id === id);
+  const found = concepts.find(c => c.id === id);
+  if (found) return found;
 
-  if (!concept) {
-    return MOCK_CONCEPTS.find(c => c.id === id) || null;
-  }
-
-  return concept;
+  return MOCK_CONCEPTS.find(c => c.id === id) || null;
 };
 
 /**
@@ -134,16 +130,14 @@ export const getConceptFromLocalStorage = (id: string): Concept | null => {
  * @param id – unique identifier of the Concept to delete
  */
 export const deleteConceptFromLocalStorage = (id: string) => {
-  if (isServer) return;
+  if (typeof window === "undefined") return;
 
   const concepts = getConceptsFromLocalStorage();
   const filtered = concepts.filter(c => c.id !== id);
 
   localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
   sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
-  if (typeof window !== 'undefined') {
-    (window as any).__CONCEPTS_DATA = filtered;
-  }
+  (window as any).__CONCEPTS_DATA = filtered;
 };
 
 /**
@@ -231,7 +225,7 @@ export const categorizeRelations = (relations: RelatedConcept[]) => {
  */
 export const createNewConcept = (newConcept: Partial<Concept>, currentUser: string): Concept => {
   const currentDate = new Date().toISOString();
-  const concept = {
+  const concept: Concept = {
     id: `concept-${Date.now()}`,
     title: newConcept.title || "Nový koncept",
     description: newConcept.description || "",

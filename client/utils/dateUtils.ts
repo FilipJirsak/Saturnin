@@ -1,5 +1,8 @@
-import { format, formatDistance, isAfter, subDays, isValid } from "date-fns";
+import { formatDistance, isAfter, subDays, isValid } from "date-fns";
 import { cs } from "date-fns/locale";
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+
+const PRAGUE_TIMEZONE = 'Europe/Prague';
 
 /**
  * Formats a date string into a localized full date format.
@@ -10,9 +13,14 @@ import { cs } from "date-fns/locale";
  */
 export const formatDate = (dateString: string | undefined | null, locale = cs): string => {
   if (!dateString) return "Není nastaveno";
-  const date = new Date(dateString);
-  if (!isValid(date)) return "Neplatné datum";
-  return format(date, "d. MMMM yyyy", { locale });
+  try {
+    const date = new Date(dateString);
+    if (!isValid(date)) return "Neplatné datum";
+    return formatInTimeZone(date, PRAGUE_TIMEZONE, "d. MMMM yyyy", { locale });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Neplatné datum";
+  }
 };
 
 /**
@@ -24,9 +32,16 @@ export const formatDate = (dateString: string | undefined | null, locale = cs): 
  */
 export const formatRelativeTime = (dateString: string | undefined | null, locale = cs): string => {
   if (!dateString) return "Není nastaveno";
-  const date = new Date(dateString);
-  if (!isValid(date)) return "Neplatné datum";
-  return formatDistance(date, new Date(), { addSuffix: true, locale });
+  try {
+    const date = new Date(dateString);
+    if (!isValid(date)) return "Neplatné datum";
+    const pragueDatetime = toZonedTime(date, PRAGUE_TIMEZONE);
+    const now = toZonedTime(new Date(), PRAGUE_TIMEZONE);
+    return formatDistance(pragueDatetime, now, { addSuffix: true, locale });
+  } catch (error) {
+    console.error("Error formatting relative time:", error);
+    return "Neplatné datum";
+  }
 };
 
 /**

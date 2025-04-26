@@ -5,6 +5,7 @@ import { ISSUE_STATES } from "~/lib/constants";
  * Gets the human-readable label for an issue state
  *
  * @param stateValue - The state value code (e.g., 'new', 'to_do', 'in_progress', 'done')
+ * @returns The human-readable label for the given state
  */
 export const getStateLabel = (stateValue: string): string => {
   const stateObj = ISSUE_STATES.find(s => s.value === stateValue);
@@ -39,6 +40,7 @@ export const getStateVariant = (state: string): 'outline' | 'secondary' | 'defau
  * to maintain consistent styling across the application.
  *
  * @param state - The state value code (e.g., 'new', 'to_do', 'in_progress', 'done')
+ * @returns The CSS classes for the given state
  */
 export const getStateColorClasses = (state: string): { circle: string; text: string } => {
   switch (state) {
@@ -81,6 +83,7 @@ export const getStateColorClasses = (state: string): { circle: string; text: str
  * @param searchTerm - The search string to filter by (matched against title, summary, and code)
  * @param filters - Object containing filter criteria for state and assignee
  * @param sortConfig - Configuration for sorting, including the property key and direction
+ * @returns The filtered and sorted array of issues
  */
 export const filterAndSortIssues = (
     issues: IssueFull[],
@@ -146,6 +149,7 @@ export const filterAndSortIssues = (
  * Checks if there are any active filters applied
  *
  * @param filters - The current filter object
+ * @returns True if there are active filters, false otherwise
  */
 export const hasActiveFilters = (filters: { state: string | null; assignee: string | null }): boolean => {
   return filters.state !== null || filters.assignee !== null;
