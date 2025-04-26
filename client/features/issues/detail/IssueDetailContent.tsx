@@ -14,6 +14,9 @@ import { IssueExternalLink } from "~/features/issues/detail/content/IssueExterna
 import { IssueAttachments } from "~/features/issues/detail/content/IssueAttachments";
 import { IssueComments } from "~/features/issues/detail/content/IssueComments";
 
+// TODO (NL): Přidat podporu pro více typů souborů a externích odkazů
+// TODO (NL): Přidat podporu pro náhledy obrázků a PDF
+// TODO (NL): Přidat validaci maximální velikosti souboru
 interface IssueDetailContentProps {
   editedIssue: IssueFull;
   setEditedIssue: Dispatch<SetStateAction<IssueFull>>;

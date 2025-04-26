@@ -12,6 +12,9 @@ import {
 } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 
+// TODO (NL): Vylepšit vizuální design kartičky
+// TODO (NL): Přidat náhled obsahu při najetí myší
+// TODO (NL): Vylepšit zobrazení propojených konceptů - přidat vizuální mapu
 interface ConceptCardProps {
   concept: Concept;
 }

@@ -3,6 +3,7 @@ import { IssueFull } from '~/types';
 import { FileText } from "lucide-react";
 import { Textarea } from "~/components/ui/textarea";
 
+// TODO (NL): Přidat maximální délku popisu
 interface IssueDescriptionProps {
   description?: string;
   isEditing: boolean;

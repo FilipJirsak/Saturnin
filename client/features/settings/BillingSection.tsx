@@ -4,8 +4,9 @@ import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { CreditCard } from "lucide-react";
 
-//TODO (NL): Implementovat zpracování plateb a správu předplatného
-//TODO (NL): Upravit texty
+// TODO (NL): Implementovat zpracování plateb a správu předplatného
+// TODO (NL): Upravit texty
+// TODO (NL): Přidat podporu pro více platebních metod
 export function BillingSection() {
   return (
       <Card>

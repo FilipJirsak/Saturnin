@@ -19,7 +19,8 @@ interface SearchResultsProps {
 // TODO (NL): Přidat našeptávač pro vyhledávání
 // TODO (NL): Zlepšit algoritmus pro relevanci výsledků
 // TODO (NL): Implementovat cachování vyhledávacích výsledků pro opakované dotazy
-
+// TODO (NL): Přidat podporu pro řazení výsledků podle různých kritérií
+// TODO (NL): Přidat podporu pro stránkování výsledků
 
 interface SearchResultCardProps {
   result: SearchResult;

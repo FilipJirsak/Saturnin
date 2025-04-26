@@ -5,6 +5,7 @@ import {ReactNode, DragEvent} from "react";
  * Interface representing a search result with consistent structure
  * regardless of the source type (issue, project, page, file, URL, or create-issue).
  */
+// TODO (NL): Rozšířit typ SearchResult o další metadata pro lepší vyhledávání
 export interface SearchResult {
   id: string;
   type: "issue" | "project" | "page" | "file" | "url" | "create-issue";
@@ -24,6 +25,7 @@ export interface SearchResult {
  * @param projects - Array of projects with nested issues
  * @returns Flattened array of issues with project code attached
  */
+// TODO (NL): Optimalizovat výkon při velkém množství issues
 export function extractAllIssues(projects: ProjectWithIssues[]): (IssueFull & { projectCode: string })[] {
   return projects.reduce<(IssueFull & { projectCode: string })[]>((acc, project) => {
     if (project.issues && Array.isArray(project.issues)) {
@@ -58,6 +60,7 @@ export function isValidUrl(urlString: string): boolean {
  * @param input - The string to check
  * @returns Boolean indicating if the string looks like a file path
  */
+// TODO (NL): Rozšířit seznam podporovaných přípon souborů
 export function isLikelyFilePath(input: string): boolean {
   const fileExtensions = [
     '.txt', '.pdf', '.doc', '.docx', '.xls', '.xlsx',
@@ -76,6 +79,7 @@ export function isLikelyFilePath(input: string): boolean {
  * @param input - The search input to classify
  * @returns The determined search type ('text', 'url', or 'file')
  */
+// TODO (NL): Implementovat pokročilou detekci typu vyhledávání
 export function determineSearchType(input: string): 'text' | 'url' | 'file' {
   if (!input || input.trim().length === 0) {
     return 'text';
@@ -102,6 +106,7 @@ export function determineSearchType(input: string): 'text' | 'url' | 'file' {
  * @param options - Search options including limit counts
  * @returns Array of search results matching the query
  */
+// TODO (NL): Implementovat fulltextové vyhledávání na backendu
 export function performTextSearch(
     query: string,
     projects: ProjectWithIssues[],
@@ -164,6 +169,7 @@ export function performTextSearch(
  * @param event - The drop event containing files
  * @returns Information about the dropped file for search
  */
+// TODO (NL): Přidat podporu pro více souborů najednou
 export function handleFileDropForSearch(event: DragEvent): {
   fileName: string,
   fileType: string,
@@ -188,6 +194,7 @@ export function handleFileDropForSearch(event: DragEvent): {
  * @param event - The drop event to extract URL from
  * @returns The URL if found and valid, otherwise null
  */
+// TODO (NL): Přidat podporu pro více formátů URL
 export function extractUrlFromDrop(event: DragEvent): string | null {
   const text = event.dataTransfer.getData("text");
 

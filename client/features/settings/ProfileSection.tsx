@@ -9,13 +9,14 @@ import { ChangeEvent, useState, useRef } from "react";
 import { User } from "~/types";
 import { getInitials } from "~/utils/helpers";
 
+// TODO (NL): Implementovat aktualizaci profilu na backendu
+// TODO (NL): Upravit texty, změnit některá data na dynamická
+// TODO (NL): Přidat validaci formuláře
+// TODO (NL): Přidat podporu pro sociální sítě
 interface ProfileSectionProps {
   user: User;
 }
 
-//TODO (NL): Implementovat aktualizaci profilu na backendu
-//TODO (NL): Upravit texty, změnit některá data na dynamická
-//TODO (NL): Přidat validaci formuláře
 export function ProfileSection({ user }: ProfileSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({

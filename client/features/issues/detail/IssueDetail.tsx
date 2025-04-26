@@ -7,6 +7,8 @@ import {IssueDeleteDialog} from "~/features/issues/detail/dialogs/IssueDeleteDia
 import {IssueAddTagDialog} from "~/features/issues/detail/dialogs/IssueAddTagDialog";
 import {Card} from "~/components/ui/card";
 
+// TODO (NL): Přidat podporu pro více typů příloh
+// TODO (NL): Přidat podporu pro přidání více tagů najednou
 interface IssueDetailProps {
   issue: IssueFull;
   className?: string;
@@ -29,6 +31,7 @@ export function IssueDetail({ issue, className, onSave, onDelete }: IssueDetailP
     }
   }, [issue, isEditing]);
 
+  // TODO (NL): Implementovat validaci formuláře a lepší zpracování chyb
   const handleSave = async (data: IssueFull) => {
     try {
       const issueData = data.data || {};

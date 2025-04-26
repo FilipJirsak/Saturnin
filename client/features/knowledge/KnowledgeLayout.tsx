@@ -10,6 +10,7 @@ import { ToastProvider } from "~/components/ui/toast";
 
 // TODO (NL): Zvážit přidání breadcrumbs navigace pro lepší orientaci ve složkách
 // TODO (NL): Přidat animace pro přechody mezi záložkami, aby byl UI experience plynulejší
+// TODO (NL): Přidat podporu pro klávesové zkratky pro navigaci mezi záložkami
 interface SearchContextType {
   searchTerm: string;
   setSearchTerm: (term: string) => void;

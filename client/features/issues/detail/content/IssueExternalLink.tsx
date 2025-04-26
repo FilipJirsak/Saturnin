@@ -3,6 +3,7 @@ import { LinkIcon, ArrowUpRight } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import { IssueFull } from '~/types';
 
+// TODO (NL): Přidat podporu pro více externích odkazů
 interface IssueExternalLinkProps {
   link?: string;
   isEditing: boolean;

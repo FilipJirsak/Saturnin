@@ -15,6 +15,8 @@ import { useToast } from "~/hooks/use-toast";
 import { IssueFull } from "~/types";
 import { cn } from "~/utils/helpers";
 
+// TODO (NL): Přidat validaci formuláře
+
 interface IssueFormProps {
   onIssueCreated: (issue: IssueFull) => void;
 }

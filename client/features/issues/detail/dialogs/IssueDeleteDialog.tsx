@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 
+// TODO (NL): Přidat možnost obnovení smazaného issue
 interface IssueDeleteDialogProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;

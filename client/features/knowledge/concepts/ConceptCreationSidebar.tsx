@@ -16,6 +16,8 @@ import { cn } from "~/utils/helpers";
 import { Concept } from "~/types/knowledge";
 import {KNOWLEDGE_AVAILABLE_TAGS} from "~/lib/constants";
 
+// TODO (NL): Implementovat automatické návrhy tagů na základě obsahu
+// TODO (NL): Přidat validaci formuláře s konkrétními chybovými hláškami
 interface ConceptCreationSidebarProps {
   isOpen: boolean;
   onClose: () => void;

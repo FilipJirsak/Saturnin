@@ -4,6 +4,7 @@ import { formatDate, formatRelativeTime } from "~/utils/dateUtils";
 import { getInitials } from "~/utils/helpers";
 import { IssueFull } from '~/types';
 
+// TODO (NL): Přidat profilovou fotku přiřazené osoby
 interface IssueMetadataProps {
   editedIssue: IssueFull;
   isEditing: boolean;

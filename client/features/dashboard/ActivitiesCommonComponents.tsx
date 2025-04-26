@@ -22,6 +22,7 @@ import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAx
 import {formatDate} from "~/utils/dateUtils";
 import {getInitials} from "~/utils/helpers";
 
+// TODO (NL): Přidat podporu pro více typů aktivit
 export function ActivityIcon({ type, className = '' }: { type: ActivityType; className?: string }) {
   const { icon: Icon, className: defaultClassName } = ACTIVITY_ICONS[type];
   return <Icon className={`h-5 w-5 ${defaultClassName} ${className}`} />;

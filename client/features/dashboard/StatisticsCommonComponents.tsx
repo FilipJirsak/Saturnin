@@ -20,6 +20,7 @@ import {
   Users
 } from 'lucide-react';
 
+// TODO (NL): Přidat podporu pro více typů grafů
 export function ProgressDisplay({
                                   label,
                                   value,

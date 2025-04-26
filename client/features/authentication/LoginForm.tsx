@@ -6,7 +6,11 @@ import { Label } from "~/components/ui/label";
 import { ComponentProps, FormEvent, useState } from "react";
 import {Link, useNavigate, useSearchParams} from "@remix-run/react";
 
-// TODO (NL): Zatím pouze simulace registrace pro testovací účely --> kompletně upravit, až bude backend
+// TODO (NL): Implementovat skutečné přihlášení přes backend API
+// TODO (NL): Přidat validaci formuláře (email, heslo)
+// TODO (NL): Implementovat skutečné OAuth přihlášení (Google, GitHub)
+// TODO (NL): Přidat zobrazení chybových hlášek
+// TODO (NL): Implementovat obnovení hesla
 // TODO (NL): Upravit texty a doplnit linky
 export function LoginForm({
                             className,

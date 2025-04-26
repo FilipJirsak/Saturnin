@@ -23,6 +23,7 @@ import { EdgePanel } from './EdgePanel';
 import { NODE_COLORS } from '~/lib/constants';
 import { useToast } from '~/hooks/use-toast';
 
+// TODO (NL): Implementovat historii změn (undo/redo)
 interface InnerMindMapEditorProps {
   mindmap: MindMap;
   onSave: (updatedMindmap: MindMap) => void;
