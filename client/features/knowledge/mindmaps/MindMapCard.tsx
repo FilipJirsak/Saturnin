@@ -16,6 +16,8 @@ import { formatDate } from "~/utils/dateUtils";
 import { MindMapDeleteConfirmationDialog } from "~/features/knowledge/mindmaps/MindMapDeleteConfirmationDialog";
 import {cn, truncateText} from "~/utils/helpers";
 
+// TODO (NL): Přidat náhled mindmapy v kartě
+// TODO (NL): Přidat možnost řazení mindmap
 export function MindMapCard ({ mindmap, onDelete, onDuplicate, onShare }: {
   mindmap: MindMap,
   onDelete: (id: string) => void,

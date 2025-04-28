@@ -1,6 +1,9 @@
 import { MessageSquare } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
+// TODO (NL): Implementovat komentáře s podporou Markdown
+// TODO (NL): Přidat možnost přidání příloh ke komentářům
+// TODO (NL): Přidat možnost odpovědí na komentáře
 interface IssueCommentsProps {
   commentsCount?: number;
 }

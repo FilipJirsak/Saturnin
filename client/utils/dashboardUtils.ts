@@ -27,7 +27,7 @@ export function filterActivitiesBySearch(
   return activities.filter(activity =>
       activity.title.toLowerCase().includes(query) ||
       activity.description.toLowerCase().includes(query) ||
-      activity.user.name.toLowerCase().includes(query)
+      (activity.user?.name?.toLowerCase() || '').includes(query)
   );
 }
 

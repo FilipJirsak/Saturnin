@@ -43,6 +43,7 @@ export function CommandSearch({ projects }: CommandSearchProps) {
     onClose: () => setOpen(false)
   });
 
+  // TODO (NL): Přidat podporu pro více klávesových zkratek
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
@@ -139,7 +140,7 @@ export function CommandSearch({ projects }: CommandSearchProps) {
                 </div>
             )}
 
-            {/* Sekce výsledků */}
+            {/* TODO (NL): Přidat podporu pro více typů výsledků */}
             {!isSearching && results.some(r => r.type === "issue") && (
                 <CommandGroup heading="Issues">
                   {results

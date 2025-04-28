@@ -15,6 +15,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 
+// TODO (NL): Vylepšit vizuální hierarchii propojených konceptů
+// TODO (NL): Implementovat rychlé přidávání nových propojení
 interface ConceptListItemProps {
   concept: Concept;
   onToggleExpand: (conceptId: string) => void;

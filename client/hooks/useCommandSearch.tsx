@@ -15,7 +15,7 @@ interface UseCommandSearchOptions {
   onClose?: () => void;
 }
 
-//TODO (NL): Upravit funkcionalitu přidání nového issue, pokud není žádné nalezeno
+// TODO (NL): Upravit funkcionalitu přidání nového issue, pokud není žádné nalezeno
 export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions) {
   const [inputValue, setInputValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -25,6 +25,7 @@ export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions)
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // TODO (NL): Přidat cachování výsledků vyhledávání pro lepší výkon
   const performSearch = useCallback(
       async (query: string, type: "text" | "file" | "url" = "text") => {
         setIsSearching(true);

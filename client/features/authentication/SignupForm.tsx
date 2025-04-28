@@ -6,7 +6,11 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { ComponentProps, FormEvent, useState } from "react";
 import { Link, useNavigate } from "@remix-run/react";
 
-// TODO (NL): Zatím pouze simulace registrace pro testovací účely --> kompletně upravit, až bude backend
+// TODO (NL): Implementovat skutečnou registraci přes backend API
+// TODO (NL): Přidat validaci formuláře (jméno, email, heslo)
+// TODO (NL): Implementovat skutečné OAuth registraci (Google, GitHub)
+// TODO (NL): Přidat zobrazení chybových hlášek
+// TODO (NL): Přidat ověření emailu
 // TODO (NL): Upravit texty a doplnit linky
 export function SignUpForm({
                              className,

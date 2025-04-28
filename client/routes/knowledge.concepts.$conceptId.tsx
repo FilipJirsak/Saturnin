@@ -1,6 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import { useLoaderData, useNavigate, useLocation, Form, useParams } from "@remix-run/react";
-import { type LoaderFunctionArgs } from "@remix-run/node";
+import { useState, useEffect } from "react";
+import {
+  useLoaderData,
+  useNavigate,
+  useLocation,
+  useParams,
+  useFetcher,
+} from "@remix-run/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import {
   ChevronLeft,
   Edit,
@@ -12,7 +18,7 @@ import {
   LinkIcon,
   Share2,
   Copy,
-  Network
+  Network,
 } from "lucide-react";
 import {
   Card,
@@ -30,78 +36,45 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 import { useToast } from "~/hooks/use-toast";
 
 import { requireAuth } from "~/utils/authGuard";
 import { typedJson } from "~/utils/typedJson";
-import { RelatedConcept, Concept } from "~/types/knowledge";
+import { Concept } from "~/types/knowledge";
 import { MOCK_CONCEPTS } from "~/lib/data";
-import {ConceptInfo} from "~/features/knowledge/concepts/conceptDetail/ConceptInfo";
-import {ConceptTagsManager} from "~/features/knowledge/concepts/conceptDetail/ConceptTagsManager";
-import {ConceptRelationManager} from "~/features/knowledge/concepts/conceptDetail/ConceptRelationManager";
-import { getConceptFromLocalStorage, saveConceptToLocalStorage, deleteConceptFromLocalStorage } from "~/utils/knowledge/conceptUtils";
+import { ConceptInfo } from "~/features/knowledge/concepts/conceptDetail/ConceptInfo";
+import { ConceptTagsManager } from "~/features/knowledge/concepts/conceptDetail/ConceptTagsManager";
+import { ConceptRelationManager } from "~/features/knowledge/concepts/conceptDetail/ConceptRelationManager";
+import {
+  getConceptFromLocalStorage,
+  saveConceptToLocalStorage,
+  deleteConceptFromLocalStorage,
+} from "~/utils/knowledge/conceptUtils";
 
 export const loader = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);
-
   const conceptId = args.params.conceptId;
-  if (!conceptId) {
-    throw new Response("Concept ID is required", { status: 400 });
-  }
-
-  const mockConcept = MOCK_CONCEPTS.find(c => c.id === conceptId);
+  if (!conceptId) throw new Response("Concept ID is required", { status: 400 });
+  const mockConcept = MOCK_CONCEPTS.find((c) => c.id === conceptId);
   return typedJson({ concept: mockConcept ?? null });
 };
 
 export const action = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);
-
-  const conceptId = args.params.conceptId;
-  if (!conceptId) {
-    throw new Response("Concept ID is required", { status: 400 });
-  }
-
   const formData = await args.request.formData();
-  const intent = formData.get("intent");
-
-  if (intent === "delete") {
-    try {
-      deleteConceptFromLocalStorage(conceptId);
-      return typedJson({ success: true });
-    } catch (error) {
-      return typedJson({ error: "Failed to delete concept" }, { status: 500 });
-    }
+  if (formData.get("intent") === "delete") {
+    return typedJson({ success: true });
   }
-
-  if (intent === "update") {
-    try {
-      const title = formData.get("title") as string;
-      const description = formData.get("description") as string;
-      const tags = formData.getAll("tags") as string[];
-      const related = JSON.parse(formData.get("related") as string);
-
-      const concept = getConceptFromLocalStorage(conceptId);
-      if (!concept) {
-        throw new Response("Concept not found", { status: 404 });
-      }
-
-      const updatedConcept: Concept = {
-        ...concept,
-        title,
-        description,
-        tags,
-        related,
-        lastModified: new Date().toISOString()
-      };
-
-      saveConceptToLocalStorage(updatedConcept);
-      return typedJson({ concept: updatedConcept });
-    } catch (error) {
-      return typedJson({ error: "Failed to update concept" }, { status: 500 });
-    }
-  }
-
   return typedJson({ error: "Invalid action" }, { status: 400 });
 };
 
@@ -112,70 +85,88 @@ export default function ConceptDetailPage() {
   const location = useLocation();
   const { toast } = useToast();
 
-  const [concept, setConcept] = useState<Concept|null>(serverConcept);
+  const [concept, setConcept] = useState<Concept | null>(serverConcept);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedConcept, setEditedConcept] = useState(concept);
+  const [editedConcept, setEditedConcept] = useState<Concept | null>(
+      serverConcept
+  );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const updateFormRef = useRef<HTMLFormElement>(null);
-  const deleteFormRef = useRef<HTMLFormElement>(null);
+  const deleteFetcher = useFetcher<typeof action>();
+  const isDeleting = deleteFetcher.state === "submitting";
 
   useEffect(() => {
     if (!serverConcept && conceptId) {
-      const localConcept = getConceptFromLocalStorage(conceptId);
-      if (localConcept) {
-        setConcept(localConcept);
-        setEditedConcept(localConcept);
-        return;
+      const local = getConceptFromLocalStorage(conceptId);
+      if (local) {
+        setConcept(local);
+        setEditedConcept(local);
+      } else {
+        navigate("/404", { replace: true });
       }
-      navigate("/404", { replace: true });
     }
   }, [serverConcept, conceptId, navigate]);
 
   useEffect(() => {
-    if (location.state?.editing) {
-      setIsEditing(true);
-    }
+    if (location.state?.editing) setIsEditing(true);
   }, [location.state]);
 
   useEffect(() => {
     setEditedConcept(concept);
   }, [concept]);
 
-  if (concept === null || editedConcept === null) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        Načítám koncept...
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (
+        deleteFetcher.state === "idle" &&
+        deleteFetcher.data !== undefined
+    ) {
+      setIsDeleteDialogOpen(false);
+
+      if (deleteFetcher.data.success) {
+        if (conceptId) {
+          deleteConceptFromLocalStorage(conceptId);
+        }
+        toast({ title: "Koncept smazán", variant: "success" });
+        navigate("/knowledge/concepts");
+      } else {
+        toast({
+          title: "Chyba při mazání",
+          description: "Nepodařilo se koncept smazat.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [
+    deleteFetcher.state,
+    deleteFetcher.data,
+    navigate,
+    toast,
+    conceptId,
+  ]);
 
   const handleSaveConcept = async () => {
+    if (!editedConcept) return;
     setIsSaving(true);
     try {
-      const updatedConcept = {
+      const updated: Concept = {
         ...editedConcept,
-        lastModified: new Date().toISOString()
+        lastModified: new Date().toISOString(),
       };
-
-      saveConceptToLocalStorage(updatedConcept);
-      setConcept(updatedConcept);
-      setEditedConcept(updatedConcept);
+      saveConceptToLocalStorage(updated);
+      setConcept(updated);
+      setEditedConcept(updated);
       setIsEditing(false);
-
       toast({
         title: "Koncept uložen",
         description: "Změny byly úspěšně uloženy.",
-        variant: "success"
+        variant: "success",
       });
-    } catch (error) {
-      console.error("Chyba při ukládání konceptu:", error);
+    } catch {
       toast({
         title: "Chyba při ukládání",
-        description: "Nepodařilo se uložit změny. Zkuste to prosím znovu.",
-        variant: "destructive"
+        description: "Nepodařilo se uložit změny.",
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
@@ -183,20 +174,19 @@ export default function ConceptDetailPage() {
   };
 
   const handleDeleteConcept = () => {
-    setIsDeleting(true);
-    try {
-      deleteFormRef.current?.requestSubmit();
-    } catch (error) {
-      console.error("Chyba při mazání konceptu:", error);
-      setIsDeleting(false);
-      setIsDeleteDialogOpen(false);
-      toast({
-        title: "Chyba při mazání",
-        description: "Nepodařilo se smazat koncept. Zkuste to prosím znovu.",
-        variant: "destructive"
-      });
-    }
+    deleteFetcher.submit(
+        { intent: "delete" },
+        { method: "post", action: "" }
+    );
   };
+
+  if (concept === null || editedConcept === null) {
+    return (
+        <div className="flex items-center justify-center h-64">
+          Načítám koncept...
+        </div>
+    );
+  }
 
   const handleAddTag = (tag: string) => {
     if (tag && !editedConcept.tags.includes(tag)) {
@@ -206,34 +196,25 @@ export default function ConceptDetailPage() {
       });
     }
   };
-
-  const handleRemoveTag = (tagToRemove: string) => {
+  const handleRemoveTag = (tag: string) =>
+      setEditedConcept({
+        ...editedConcept,
+        tags: editedConcept.tags.filter((t) => t !== tag),
+      });
+  const handleRemoveRelation = (id: string) =>
+      setEditedConcept({
+        ...editedConcept,
+        related: editedConcept.related.filter((r) => r.id !== id),
+      });
+  const handleAddRelation = (id: string, rel: string) => {
+    const target = MOCK_CONCEPTS.find((c) => c.id === id);
+    if (!target) return;
     setEditedConcept({
       ...editedConcept,
-      tags: editedConcept.tags.filter((tag: string) => tag !== tagToRemove),
-    });
-  };
-
-  const handleRemoveRelation = (relationId: string) => {
-    setEditedConcept({
-      ...editedConcept,
-      related: editedConcept.related.filter((rel: RelatedConcept) => rel.id !== relationId)
-    });
-  };
-
-  const handleAddRelation = (relationId: string, relationType: string) => {
-    const targetConcept = MOCK_CONCEPTS.find((c: Concept) => c.id === relationId);
-    if (!targetConcept) return;
-
-    const newRelation: RelatedConcept = {
-      id: relationId,
-      title: targetConcept.title,
-      relation: relationType as "is_a" | "has_a" | "related_to" | "depends_on" | "part_of"
-    };
-
-    setEditedConcept({
-      ...editedConcept,
-      related: [...editedConcept.related, newRelation]
+      related: [
+        ...editedConcept.related,
+        { id, title: target.title, relation: rel as any },
+      ],
     });
   };
 
@@ -249,7 +230,6 @@ export default function ConceptDetailPage() {
             <ChevronLeft className="h-4 w-4" />
             <span>Zpět na koncepty</span>
           </Button>
-
           <div className="flex items-center gap-2">
             {isEditing ? (
                 <>
@@ -259,26 +239,26 @@ export default function ConceptDetailPage() {
                         setIsEditing(false);
                         setEditedConcept(concept);
                       }}
-                      className="gap-1"
                       disabled={isSaving}
+                      className="gap-1"
                   >
                     <X className="h-4 w-4" />
                     <span>Zrušit</span>
                   </Button>
                   <Button
                       onClick={handleSaveConcept}
-                      className="gap-1"
                       disabled={isSaving}
+                      className="gap-1"
                   >
                     {isSaving ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                          <span>Ukládání...</span>
+                          Ukládání...
                         </>
                     ) : (
                         <>
                           <Save className="h-4 w-4" />
-                          <span>Uložit změny</span>
+                          Uložit změny
                         </>
                     )}
                   </Button>
@@ -291,9 +271,8 @@ export default function ConceptDetailPage() {
                       className="gap-1"
                   >
                     <Edit className="h-4 w-4" />
-                    <span>Upravit</span>
+                    Upravit
                   </Button>
-
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
@@ -304,15 +283,15 @@ export default function ConceptDetailPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>
                         <LinkIcon className="mr-2 h-4 w-4" />
-                        <span>Kopírovat odkaz</span>
+                        Kopírovat odkaz
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Copy className="mr-2 h-4 w-4" />
-                        <span>Duplikovat</span>
+                        Duplikovat
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Share2 className="mr-2 h-4 w-4" />
-                        <span>Sdílet</span>
+                        Sdílet
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -320,7 +299,7 @@ export default function ConceptDetailPage() {
                           onClick={() => setIsDeleteDialogOpen(true)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Smazat</span>
+                        Smazat
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -335,9 +314,14 @@ export default function ConceptDetailPage() {
               {isEditing ? (
                   <Input
                       value={editedConcept.title}
-                      onChange={(e) => setEditedConcept({ ...editedConcept, title: e.target.value })}
-                      className="text-xl font-bold"
+                      onChange={(e) =>
+                          setEditedConcept({
+                            ...editedConcept,
+                            title: e.target.value,
+                          })
+                      }
                       placeholder="Název konceptu"
+                      className="text-xl font-bold"
                       required
                   />
               ) : (
@@ -347,14 +331,18 @@ export default function ConceptDetailPage() {
                   </CardTitle>
               )}
             </CardHeader>
-
             <CardContent className="p-6">
               {isEditing ? (
                   <Textarea
                       value={editedConcept.description}
-                      onChange={(e) => setEditedConcept({ ...editedConcept, description: e.target.value })}
-                      className="w-full p-3 min-h-24 mb-4"
+                      onChange={(e) =>
+                          setEditedConcept({
+                            ...editedConcept,
+                            description: e.target.value,
+                          })
+                      }
                       placeholder="Popis konceptu"
+                      className="w-full p-3 min-h-24 mb-4"
                       required
                   />
               ) : (
@@ -373,7 +361,6 @@ export default function ConceptDetailPage() {
                         onRemoveTag={handleRemoveTag}
                     />
                   </div>
-
                   <div className="bg-muted/10 rounded-lg p-4 border border-border/40">
                     <ConceptInfo
                         author={editedConcept.author}
@@ -382,7 +369,6 @@ export default function ConceptDetailPage() {
                     />
                   </div>
                 </div>
-
                 <div className="bg-muted/10 rounded-lg p-4 border border-border/40">
                   <ConceptRelationManager
                       relations={editedConcept.related}
@@ -397,35 +383,40 @@ export default function ConceptDetailPage() {
           </Card>
         </div>
 
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Opravdu chcete smazat tento koncept?</AlertDialogTitle>
+              <AlertDialogTitle>
+                Opravdu chcete smazat tento koncept?
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                Tato akce je nevratná. Koncept "{editedConcept.title}" bude trvale odstraněn.
+                Tato akce je nevratná. Koncept „{editedConcept.title}“ bude trvale odstraněn.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Zrušit</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteConcept} className="bg-destructive">
-                {isDeleting ? "Mazání..." : "Smazat"}
+              <AlertDialogCancel disabled={isDeleting}>
+                Zrušit
+              </AlertDialogCancel>
+              <AlertDialogAction
+                  onClick={handleDeleteConcept}
+                  disabled={isDeleting}
+                  className="bg-destructive"
+              >
+                {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Mazání...
+                    </>
+                ) : (
+                    "Smazat"
+                )}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
-        <Form method="post" ref={updateFormRef} className="hidden">
-          <input type="hidden" name="intent" value="update" />
-          <input type="hidden" name="title" value={editedConcept.title} />
-          <input type="hidden" name="description" value={editedConcept.description} />
-          <input type="hidden" name="tags" value={JSON.stringify(editedConcept.tags)} />
-          <input type="hidden" name="related" value={JSON.stringify(editedConcept.related)} />
-        </Form>
-
-        <Form method="post" ref={deleteFormRef} className="hidden">
-          <input type="hidden" name="intent" value="delete" />
-          <input type="hidden" name="conceptId" value={editedConcept.id} />
-        </Form>
       </div>
   );
 }

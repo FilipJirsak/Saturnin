@@ -10,6 +10,7 @@ import { useToast } from "~/hooks/use-toast";
 import { ISSUE_STATES } from "~/lib/constants";
 import { Edit2, Trash2, Copy, Save, X, MoreHorizontal } from "lucide-react";
 
+// TODO (NL): Přidat podporu pro více stavů issue
 interface IssueDetailHeaderProps {
   issue: IssueFull;
   isEditing: boolean;

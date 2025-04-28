@@ -6,6 +6,9 @@ import { cn } from "~/utils/helpers";
 import { IssueFull } from '~/types';
 import { ISSUE_AVAILABLE_TAGS } from "~/lib/constants";
 
+// TODO (NL): Přidat barevné rozlišení tagů
+// TODO (NL): Přidat filtrování podle tagů
+// TODO (NL): Přidat popisky k tagům
 interface IssueTagsProps {
   editedIssue: IssueFull;
   isEditing: boolean;

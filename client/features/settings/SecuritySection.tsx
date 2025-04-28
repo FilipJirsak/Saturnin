@@ -7,7 +7,10 @@ import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 import { Lock, Key } from "lucide-react";
 
-//TODO (NL): Upravit texty
+// TODO (NL): Upravit texty
+// TODO (NL): Přidat validaci hesel
+// TODO (NL): Přidat podporu pro více typů 2FA
+// TODO (NL): Přidat podporu pro více bezpečnostních klíčů
 export function SecuritySection() {
   return (
       <>

@@ -38,6 +38,7 @@ const ClientOnly = ({ children }: { children: ReactNode }) => {
   return mounted ? children : null;
 };
 
+// TODO (NL): Implementovat správné načítání projektů s paginací pro velké množství dat
 export const loader = async () => {
   const resp = await fetch("http://localhost:8080/api/project");
   const projects = await resp.json();
@@ -92,7 +93,7 @@ export function Layout({ children }: { children: ReactNode }) {
   );
 }
 
-//TODO (NL): Upravit, až bude implementováno přihlašování
+// TODO (NL): Implementovat správnou autentizaci a autorizaci
 function AuthLayout() {
   return (
       <ThemeProvider>
@@ -118,6 +119,7 @@ function AppLayoutWrapper({ projects }: { projects: any[] }) {
   );
 }
 
+// TODO (NL): Přidat error boundary pro lepší zachycení chyb
 export default function App() {
   const { projects } = useLoaderData<typeof loader>();
   const location = useLocation();

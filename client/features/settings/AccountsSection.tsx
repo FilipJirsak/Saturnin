@@ -1,8 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 
-//TODO (NL): Implementovat odpojení účtů na backendu
-//TODO (NL): Upravit texty
+// TODO (NL): Implementovat odpojení účtů na backendu
+// TODO (NL): Upravit texty
 export function AccountsSection() {
   return (
       <Card>

@@ -9,7 +9,7 @@ import {PATH_TRANSLATIONS} from "~/lib/constants";
  * @param inputs - Array of class values to be merged
  * @returns String of merged and optimized Tailwind CSS classes
  */
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 

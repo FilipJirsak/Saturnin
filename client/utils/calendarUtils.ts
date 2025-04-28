@@ -1,4 +1,7 @@
 import { IssueFull } from "~/types";
+import { toZonedTime } from 'date-fns-tz';
+
+const PRAGUE_TIMEZONE = 'Europe/Prague';
 
 //TODO (NL): Refactor!!!
 
@@ -70,8 +73,9 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
 
     if (issue.last_modified && !isNaN(new Date(issue.last_modified).getTime())) {
       date = new Date(issue.last_modified);
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
+      const pragueDatetime = toZonedTime(date, PRAGUE_TIMEZONE);
+      const hours = pragueDatetime.getHours();
+      const minutes = pragueDatetime.getMinutes();
       time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     } else {
       date = new Date();

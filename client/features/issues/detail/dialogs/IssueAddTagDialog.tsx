@@ -3,6 +3,8 @@ import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 
+// TODO (NL): Přidat validaci tagů
+// TODO (NL): Přidat podporu pro více tagů najednou
 interface IssueAddTagDialogProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;

@@ -15,6 +15,8 @@ import { useToast } from "~/hooks/use-toast";
 import { IssueFull } from "~/types";
 import { cn } from "~/utils/helpers";
 
+// TODO (NL): Přidat validaci formuláře
+
 interface IssueFormProps {
   onIssueCreated: (issue: IssueFull) => void;
 }
@@ -28,6 +30,7 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
+  const fileInputId = `file-upload-${Math.random().toString(36).substring(2, 11)}`;
   const isValid = title.trim() !== "" || description.trim() !== "";
 
   const handleDragOver = useCallback((e: DragEvent) => {
@@ -161,13 +164,13 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
               </div>
             </div>
             <div
-              className={cn(
-                "border-2 border-dashed rounded-lg p-4 text-center",
-                isDragging ? "border-primary bg-primary/5" : "border-muted"
-              )}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+                className={cn(
+                    "border-2 border-dashed rounded-lg p-4 text-center",
+                    isDragging ? "border-primary bg-primary/5" : "border-muted"
+                )}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
             >
               <div className="flex flex-col items-center gap-2">
                 <Upload className="h-6 w-6 text-muted-foreground" />
@@ -175,32 +178,32 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
                   Přetáhni soubory sem nebo klikni pro výběr
                 </p>
                 <input
-                  type="file"
-                  multiple
-                  className="hidden"
-                  id="file-upload"
-                  onChange={handleFileInput}
+                    type="file"
+                    multiple
+                    className="hidden"
+                    id={fileInputId}
+                    onChange={handleFileInput}
                 />
                 <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById('file-upload')?.click()}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById(fileInputId)?.click()}
                 >
                   Vybrat soubory
                 </Button>
               </div>
               {attachedFiles.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium mb-2">Připojené soubory:</p>
-                  <ul className="space-y-1">
-                    {attachedFiles.map((file, index) => (
-                      <li key={index} className="text-sm text-muted-foreground">
-                        {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Připojené soubory:</p>
+                    <ul className="space-y-1">
+                      {attachedFiles.map((file, index) => (
+                          <li key={index} className="text-sm text-muted-foreground">
+                            {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                          </li>
+                      ))}
+                    </ul>
+                  </div>
               )}
             </div>
           </CardContent>
