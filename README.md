@@ -46,5 +46,9 @@ server – Server (backend) code – Hono.
 types  – Common TypeScript types for both server and client.
 surql  – SurrealDB initialization scripts and sample data.
 test   – Tests
-http – Testing HTTP requests for IntelliJ Idea HTTP client.
+http   – Testing HTTP requests for IntelliJ Idea HTTP client.
 ```
+
+## Documentation
+
+For detailed technical documentation, please see [DOCUMENTATION.md](DOCUMENTATION.md).

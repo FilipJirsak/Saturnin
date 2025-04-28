@@ -1,0 +1,57 @@
+---
+title: "API Dokumentace"
+author: "Nela Letochová"
+lastModified: "2025-04-24T09:46:43.053Z"
+createdAt: "2025-03-15T09:00:00.000Z"
+isShared: false
+tags: ["nová-složka","test"]
+---
+
+## Úvod
+Tento dokument obsahuje dokumentaci k REST API. Poskytuje informace o endpointech, požadavcích a odpovědích API, spolu s příklady použití.
+
+## Autentizace
+API používá JWT pro autentizaci. Token je nutné předat v hlavičce \`Authorization\`.
+
+```
+Authorization: Bearer {token}
+```
+
+## Endpointy
+
+### GET /api/projects
+Vrátí seznam projektů.
+
+**Parametry**:
+- \`status\` - filtrovat podle stavu projektu (volitelné)
+
+**Odpověď**:
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "name": "Projekt A",
+      "status": "active"
+    }
+  ]
+}
+```
+
+### POST /api/projects
+Vytvoří nový projekt.
+
+**Payload**:
+```json
+{
+  "name": "Nový projekt",
+  "description": "Popis projektu"
+}
+```
+
+## Chybové kódy
+- 400 - Bad Request
+- 401 - Unauthorized
+- 403 - Forbidden
+- 404 - Not Found
+- 500 - Internal Server Error

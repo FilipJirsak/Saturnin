@@ -44,3 +44,62 @@ export const ISSUE_TEAM_MEMBERS = [
 export const ISSUE_AVAILABLE_TAGS = [
   "Bug", "Feature", "Documentation", "UI", "Backend", "Priority", "Research", "Testing"
 ];
+
+
+/*KNOWLEDGE*/
+
+//TODO (NL): Upravit barvy?
+export const NODE_COLORS = [
+  '#8b5cf6',
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#ec4899',
+  '#6366f1',
+  '#14b8a6',
+  '#0ea5e9',
+  '#84cc16',
+  '#d946ef',
+  '#f43f5e',
+];
+
+//TODO (NL): Upravit barvy?
+export const EDGE_COLORS = [
+  { value: '#555555', label: 'Šedá' },
+  { value: '#3b82f6', label: 'Modrá' },
+  { value: '#10b981', label: 'Zelená' },
+  { value: '#f59e0b', label: 'Žlutá' },
+  { value: '#ef4444', label: 'Červená' },
+  { value: '#6366f1', label: 'Indigo' },
+];
+
+export const LINE_STYLES = [
+  { value: 'solid', label: 'Plná čára' },
+  { value: 'dashed', label: 'Přerušovaná čára' },
+  { value: 'dotted', label: 'Tečkovaná čára' },
+];
+
+//TODO (NL): Sjednotit s tagy v issue
+export const KNOWLEDGE_AVAILABLE_TAGS = [
+  "architektura",
+  "systém",
+  "dokumentace",
+  "api",
+  "frontend",
+  "backend",
+  "databáze",
+  "workflow",
+  "brainstorming",
+  "plánování",
+  "model",
+  "mikroslužby"
+];
+
+export const RELATION_TYPES = [
+  { value: "is_a", label: "je typ" },
+  { value: "has_a", label: "má" },
+  { value: "related_to", label: "souvisí s" },
+  { value: "depends_on", label: "závisí na" },
+  { value: "part_of", label: "je součástí" },
+];

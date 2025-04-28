@@ -4,6 +4,7 @@ import "./styles/tailwind.css";
 import { createDragDropManager } from "dnd-core";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { initializeConceptsIfEmpty } from "~/utils/knowledge/conceptUtils";
 
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
@@ -31,6 +32,7 @@ const ClientOnly = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setMounted(true);
+    initializeConceptsIfEmpty();
   }, []);
 
   return mounted ? children : null;
