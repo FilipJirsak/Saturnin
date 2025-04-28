@@ -71,7 +71,7 @@ export function TagsFormDialog({
                     id="tag-name"
                     value={newTag.name}
                     onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
-                    placeholder="Zadejte název tagu"
+                    placeholder="Zadej název tagu"
                     className="flex-1"
                 />
               </div>
@@ -85,7 +85,7 @@ export function TagsFormDialog({
                   id="tag-description"
                   value={newTag.description || ""}
                   onChange={(e) => setNewTag({ ...newTag, description: e.target.value })}
-                  placeholder="Zadejte popis tagu"
+                  placeholder="Zadej popis tagu"
               />
             </div>
 

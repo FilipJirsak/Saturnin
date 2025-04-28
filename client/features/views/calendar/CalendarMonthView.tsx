@@ -2,14 +2,16 @@ import { ClockIcon } from "@heroicons/react/20/solid";
 import {CalendarDay} from "~/utils/calendarUtils";
 import {cn} from "~/utils/helpers";
 import {Fragment} from "react";
-import {Link} from "@remix-run/react";
+import { IssueFull } from "~/types";
 
 interface MonthViewProps {
   days: CalendarDay[];
+  issues: IssueFull[];
   onSelectDay: (date: string) => void;
+  onIssueSelect: (issue: IssueFull) => void;
 }
 
-export function CalendarMonthView({ days, onSelectDay }: MonthViewProps) {
+export function CalendarMonthView({ days, issues, onSelectDay, onIssueSelect }: MonthViewProps) {
   //TODO (NL): Přehodit do hooku/utils
   const selectedDay = days.find(day => day.isSelected);
   const totalRows = Math.ceil(days.length / 7);
@@ -81,7 +83,13 @@ export function CalendarMonthView({ days, onSelectDay }: MonthViewProps) {
                             <ol className="mt-8">
                               {day.events.slice(0, 2).map((event) => (
                                   <li key={event.id}>
-                                    <Link to={event.href} className="group flex">
+                                    <button
+                                        onClick={() => {
+                                          const issue = issues.find(i => i.code === event.id);
+                                          if (issue) onIssueSelect(issue);
+                                        }}
+                                        className="group text-start flex w-full"
+                                    >
                                       <p className="flex-auto truncate font-medium text-foreground group-hover:text-primary">
                                         {event.name}
                                       </p>
@@ -91,7 +99,7 @@ export function CalendarMonthView({ days, onSelectDay }: MonthViewProps) {
                                       >
                                         {event.time}
                                       </time>
-                                    </Link>
+                                    </button>
                                   </li>
                               ))}
                               {day.events.length > 2 &&

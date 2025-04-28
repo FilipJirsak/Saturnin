@@ -39,9 +39,9 @@ export function NotificationsSection() {
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Oznámení o úkolech</p>
+                  <p className="font-medium">Oznámení o issues</p>
                   <p className="text-sm text-muted-foreground">
-                    Když ti je přiřazen nový úkol
+                    Když ti je přiřazeno nové issue
                   </p>
                 </div>
                 <Switch defaultChecked />

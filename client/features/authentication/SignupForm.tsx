@@ -10,8 +10,9 @@ import { Link, useNavigate } from "@remix-run/react";
 // TODO (NL): Upravit texty a doplnit linky
 export function SignUpForm({
                              className,
+                             redirectTo = "/",
                              ...props
-                           }: ComponentProps<"div">) {
+                           }: ComponentProps<"div"> & { redirectTo?: string }) {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,15 +27,18 @@ export function SignUpForm({
     setLoading(true);
 
     setTimeout(() => {
-      navigate(`?simulateAuth=true`);
+      navigate(`${redirectTo}?simulateAuth=true`);
     }, 1000);
   };
 
   const handleOAuthSignup = (provider: string) => {
     setLoading(true);
 
+    if (process.env.NODE_ENV === "development") {
+      console.log(`Simulace registrace přes ${provider}...`);
+    }
     setTimeout(() => {
-      navigate(`?simulateAuth=true`);
+      navigate(`${redirectTo}?simulateAuth=true`);
     }, 1000);
   };
 

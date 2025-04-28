@@ -96,7 +96,7 @@ export function LibraryCreateFolderSidebar({
                   <Input
                       id="title"
                       name="title"
-                      placeholder="Zadejte název složky"
+                      placeholder="Zadej název složky"
                       value={formData.title}
                       onChange={handleInputChange}
                       required

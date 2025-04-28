@@ -8,6 +8,22 @@ export const listProject = async (projectCode: string): Promise<IssueFull[]> => 
     );
 };
 
+export const get = async (projectCode: string, issueCode: string): Promise<IssueFull | null> => {
+    const result = await db.query<[IssueDBFull[]]>(
+        "SELECT id, in.* AS issue FROM issue_code:[$project, $number];",
+        {
+            project: projectCode,
+            number: parseInt(issueCode.split('-')[1], 10)
+        }
+    );
+
+    if (!result[0] || result[0].length === 0) {
+        return null;
+    }
+
+    return fromDB(result[0][0]);
+};
+
 export const create = async (projectCode: string, issue: Issue): Promise<IssueFull> => {
     //TODO
     const issueDB = await db.create<IssueDB, IssueDB>("issue", toDB(issue));
