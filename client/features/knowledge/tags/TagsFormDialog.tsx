@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { KnowledgeTag } from "~/types/knowledge";
@@ -60,6 +60,9 @@ export function TagsFormDialog({
             <DialogTitle>
               {editMode ? "Upravit tag" : "Vytvořit nový tag"}
             </DialogTitle>
+            <DialogDescription>
+              {editMode ? "Uprav vlastnosti existujícího tagu" : "Vytvoř nový tag pro organizaci vašeho obsahu"}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
