@@ -39,22 +39,22 @@ export const saveConceptToLocalStorage = (concept: Concept) => {
 
   const storedJson = localStorage.getItem(CONCEPTS_STORAGE_KEY);
   let storedConcepts: Concept[] = storedJson
-      ? (() => {
-        try {
-          return JSON.parse(storedJson);
-        } catch (err) {
-          console.error("Error parsing data from localStorage:", err);
-          return [];
-        }
-      })()
-      : getConceptsFromLocalStorage();
+    ? (() => {
+      try {
+        return JSON.parse(storedJson);
+      } catch (err) {
+        console.error("Error parsing data from localStorage:", err);
+        return [];
+      }
+    })()
+    : getConceptsFromLocalStorage();
 
   if (!Array.isArray(storedConcepts)) {
     console.warn("Data in localStorage is not an array, resetting...");
     storedConcepts = [];
   }
 
-  const existingIndex = storedConcepts.findIndex(c => c.id === concept.id);
+  const existingIndex = storedConcepts.findIndex((c) => c.id === concept.id);
   if (existingIndex >= 0) storedConcepts[existingIndex] = concept;
   else storedConcepts.unshift(concept);
 
@@ -111,14 +111,14 @@ export const getConceptsFromLocalStorage = (): Concept[] => {
  */
 export const getConceptFromLocalStorage = (id: string): Concept | null => {
   if (typeof window === "undefined") {
-    return MOCK_CONCEPTS.find(c => c.id === id) || null;
+    return MOCK_CONCEPTS.find((c) => c.id === id) || null;
   }
 
   const concepts = getConceptsFromLocalStorage();
-  const found = concepts.find(c => c.id === id);
+  const found = concepts.find((c) => c.id === id);
   if (found) return found;
 
-  return MOCK_CONCEPTS.find(c => c.id === id) || null;
+  return MOCK_CONCEPTS.find((c) => c.id === id) || null;
 };
 
 /**
@@ -143,7 +143,7 @@ export const deleteConceptFromLocalStorage = (id: string) => {
     }
   }
 
-  const filtered = storedConcepts.filter(c => c.id !== id);
+  const filtered = storedConcepts.filter((c) => c.id !== id);
 
   localStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
   sessionStorage.setItem(CONCEPTS_STORAGE_KEY, JSON.stringify(filtered));
@@ -161,7 +161,7 @@ export const deleteConceptFromLocalStorage = (id: string) => {
  * @returns The label for the relation (e.g. "Is a") or the key itself if not found.
  */
 export const getRelationLabel = (relation: string) => {
-  const rel = RELATION_TYPES.find(r => r.value === relation);
+  const rel = RELATION_TYPES.find((r) => r.value === relation);
   return rel ? rel.label : relation;
 };
 
@@ -174,7 +174,7 @@ export const getRelationColor = (relation: string) => {
     has_a: "#10b981",
     related_to: "#8b5cf6",
     depends_on: "#f59e0b",
-    part_of: "#ec4899"
+    part_of: "#ec4899",
   };
   return colors[relation] || "#6b7280";
 };
@@ -193,10 +193,10 @@ export const getRelationColor = (relation: string) => {
 export const filterConcepts = (concepts: Concept[], searchTerm: string): Concept[] => {
   if (!searchTerm) return concepts;
 
-  return concepts.filter(concept =>
-      concept.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      concept.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      concept.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  return concepts.filter((concept) =>
+    concept.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    concept.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    concept.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 };
 
@@ -213,11 +213,11 @@ export const filterConcepts = (concepts: Concept[], searchTerm: string): Concept
  */
 export const categorizeRelations = (relations: RelatedConcept[]) => {
   return {
-    is_a: relations.filter(r => r.relation === "is_a"),
-    has_a: relations.filter(r => r.relation === "has_a"),
-    part_of: relations.filter(r => r.relation === "part_of"),
-    depends_on: relations.filter(r => r.relation === "depends_on"),
-    related_to: relations.filter(r => r.relation === "related_to"),
+    is_a: relations.filter((r) => r.relation === "is_a"),
+    has_a: relations.filter((r) => r.relation === "has_a"),
+    part_of: relations.filter((r) => r.relation === "part_of"),
+    depends_on: relations.filter((r) => r.relation === "depends_on"),
+    related_to: relations.filter((r) => r.relation === "related_to"),
   };
 };
 

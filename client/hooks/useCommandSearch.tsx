@@ -1,14 +1,15 @@
-import {useState, useRef, useCallback, useEffect, DragEvent} from "react";
+import { DragEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useToast } from "~/hooks/use-toast";
 import { useNavigate } from "@remix-run/react";
 import type { ProjectWithIssues } from "~/types";
 import {
-  SearchResult,
-  performTextSearch,
+  determineSearchType,
+  extractUrlFromDrop,
   handleFileDropForSearch,
-  extractUrlFromDrop, determineSearchType
+  performTextSearch,
+  SearchResult,
 } from "~/utils/searchUtils";
-import { Link, FileText, Settings, Book, Calendar, Plus } from "lucide-react";
+import { Book, Calendar, FileText, Link, Plus, Settings } from "lucide-react";
 
 interface UseCommandSearchOptions {
   projects: ProjectWithIssues[];
@@ -27,55 +28,55 @@ export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions)
 
   // TODO (NL): Přidat cachování výsledků vyhledávání pro lepší výkon
   const performSearch = useCallback(
-      async (query: string, type: "text" | "file" | "url" = "text") => {
-        setIsSearching(true);
+    async (query: string, type: "text" | "file" | "url" = "text") => {
+      setIsSearching(true);
 
-        try {
-          if (!query.trim() && type === "text") {
-            setResults([]);
-            return;
-          }
+      try {
+        if (!query.trim() && type === "text") {
+          setResults([]);
+          return;
+        }
 
-          //TODO (NL): Nahradit simulaci síťového zpoždění skutečným API voláním
-          await new Promise((resolve) => setTimeout(resolve, 150));
+        //TODO (NL): Nahradit simulaci síťového zpoždění skutečným API voláním
+        await new Promise((resolve) => setTimeout(resolve, 150));
 
-          let searchResults: SearchResult[] = [];
+        let searchResults: SearchResult[] = [];
 
-          if (type === "url") {
-            toast({
-              title: "Vyhledávání URL",
-              description: `Vyhledávám odkazy obsahující: ${query}`,
-            });
+        if (type === "url") {
+          toast({
+            title: "Vyhledávání URL",
+            description: `Vyhledávám odkazy obsahující: ${query}`,
+          });
 
-            //TODO (NL): Implementovat skutečné vyhledávání URL místo mockovaných dat
-            searchResults.push({
-              id: "url-result",
-              type: "url",
-              title: "Externí odkaz",
-              subtitle: query,
-              url: query,
-              icon: <Link className="text-blue-500" />,
-              matchScore: 1.0,
-            });
-          } else if (type === "file") {
-            toast({
-              title: "Vyhledávání souboru",
-              description: `Analyzuji obsah souboru pro hledání shod`,
-            });
+          //TODO (NL): Implementovat skutečné vyhledávání URL místo mockovaných dat
+          searchResults.push({
+            id: "url-result",
+            type: "url",
+            title: "Externí odkaz",
+            subtitle: query,
+            url: query,
+            icon: <Link className="text-blue-500" />,
+            matchScore: 1.0,
+          });
+        } else if (type === "file") {
+          toast({
+            title: "Vyhledávání souboru",
+            description: `Analyzuji obsah souboru pro hledání shod`,
+          });
 
-            //TODO (NL): Implementovat skutečné vyhledávání souborů místo mockovaných dat
-            searchResults.push({
-              id: "file-result",
-              type: "file",
-              title: query,
-              subtitle: "Nahraný soubor",
-              icon: <FileText className="text-green-500" />,
-              matchScore: 1.0,
-            });
-          } else {
-            searchResults = performTextSearch(query, projects);
+          //TODO (NL): Implementovat skutečné vyhledávání souborů místo mockovaných dat
+          searchResults.push({
+            id: "file-result",
+            type: "file",
+            title: query,
+            subtitle: "Nahraný soubor",
+            icon: <FileText className="text-green-500" />,
+            matchScore: 1.0,
+          });
+        } else {
+          searchResults = performTextSearch(query, projects);
 
-           /* //TODO (NL): Vylepšit detekci URL a přidat více metadat k výsledkům URL?
+          /* //TODO (NL): Vylepšit detekci URL a přidat více metadat k výsledkům URL?
             if (isValidUrl(query)) {
               searchResults.push({
                 id: "url-match",
@@ -88,67 +89,67 @@ export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions)
               });
             }*/
 
-            //TODO (NL): Nahradit statické vyhledávání stránek dynamickým systémem mapování klíčových slov?
-            const searchQuery = query.toLowerCase().trim();
-            if (
-                searchQuery.includes("nastavení") ||
-                searchQuery.includes("settings")
-            ) {
-              searchResults.push({
-                id: "settings",
-                type: "page",
-                title: "Nastavení",
-                subtitle: "Stránka",
-                url: "/settings",
-                icon: <Settings className="text-muted-foreground" />,
-                matchScore: 0.7,
-              });
-            }
-
-            if (
-                searchQuery.includes("inbox") ||
-                searchQuery.includes("přijaté")
-            ) {
-              searchResults.push({
-                id: "inbox",
-                type: "page",
-                title: "Inbox",
-                subtitle: "Stránka",
-                url: "/inbox",
-                icon: <Book className="text-muted-foreground" />,
-                matchScore: 0.7,
-              });
-            }
-
-            if (
-                searchQuery.includes("kalendář") ||
-                searchQuery.includes("calendar")
-            ) {
-              searchResults.push({
-                id: "calendar",
-                type: "page",
-                title: "Kalendář",
-                subtitle: "Stránka",
-                url: "/calendar",
-                icon: <Calendar className="text-muted-foreground" />,
-                matchScore: 0.7,
-              });
-            }
+          //TODO (NL): Nahradit statické vyhledávání stránek dynamickým systémem mapování klíčových slov?
+          const searchQuery = query.toLowerCase().trim();
+          if (
+            searchQuery.includes("nastavení") ||
+            searchQuery.includes("settings")
+          ) {
+            searchResults.push({
+              id: "settings",
+              type: "page",
+              title: "Nastavení",
+              subtitle: "Stránka",
+              url: "/settings",
+              icon: <Settings className="text-muted-foreground" />,
+              matchScore: 0.7,
+            });
           }
 
-          setResults(searchResults);
-        } catch (error) {
-          console.error("Chyba při vyhledávání:", error);
-          toast({
-            title: "Chyba při vyhledávání",
-            description: "Nepodařilo se načíst výsledky vyhledávání",
-            variant: "destructive",
-          });
-        } finally {
-          setIsSearching(false);
+          if (
+            searchQuery.includes("inbox") ||
+            searchQuery.includes("přijaté")
+          ) {
+            searchResults.push({
+              id: "inbox",
+              type: "page",
+              title: "Inbox",
+              subtitle: "Stránka",
+              url: "/inbox",
+              icon: <Book className="text-muted-foreground" />,
+              matchScore: 0.7,
+            });
+          }
+
+          if (
+            searchQuery.includes("kalendář") ||
+            searchQuery.includes("calendar")
+          ) {
+            searchResults.push({
+              id: "calendar",
+              type: "page",
+              title: "Kalendář",
+              subtitle: "Stránka",
+              url: "/calendar",
+              icon: <Calendar className="text-muted-foreground" />,
+              matchScore: 0.7,
+            });
+          }
         }
-      },
-      [projects, toast]
+
+        setResults(searchResults);
+      } catch (error) {
+        console.error("Chyba při vyhledávání:", error);
+        toast({
+          title: "Chyba při vyhledávání",
+          description: "Nepodařilo se načíst výsledky vyhledávání",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [projects, toast],
   );
 
   const handleInputChange = useCallback((value: string) => {
@@ -225,7 +226,7 @@ export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions)
       title: `Vytvořit nové issue: "${inputValue}"`,
       subtitle: "Přejít na stránku vytváření",
       icon: <Plus className="text-green-500" />,
-      url: "/"
+      url: "/",
     };
 
     handleSelect(createIssueResult);
@@ -268,7 +269,7 @@ export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions)
         const searchType = determineSearchType(text);
         performSearch(text, searchType);
       }
-    }
+    },
   };
 
   return {
@@ -280,7 +281,6 @@ export function useCommandSearch({ projects, onClose }: UseCommandSearchOptions)
     handleInputChange,
     handleSelect,
     createNewIssue,
-    dragAndDropHandlers
+    dragAndDropHandlers,
   };
 }
-

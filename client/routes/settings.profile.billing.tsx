@@ -16,8 +16,8 @@ export const loader = async (args: LoaderFunctionArgs) => {
 
 export default function BillingRoute() {
   return (
-      <div className="space-y-6">
-        <BillingSection />
-      </div>
+    <div className="space-y-6">
+      <BillingSection />
+    </div>
   );
 }

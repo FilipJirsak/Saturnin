@@ -1,4 +1,4 @@
-import db from "./index.ts"
+import db from "./index.ts";
 
 await db.query("REMOVE NAMESPACE IF EXISTS saturnin");
 

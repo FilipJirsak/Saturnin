@@ -1,6 +1,6 @@
-import { MindMap } from '~/types/knowledge';
-import { InnerMindMapEditor } from './InnerMindMapEditor';
-import { ReactFlowProvider } from 'reactflow';
+import { MindMap } from "~/types/knowledge";
+import { InnerMindMapEditor } from "./InnerMindMapEditor";
+import { ReactFlowProvider } from "reactflow";
 
 interface MindMapEditorProps {
   mindmap: MindMap;

@@ -1,8 +1,8 @@
-import { formatDistance, isAfter, subDays, isValid } from "date-fns";
+import { formatDistance, isAfter, isValid, subDays } from "date-fns";
 import { cs } from "date-fns/locale";
-import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 
-const PRAGUE_TIMEZONE = 'Europe/Prague';
+const PRAGUE_TIMEZONE = "Europe/Prague";
 
 /**
  * Formats a date string into a localized full date format.
@@ -68,8 +68,8 @@ export const isWithinLastDays = (dateString: string | undefined | null, days = 7
  * @returns Filtered array containing only recent items
  */
 export const filterRecentItems = <T extends { last_modified: string }>(
-    items: T[],
-    days = 7
+  items: T[],
+  days = 7,
 ): T[] => {
-  return items.filter(item => isWithinLastDays(item.last_modified, days));
+  return items.filter((item) => isWithinLastDays(item.last_modified, days));
 };

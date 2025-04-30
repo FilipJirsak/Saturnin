@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, ChangeEvent, DragEvent, useState } from "react";
-import { IssueFull, IssueData } from '~/types';
+import { ChangeEvent, Dispatch, DragEvent, SetStateAction, useState } from "react";
+import { IssueData, IssueFull } from "~/types";
 import { CardContent } from "~/components/ui/card";
 import { useToast } from "~/hooks/use-toast";
 import { cn } from "~/utils/helpers";
@@ -27,13 +27,13 @@ interface IssueDetailContentProps {
 }
 
 export function IssueDetailContent({
-                                     editedIssue,
-                                     setEditedIssue,
-                                     isEditing,
-                                     attachedFiles,
-                                     setAttachedFiles,
-                                     setIsAddTagDialogOpen
-                                   }: IssueDetailContentProps) {
+  editedIssue,
+  setEditedIssue,
+  isEditing,
+  attachedFiles,
+  setAttachedFiles,
+  setIsAddTagDialogOpen,
+}: IssueDetailContentProps) {
   const { toast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -42,11 +42,9 @@ export function IssueDetailContent({
   const link = issueData?.link;
 
   const handleTagClick = (tag: string) => {
-    setEditedIssue(prev => {
+    setEditedIssue((prev) => {
       const currentTags = prev.tags || [];
-      const newTags = currentTags.includes(tag)
-          ? currentTags.filter(t => t !== tag)
-          : [...currentTags, tag];
+      const newTags = currentTags.includes(tag) ? currentTags.filter((t) => t !== tag) : [...currentTags, tag];
       return { ...prev, tags: newTags };
     });
   };
@@ -66,7 +64,7 @@ export function IssueDetailContent({
     setIsDragging(false);
 
     const files = Array.from(e.dataTransfer?.files || []);
-    setAttachedFiles(prev => [...prev, ...files]);
+    setAttachedFiles((prev) => [...prev, ...files]);
 
     toast({
       description: `Přidáno ${files.length} souborů`,
@@ -75,7 +73,7 @@ export function IssueDetailContent({
 
   const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setAttachedFiles(prev => [...prev, ...files]);
+    setAttachedFiles((prev) => [...prev, ...files]);
 
     toast({
       description: `Přidáno ${files.length} souborů`,
@@ -83,7 +81,7 @@ export function IssueDetailContent({
   };
 
   const handleRemoveAttachedFile = (index: number) => {
-    setAttachedFiles(prev => {
+    setAttachedFiles((prev) => {
       const newFiles = [...prev];
       newFiles.splice(index, 1);
       return newFiles;
@@ -95,7 +93,7 @@ export function IssueDetailContent({
   };
 
   const handleRemoveExistingFile = (index: number) => {
-    setEditedIssue(prev => {
+    setEditedIssue((prev) => {
       const prevData = prev.data as IssueData;
       const newAttachments = [...(prevData.attachments || [])];
       newAttachments.splice(index, 1);
@@ -104,8 +102,8 @@ export function IssueDetailContent({
         ...prev,
         data: {
           ...prevData,
-          attachments: newAttachments
-        }
+          attachments: newAttachments,
+        },
       };
     });
 
@@ -115,94 +113,96 @@ export function IssueDetailContent({
   };
 
   return (
-      <CardContent className="space-y-8">
-        <IssueDescription
-            description={editedIssue.description}
-            isEditing={isEditing}
-            setEditedIssue={setEditedIssue}
+    <CardContent className="space-y-8">
+      <IssueDescription
+        description={editedIssue.description}
+        isEditing={isEditing}
+        setEditedIssue={setEditedIssue}
+      />
+
+      {isEditing && (
+        <IssueSettings
+          editedIssue={editedIssue}
+          setEditedIssue={setEditedIssue}
         />
+      )}
 
-        {isEditing && (
-            <IssueSettings
-                editedIssue={editedIssue}
-                setEditedIssue={setEditedIssue}
-            />
-        )}
+      <IssueMetadata
+        editedIssue={editedIssue}
+        isEditing={isEditing}
+      />
 
-        <IssueMetadata
-            editedIssue={editedIssue}
-            isEditing={isEditing}
-        />
+      <IssueTags
+        editedIssue={editedIssue}
+        isEditing={isEditing}
+        handleTagClick={handleTagClick}
+        setIsAddTagDialogOpen={setIsAddTagDialogOpen}
+      />
 
-        <IssueTags
-            editedIssue={editedIssue}
-            isEditing={isEditing}
-            handleTagClick={handleTagClick}
-            setIsAddTagDialogOpen={setIsAddTagDialogOpen}
-        />
+      <IssueExternalLink
+        link={link}
+        isEditing={isEditing}
+        setEditedIssue={setEditedIssue}
+      />
 
-        <IssueExternalLink
-            link={link}
-            isEditing={isEditing}
-            setEditedIssue={setEditedIssue}
-        />
-
-        {isEditing ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <FileText className="h-4 w-4" />
-                <span>Přílohy</span>
-              </div>
-              <div
-                  className={cn(
-                      "border-2 border-dashed rounded-lg p-4 text-center",
-                      isDragging ? "border-primary bg-primary/5" : "border-muted"
-                  )}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Přetáhněte soubory sem nebo klikněte pro výběr
-                  </p>
-                  <Input
-                      type="file"
-                      multiple
-                      onChange={handleFileInput}
-                      className="hidden"
-                      id="file-upload"
-                  />
-                  <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                  >
-                    Vybrat soubory
-                  </Button>
-                </div>
-              </div>
-
-              <IssueAttachments
-                  attachments={attachments}
-                  attachedFiles={attachedFiles}
-                  isEditing={true}
-                  onRemoveExisting={handleRemoveExistingFile}
-                  onRemoveNew={handleRemoveAttachedFile}
-              />
+      {isEditing
+        ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <FileText className="h-4 w-4" />
+              <span>Přílohy</span>
             </div>
-        ) : (
+            <div
+              className={cn(
+                "border-2 border-dashed rounded-lg p-4 text-center",
+                isDragging ? "border-primary bg-primary/5" : "border-muted",
+              )}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <div className="flex flex-col items-center gap-2">
+                <Upload className="h-8 w-8 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Přetáhněte soubory sem nebo klikněte pro výběr
+                </p>
+                <Input
+                  type="file"
+                  multiple
+                  onChange={handleFileInput}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("file-upload")?.click()}
+                >
+                  Vybrat soubory
+                </Button>
+              </div>
+            </div>
+
             <IssueAttachments
-                attachments={attachments}
-                attachedFiles={[]}
-                isEditing={false}
+              attachments={attachments}
+              attachedFiles={attachedFiles}
+              isEditing={true}
+              onRemoveExisting={handleRemoveExistingFile}
+              onRemoveNew={handleRemoveAttachedFile}
             />
+          </div>
+        )
+        : (
+          <IssueAttachments
+            attachments={attachments}
+            attachedFiles={[]}
+            isEditing={false}
+          />
         )}
 
-        <IssueComments
-            commentsCount={editedIssue.comments_count}
-        />
-      </CardContent>
+      <IssueComments
+        commentsCount={editedIssue.comments_count}
+      />
+    </CardContent>
   );
 }

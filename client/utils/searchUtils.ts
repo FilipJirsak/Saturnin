@@ -1,5 +1,5 @@
-import type { ProjectWithIssues, IssueFull } from "~/types";
-import {ReactNode, DragEvent} from "react";
+import type { IssueFull, ProjectWithIssues } from "~/types";
+import { DragEvent, ReactNode } from "react";
 
 /**
  * Interface representing a search result with consistent structure
@@ -29,9 +29,9 @@ export interface SearchResult {
 export function extractAllIssues(projects: ProjectWithIssues[]): (IssueFull & { projectCode: string })[] {
   return projects.reduce<(IssueFull & { projectCode: string })[]>((acc, project) => {
     if (project.issues && Array.isArray(project.issues)) {
-      const issuesWithProject = project.issues.map(issue => ({
+      const issuesWithProject = project.issues.map((issue) => ({
         ...issue,
-        projectCode: project.code
+        projectCode: project.code,
       }));
       return [...acc, ...issuesWithProject];
     }
@@ -63,13 +63,34 @@ export function isValidUrl(urlString: string): boolean {
 // TODO (NL): Rozšířit seznam podporovaných přípon souborů
 export function isLikelyFilePath(input: string): boolean {
   const fileExtensions = [
-    '.txt', '.pdf', '.doc', '.docx', '.xls', '.xlsx',
-    '.ppt', '.pptx', '.csv', '.json', '.xml', '.html',
-    '.js', '.ts', '.jsx', '.tsx', '.css', '.scss',
-    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.mp4', '.mp3'
+    ".txt",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".csv",
+    ".json",
+    ".xml",
+    ".html",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".css",
+    ".scss",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".mp4",
+    ".mp3",
   ];
 
-  return fileExtensions.some(ext => input.toLowerCase().endsWith(ext));
+  return fileExtensions.some((ext) => input.toLowerCase().endsWith(ext));
 }
 
 /**
@@ -80,20 +101,20 @@ export function isLikelyFilePath(input: string): boolean {
  * @returns The determined search type ('text', 'url', or 'file')
  */
 // TODO (NL): Implementovat pokročilou detekci typu vyhledávání
-export function determineSearchType(input: string): 'text' | 'url' | 'file' {
+export function determineSearchType(input: string): "text" | "url" | "file" {
   if (!input || input.trim().length === 0) {
-    return 'text';
+    return "text";
   }
 
   if (isValidUrl(input)) {
-    return 'url';
+    return "url";
   }
 
   if (isLikelyFilePath(input)) {
-    return 'file';
+    return "file";
   }
 
-  return 'text';
+  return "text";
 }
 
 /**
@@ -108,12 +129,12 @@ export function determineSearchType(input: string): 'text' | 'url' | 'file' {
  */
 // TODO (NL): Implementovat fulltextové vyhledávání na backendu
 export function performTextSearch(
-    query: string,
-    projects: ProjectWithIssues[],
-    options: {
-      issueLimit?: number,
-      projectLimit?: number
-    } = { issueLimit: 5, projectLimit: 3 }
+  query: string,
+  projects: ProjectWithIssues[],
+  options: {
+    issueLimit?: number;
+    projectLimit?: number;
+  } = { issueLimit: 5, projectLimit: 3 },
 ): SearchResult[] {
   if (!query.trim()) {
     return [];
@@ -123,15 +144,15 @@ export function performTextSearch(
   const allIssues = extractAllIssues(projects);
   const results: SearchResult[] = [];
 
-  const matchingIssues = allIssues.filter(issue =>
-      (issue.title && issue.title.toLowerCase().includes(searchQuery)) ||
-      issue.code.toLowerCase().includes(searchQuery) ||
-      (issue.description && issue.description.toLowerCase().includes(searchQuery)) ||
-      (issue.summary && issue.summary.toLowerCase().includes(searchQuery))
+  const matchingIssues = allIssues.filter((issue) =>
+    (issue.title && issue.title.toLowerCase().includes(searchQuery)) ||
+    issue.code.toLowerCase().includes(searchQuery) ||
+    (issue.description && issue.description.toLowerCase().includes(searchQuery)) ||
+    (issue.summary && issue.summary.toLowerCase().includes(searchQuery))
   ).slice(0, options.issueLimit);
 
-  matchingIssues.forEach(issue => {
-    const project = projects.find(p => p.code === issue.projectCode);
+  matchingIssues.forEach((issue) => {
+    const project = projects.find((p) => p.code === issue.projectCode);
     results.push({
       id: issue.code,
       type: "issue",
@@ -139,23 +160,23 @@ export function performTextSearch(
       subtitle: `${project?.title || issue.projectCode} • ${issue.code}`,
       issueCode: issue.code,
       projectCode: issue.projectCode,
-      matchScore: 0.9 // TODO (NL): Zatím pouze simulace relevance skóre
+      matchScore: 0.9, // TODO (NL): Zatím pouze simulace relevance skóre
     });
   });
 
-  const matchingProjects = projects.filter(project =>
-      project.title.toLowerCase().includes(searchQuery) ||
-      project.code.toLowerCase().includes(searchQuery)
+  const matchingProjects = projects.filter((project) =>
+    project.title.toLowerCase().includes(searchQuery) ||
+    project.code.toLowerCase().includes(searchQuery)
   ).slice(0, options.projectLimit);
 
-  matchingProjects.forEach(project => {
+  matchingProjects.forEach((project) => {
     results.push({
       id: project.code,
       type: "project",
       title: project.title,
       subtitle: `Projekt • ${project.code}`,
       projectCode: project.code,
-      matchScore: 0.8 // TODO (NL): Zatím pouze simulace relevance skóre
+      matchScore: 0.8, // TODO (NL): Zatím pouze simulace relevance skóre
     });
   });
 
@@ -171,9 +192,9 @@ export function performTextSearch(
  */
 // TODO (NL): Přidat podporu pro více souborů najednou
 export function handleFileDropForSearch(event: DragEvent): {
-  fileName: string,
-  fileType: string,
-  fileSize: number
+  fileName: string;
+  fileType: string;
+  fileSize: number;
 } | null {
   if (!event.dataTransfer.files || event.dataTransfer.files.length === 0) {
     return null;
@@ -183,7 +204,7 @@ export function handleFileDropForSearch(event: DragEvent): {
   return {
     fileName: file.name,
     fileType: file.type,
-    fileSize: file.size
+    fileSize: file.size,
   };
 }
 

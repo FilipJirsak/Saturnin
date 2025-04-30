@@ -1,5 +1,5 @@
-import {useMatches} from "@remix-run/react";
-import {LoaderData} from "~/types";
+import { useMatches } from "@remix-run/react";
+import { LoaderData } from "~/types";
 
 export function useProjects() {
   const matches = useMatches();

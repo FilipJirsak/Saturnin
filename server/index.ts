@@ -1,6 +1,6 @@
-import {Hono} from "@hono/hono";
-import {cors} from "@hono/hono/cors";
-import {showRoutes} from "@hono/hono/dev";
+import { Hono } from "@hono/hono";
+import { cors } from "@hono/hono/cors";
+import { showRoutes } from "@hono/hono/dev";
 import projectRouter from "./project/router.ts";
 import issueRouter from "./issue/index.ts";
 import viewRouter from "./view/index.ts";
@@ -18,7 +18,7 @@ api.route("/knowledge", knowledgeRouter);
 app.route("/api", api);
 
 showRoutes(app, {
-    verbose: true,
+  verbose: true,
 });
 
 export default app;

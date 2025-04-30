@@ -16,8 +16,8 @@ export const loader = async (args: LoaderFunctionArgs) => {
 
 export default function NotificationsRoute() {
   return (
-      <div className="space-y-6">
-        <NotificationsSection />
-      </div>
+    <div className="space-y-6">
+      <NotificationsSection />
+    </div>
   );
 }

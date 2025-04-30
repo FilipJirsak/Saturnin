@@ -70,7 +70,7 @@
     "npm:html-to-image@^1.11.13": "1.11.13",
     "npm:input-otp@^1.4.2": "1.4.2_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:isbot@^4.1.0": "4.4.0",
-    "npm:isows@^1.0.6": "1.0.6_ws@7.5.10",
+    "npm:isows@^1.0.6": "1.0.6_ws@8.18.1",
     "npm:jsdom@^26.1.0": "26.1.0",
     "npm:lucide-react@0.475": "0.475.0_react@18.3.1",
     "npm:mdx-bundler@^10.1.1": "10.1.1_esbuild@0.25.3",
@@ -5087,10 +5087,10 @@
     "isexe@2.0.0": {
       "integrity": "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw=="
     },
-    "isows@1.0.6_ws@7.5.10": {
+    "isows@1.0.6_ws@8.18.1": {
       "integrity": "sha512-lPHCayd40oW98/I0uvgaHKWCSvkzY27LjWLbtzOm64yQ+G3Q5npjjbdppU65iZXkK1Zt+kH9pfegli0AYfwYYw==",
       "dependencies": [
-        "ws@7.5.10"
+        "ws@8.18.1"
       ]
     },
     "iterator.prototype@1.1.5": {

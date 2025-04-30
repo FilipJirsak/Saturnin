@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOutletContext, useParams } from "@remix-run/react";
-import { ProjectWithIssues, IssueFull } from "~/types";
+import { IssueFull, ProjectWithIssues } from "~/types";
 import { Card } from "~/components/ui/card";
 import { getDaysInMonth, issueToEvent, navigateDate } from "~/utils/calendarUtils";
 import { CalendarNavigation } from "~/features/views/calendar/CalendarNavigation";
@@ -29,7 +29,7 @@ export const meta: MetaFunction = ({ params }) => {
 export default function ProjectCalendarView() {
   const { project, issues: initialIssues } = useOutletContext<ProjectContext>();
   const { projectCode } = useParams();
-  const [viewType, setViewType] = useState<'month' | 'week' | 'day'>('month');
+  const [viewType, setViewType] = useState<"month" | "week" | "day">("month");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedIssue, setSelectedIssue] = useState<IssueFull | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -44,7 +44,7 @@ export default function ProjectCalendarView() {
   // TODO (NL): Implementovat možnost filtrování issues v kalendáři
   // TODO (NL): Implementovat možnost zobrazení opakujících se issues
 
-  const handleNavigate = (direction: 'prev' | 'next') => {
+  const handleNavigate = (direction: "prev" | "next") => {
     try {
       setIsLoading(true);
       setError(null);
@@ -74,7 +74,7 @@ export default function ProjectCalendarView() {
     try {
       setIsLoading(true);
       setError(null);
-      const [year, month, day] = dateString.split('-').map(part => parseInt(part, 10));
+      const [year, month, day] = dateString.split("-").map((part) => parseInt(part, 10));
       const selectedDate = new Date(year, month - 1, day, 0, 0, 0, 0);
       setCurrentDate(selectedDate);
     } catch (err) {
@@ -96,16 +96,14 @@ export default function ProjectCalendarView() {
       // console.log("Saving issue:", issue);
 
       if (selectedIssue) {
-        const updatedIssues = issues.map(i =>
-          i.code === selectedIssue.code ? { ...i, ...issue } : i
-        );
+        const updatedIssues = issues.map((i) => i.code === selectedIssue.code ? { ...i, ...issue } : i);
         setIssues(updatedIssues);
       }
 
       toast({
         title: "Issue uloženo",
         description: "Změny byly úspěšně uloženy.",
-        variant: "success"
+        variant: "success",
       });
 
       setIsSidebarOpen(false);
@@ -114,7 +112,7 @@ export default function ProjectCalendarView() {
       toast({
         title: "Chyba",
         description: "Nepodařilo se uložit změny. Zkus to prosím znovu.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -148,35 +146,39 @@ export default function ProjectCalendarView() {
         </div>
 
         <div className="flex-auto p-6 overflow-auto">
-          {isLoading ? (
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-64 w-full" />
-            </div>
-          ) : viewType === 'month' ? (
-            <CalendarMonthView
-              days={days}
-              issues={issues}
-              onSelectDay={handleSelectDay}
-              onIssueSelect={handleIssueSelect}
-            />
-          ) : (
-            <CalendarTimeGridView
-              viewType={viewType}
-              currentDate={currentDate}
-              days={days}
-              issues={issues}
-              onSelectDay={handleSelectDay}
-              onIssueSelect={handleIssueSelect}
-            />
-          )}
+          {isLoading
+            ? (
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-64 w-full" />
+              </div>
+            )
+            : viewType === "month"
+            ? (
+              <CalendarMonthView
+                days={days}
+                issues={issues}
+                onSelectDay={handleSelectDay}
+                onIssueSelect={handleIssueSelect}
+              />
+            )
+            : (
+              <CalendarTimeGridView
+                viewType={viewType}
+                currentDate={currentDate}
+                days={days}
+                issues={issues}
+                onSelectDay={handleSelectDay}
+                onIssueSelect={handleIssueSelect}
+              />
+            )}
         </div>
       </Card>
 
       <IssueSidebar
         isOpen={isSidebarOpen}
         issue={selectedIssue}
-        projectCode={projectCode || ''}
+        projectCode={projectCode || ""}
         onClose={() => setIsSidebarOpen(false)}
         onSave={handleSaveIssue}
       />

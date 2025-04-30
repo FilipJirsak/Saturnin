@@ -4,7 +4,9 @@
     "server:dev": "deno serve  --port 8080 --watch --allow-read  --allow-net --allow-write server/index.ts",
     "db:dev": "surreal start --unauthenticated surrealkv:./data",
     "db:init": "deno run --allow-read --allow-net server/db/init.ts",
-    "db:sample": "deno run --allow-read --allow-net server/db/sample.ts"
+    "db:sample": "deno run --allow-read --allow-net server/db/sample.ts",
+    "format": "deno fmt client server test",
+    "lint": "deno lint client server test"
     // "db:init": "surreal import --endpoint ws://localhost:8000 --database saturnin --namespace saturnin surql/init.surql"
   },
   "imports": {
@@ -12,7 +14,35 @@
     "@surrealdb/surrealdb": "jsr:@surrealdb/surrealdb@^1.0.6"
   },
   "fmt": {
-    "lineWidth": 160
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "useTabs": false,
+    "proseWrap": "always",
+    "include": [
+      "client/**/*.{ts,tsx,js,jsx,json,md}",
+      "server/**/*.{ts,tsx,js,jsx,json,md}",
+      "test/**/*.{ts,tsx,js,jsx,json,md}"
+    ],
+    "exclude": ["**/node_modules/**", "**/dist/**"]
+  },
+  "lint": {
+    "include": [
+      "client/**/*.{ts,tsx,js,jsx}",
+      "server/**/*.{ts,tsx,js,jsx}",
+      "test/**/*.{ts,tsx,js,jsx}"
+    ],
+    "exclude": ["**/node_modules/**", "**/dist/**"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "no-explicit-any",
+        "no-unused-vars",
+        "no-empty-interface",
+        "no-non-null-assertion"
+      ]
+    }
   },
   "nodeModulesDir": "auto"
 }

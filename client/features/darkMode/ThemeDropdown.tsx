@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Moon, Sun, Laptop } from "lucide-react";
+import { Laptop, Moon, Sun } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,28 +63,28 @@ export function ThemeDropdown() {
   }
 
   return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-            <ThemeIcon className="h-5 w-5" />
-            <span className="sr-only">Přepnout téma</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {themes.map((item) => {
-            const Icon = item.icon;
-            return (
-                <DropdownMenuItem
-                    key={item.value}
-                    onClick={() => setTheme(item.value)}
-                    className={theme === item.value ? "bg-muted" : ""}
-                >
-                  <Icon className="mr-2 h-4 w-4" />
-                  <span>{item.label}</span>
-                </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+          <ThemeIcon className="h-5 w-5" />
+          <span className="sr-only">Přepnout téma</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {themes.map((item) => {
+          const Icon = item.icon;
+          return (
+            <DropdownMenuItem
+              key={item.value}
+              onClick={() => setTheme(item.value)}
+              className={theme === item.value ? "bg-muted" : ""}
+            >
+              <Icon className="mr-2 h-4 w-4" />
+              <span>{item.label}</span>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

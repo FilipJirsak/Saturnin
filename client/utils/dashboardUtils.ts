@@ -1,11 +1,5 @@
-import {
-  type Activity,
-  type ActivityType
-} from '~/types/dashboard';
-import {
-  ACTIVITY_TYPES,
-  ACTIVITY_TABS
-} from '~/lib/constants';
+import { type Activity, type ActivityType } from "~/types/dashboard";
+import { ACTIVITY_TABS, ACTIVITY_TYPES } from "~/lib/constants";
 
 /**
  * Filters activities based on a search query.
@@ -18,16 +12,16 @@ import {
  * @param searchQuery - The search query string to filter by
  */
 export function filterActivitiesBySearch(
-    activities: Activity[],
-    searchQuery: string
+  activities: Activity[],
+  searchQuery: string,
 ): Activity[] {
   if (!searchQuery) return activities;
 
   const query = searchQuery.toLowerCase();
-  return activities.filter(activity =>
-      activity.title.toLowerCase().includes(query) ||
-      activity.description.toLowerCase().includes(query) ||
-      (activity.user?.name?.toLowerCase() || '').includes(query)
+  return activities.filter((activity) =>
+    activity.title.toLowerCase().includes(query) ||
+    activity.description.toLowerCase().includes(query) ||
+    (activity.user?.name?.toLowerCase() || "").includes(query)
   );
 }
 
@@ -44,18 +38,20 @@ export function filterActivitiesBySearch(
  * @param selectedTab - The currently selected dashboard tab
  */
 export function filterActivitiesByTab(
-    activities: Activity[],
-    selectedTab: string
+  activities: Activity[],
+  selectedTab: string,
 ): Activity[] {
   switch (selectedTab) {
     case ACTIVITY_TABS.ISSUES:
-      return activities.filter(activity => activity.type === ACTIVITY_TYPES.ISSUE);
+      return activities.filter((activity) => activity.type === ACTIVITY_TYPES.ISSUE);
     case ACTIVITY_TABS.KNOWLEDGE:
-      return activities.filter(activity =>
-          [ACTIVITY_TYPES.DOCUMENT, ACTIVITY_TYPES.CONCEPT, ACTIVITY_TYPES.MINDMAP].includes(activity.type as ActivityType)
+      return activities.filter((activity) =>
+        [ACTIVITY_TYPES.DOCUMENT, ACTIVITY_TYPES.CONCEPT, ACTIVITY_TYPES.MINDMAP].includes(
+          activity.type as ActivityType,
+        )
       );
     case ACTIVITY_TABS.MESSAGES:
-      return activities.filter(activity => activity.type === ACTIVITY_TYPES.MESSAGE);
+      return activities.filter((activity) => activity.type === ACTIVITY_TYPES.MESSAGE);
     case ACTIVITY_TABS.RECENT:
     default:
       return activities;
@@ -71,9 +67,7 @@ export function filterActivitiesByTab(
  * @param activities - Array of activities to sort
  */
 export function sortActivitiesByDate(activities: Activity[]): Activity[] {
-  return [...activities].sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+  return [...activities].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 }
 
 /**
@@ -87,9 +81,9 @@ export function sortActivitiesByDate(activities: Activity[]): Activity[] {
  */
 export function getLatestIssues(activities: Activity[], limit: number = 3): Activity[] {
   return activities
-      .filter(a => a.type === ACTIVITY_TYPES.ISSUE)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, limit);
+    .filter((a) => a.type === ACTIVITY_TYPES.ISSUE)
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, limit);
 }
 
 /**
@@ -100,10 +94,10 @@ export function getLatestIssues(activities: Activity[], limit: number = 3): Acti
  */
 export function createTooltipStyle() {
   return {
-    backgroundColor: 'hsl(var(--background))',
-    border: '1px solid hsl(var(--border))',
-    borderRadius: '6px',
-    fontSize: '12px'
+    backgroundColor: "hsl(var(--background))",
+    border: "1px solid hsl(var(--border))",
+    borderRadius: "6px",
+    fontSize: "12px",
   };
 }
 
@@ -115,9 +109,9 @@ export function createTooltipStyle() {
  */
 export function getAxisConfig() {
   return {
-    stroke: 'hsl(var(--muted-foreground))',
+    stroke: "hsl(var(--muted-foreground))",
     fontSize: 12,
-    tickMargin: 8
+    tickMargin: 8,
   };
 }
 
@@ -129,7 +123,7 @@ export function getAxisConfig() {
  */
 export function getGridConfig() {
   return {
-    strokeDasharray: '3 3',
-    stroke: 'hsl(var(--border))'
+    strokeDasharray: "3 3",
+    stroke: "hsl(var(--border))",
   };
 }

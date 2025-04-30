@@ -1,7 +1,7 @@
 import { IssueFull } from "~/types";
-import { toZonedTime } from 'date-fns-tz';
+import { toZonedTime } from "date-fns-tz";
 
-const PRAGUE_TIMEZONE = 'Europe/Prague';
+const PRAGUE_TIMEZONE = "Europe/Prague";
 
 //TODO (NL): Refactor!!!
 
@@ -48,8 +48,8 @@ export type CalendarDay = {
  */
 export function getLocalDateString(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -61,10 +61,10 @@ export function getLocalDateString(date: Date): string {
  */
 export function issueToEvent(issue: IssueFull): CalendarEvent {
   const stateColorMap: Record<string, string> = {
-    'new': 'bg-blue-50 text-blue-700 hover:bg-blue-100 group-hover:text-blue-800',
-    'to_do': 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100 group-hover:text-yellow-800',
-    'in_progress': 'bg-purple-50 text-purple-700 hover:bg-purple-100 group-hover:text-purple-800',
-    'done': 'bg-green-50 text-green-700 hover:bg-green-100 group-hover:text-green-800'
+    "new": "bg-blue-50 text-blue-700 hover:bg-blue-100 group-hover:text-blue-800",
+    "to_do": "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 group-hover:text-yellow-800",
+    "in_progress": "bg-purple-50 text-purple-700 hover:bg-purple-100 group-hover:text-purple-800",
+    "done": "bg-green-50 text-green-700 hover:bg-green-100 group-hover:text-green-800",
   };
 
   try {
@@ -76,7 +76,7 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
       const pragueDatetime = toZonedTime(date, PRAGUE_TIMEZONE);
       const hours = pragueDatetime.getHours();
       const minutes = pragueDatetime.getMinutes();
-      time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      time = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
     } else {
       date = new Date();
       date.setHours(9, 0, 0, 0);
@@ -89,7 +89,8 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
       time: time,
       datetime: date.toISOString(),
       href: `#issue-${issue.code}`,
-      colorClass: stateColorMap[issue.state] || 'bg-muted text-foreground/80 hover:bg-muted/80 group-hover:text-foreground'
+      colorClass: stateColorMap[issue.state] ||
+        "bg-muted text-foreground/80 hover:bg-muted/80 group-hover:text-foreground",
     };
   } catch (error) {
     console.warn("Chyba při zpracování data pro issue:", issue.code, error);
@@ -102,7 +103,8 @@ export function issueToEvent(issue: IssueFull): CalendarEvent {
       time: "09:00",
       datetime: date.toISOString(),
       href: `#issue-${issue.code}`,
-      colorClass: stateColorMap[issue.state] || 'bg-muted text-foreground/80 hover:bg-muted/80 group-hover:text-foreground'
+      colorClass: stateColorMap[issue.state] ||
+        "bg-muted text-foreground/80 hover:bg-muted/80 group-hover:text-foreground",
     };
   }
 }
@@ -140,7 +142,7 @@ export function getDaysInMonth(currentDate: Date, calendarEvents: CalendarEvent[
   while (currentDay <= endDay) {
     const dateString = getLocalDateString(currentDay);
 
-    const dayEvents = calendarEvents.filter(event => {
+    const dayEvents = calendarEvents.filter((event) => {
       try {
         const eventDate = new Date(event.datetime);
         if (isNaN(eventDate.getTime())) {
@@ -158,7 +160,7 @@ export function getDaysInMonth(currentDate: Date, calendarEvents: CalendarEvent[
       isCurrentMonth: currentDay.getMonth() === month,
       isToday: dateString === todayString,
       isSelected: dateString === currentDateString,
-      events: dayEvents
+      events: dayEvents,
     });
 
     currentDay.setDate(currentDay.getDate() + 1);
@@ -174,10 +176,10 @@ export function getDaysInMonth(currentDate: Date, calendarEvents: CalendarEvent[
  * @param currentDate - The date to format
  * @returns Formatted date string appropriate for the view type
  */
-export function formatCurrentDate(viewType: 'month' | 'week' | 'day', currentDate: Date): string {
-  if (viewType === 'month') {
-    return currentDate.toLocaleDateString('cs-CZ', { month: 'long', year: 'numeric' });
-  } else if (viewType === 'week') {
+export function formatCurrentDate(viewType: "month" | "week" | "day", currentDate: Date): string {
+  if (viewType === "month") {
+    return currentDate.toLocaleDateString("cs-CZ", { month: "long", year: "numeric" });
+  } else if (viewType === "week") {
     const day = currentDate.getDay() || 7;
     const monday = new Date(currentDate);
     monday.setDate(currentDate.getDate() - day + 1);
@@ -185,12 +187,12 @@ export function formatCurrentDate(viewType: 'month' | 'week' | 'day', currentDat
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
 
-    const mondayFormat = monday.toLocaleDateString('cs-CZ', { day: 'numeric' });
-    const sundayFormat = sunday.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    const mondayFormat = monday.toLocaleDateString("cs-CZ", { day: "numeric" });
+    const sundayFormat = sunday.toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
 
     return `${mondayFormat} - ${sundayFormat}`;
   } else {
-    return currentDate.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    return currentDate.toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
   }
 }
 
@@ -201,8 +203,8 @@ export function formatCurrentDate(viewType: 'month' | 'week' | 'day', currentDat
  * @returns Array of objects representing each day of the week
  */
 export function getWeekDays(currentDate: Date) {
-  const weekDays = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
-  const weekDaysFull = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
+  const weekDays = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"];
+  const weekDaysFull = ["Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota", "Neděle"];
 
   const currentDayOfWeek = currentDate.getDay();
   const mondayOffset = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
@@ -222,7 +224,7 @@ export function getWeekDays(currentDate: Date) {
       date: dateString,
       day: weekDays[i],
       dayFull: weekDaysFull[i],
-      isToday: dateString === todayString
+      isToday: dateString === todayString,
     };
   });
 }
@@ -235,23 +237,23 @@ export function getWeekDays(currentDate: Date) {
  * @param direction - Direction to navigate (previous or next)
  * @returns A new Date object representing the target date
  */
-export function navigateDate(currentDate: Date, viewType: 'month' | 'week' | 'day', direction: 'prev' | 'next'): Date {
+export function navigateDate(currentDate: Date, viewType: "month" | "week" | "day", direction: "prev" | "next"): Date {
   const newDate = new Date(currentDate);
 
-  if (viewType === 'month') {
-    if (direction === 'prev') {
+  if (viewType === "month") {
+    if (direction === "prev") {
       newDate.setMonth(newDate.getMonth() - 1);
     } else {
       newDate.setMonth(newDate.getMonth() + 1);
     }
-  } else if (viewType === 'week') {
-    if (direction === 'prev') {
+  } else if (viewType === "week") {
+    if (direction === "prev") {
       newDate.setDate(newDate.getDate() - 7);
     } else {
       newDate.setDate(newDate.getDate() + 7);
     }
   } else {
-    if (direction === 'prev') {
+    if (direction === "prev") {
       newDate.setDate(newDate.getDate() - 1);
     } else {
       newDate.setDate(newDate.getDate() + 1);
