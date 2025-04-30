@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  Folder,
   Forward,
   MoreHorizontal,
   Trash2,
@@ -26,6 +25,7 @@ import {
 } from "~/components/ui/sidebar"
 import {Link} from "@remix-run/react";
 import {useState} from "react";
+import { useToast } from "~/hooks/use-toast";
 
 export function NavProjects({
                               projects,
@@ -38,10 +38,29 @@ export function NavProjects({
 }) {
   const { isMobile } = useSidebar()
   const [showAll, setShowAll] = useState(false)
+  const { toast } = useToast();
 
   const initialVisibleCount = 3
   const visibleProjects = showAll ? projects : projects.slice(0, initialVisibleCount)
   const hasMoreProjects = projects.length > initialVisibleCount
+
+  {/*TODO (NL): Doplnit reálnou funkcionalitu pro prohlédnutí projektu*/}
+  const handleShareProject = () => {
+    toast({
+      title: "Sdílení projektu",
+      description: "Funkce sdílení bude brzy dostupná",
+      variant: "default"
+    });
+  };
+
+  {/*TODO (NL): Doplnit reálnou funkcionalitu pro sdílení projektu*/}
+  const handleDeleteProject = () => {
+    toast({
+      title: "Smazání projektu",
+      description: "Funkce mazání bude brzy dostupná",
+      variant: "default"
+    });
+  };
 
   return (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -67,19 +86,12 @@ export function NavProjects({
                       side={isMobile ? "bottom" : "right"}
                       align={isMobile ? "end" : "start"}
                   >
-                    {/*TODO (NL): Doplnit funkcionalitu pro prohlédnutí projektu*/}
-                    <DropdownMenuItem>
-                      <Folder className="text-muted-foreground" />
-                      <span>Prohlédnout projekt</span>
-                    </DropdownMenuItem>
-                    {/*TODO (NL): Doplnit funkcionalitu pro sdílení projektu*/}
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleShareProject}>
                       <Forward className="text-muted-foreground" />
                       <span>Sdílet projekt</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    {/*TODO (NL): Doplnit funkcionalitu pro smazání projektu*/}
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleDeleteProject}>
                       <Trash2 className="text-muted-foreground" />
                       <span>Smazat projekt</span>
                     </DropdownMenuItem>

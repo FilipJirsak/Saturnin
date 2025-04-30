@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
+import { ChevronLeft, ChevronRight, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -37,7 +37,7 @@ export function CalendarNavigation({
                 className="rounded-l-full h-9 w-9 flex items-center justify-center"
                 onClick={() => onNavigate('prev')}
             >
-              <ChevronLeftIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
               <span className="sr-only">Předchozí</span>
             </Button>
             <Button
@@ -54,7 +54,7 @@ export function CalendarNavigation({
                 className="rounded-r-full h-9 w-9 flex items-center justify-center"
                 onClick={() => onNavigate('next')}
             >
-              <ChevronRightIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
               <span className="sr-only">Další</span>
             </Button>
           </div>
@@ -63,7 +63,7 @@ export function CalendarNavigation({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-x-1.5 bg-card">
                   {viewType === 'month' ? 'Měsíc' : viewType === 'week' ? 'Týden' : 'Den'}
-                  <ChevronDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                  <ChevronDown className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-36">
@@ -82,7 +82,7 @@ export function CalendarNavigation({
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon">
-                <EllipsisHorizontalIcon className="h-5 w-5" />
+                <MoreHorizontal className="h-5 w-5" />
                 <span className="sr-only">Další možnosti</span>
               </Button>
             </DropdownMenuTrigger>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { cn, getBreadcrumbs, getInitials, truncateText } from '~/utils/helpers';
+import {cn, getBreadcrumbs, getInitials, truncateText, darkenColor, generateAvatar} from '~/utils/helpers';
 
 describe('helpers', () => {
   describe('cn', () => {
@@ -132,6 +132,53 @@ describe('helpers', () => {
 
     it('should handle text equal to maxLength', () => {
       expect(truncateText('Exactly 10', 10)).toBe('Exactly 10');
+    });
+  });
+
+  describe('darkenColor', () => {
+    it('should darken a color by the default amount', () => {
+      expect(darkenColor('#FFFFFF')).toBe('#e1e1e1');
+    });
+
+    it('should darken a color by a specified amount', () => {
+      expect(darkenColor('#FFFFFF', 50)).toBe('#cdcdcd');
+    });
+
+    it('should handle colors without # prefix', () => {
+      expect(darkenColor('FF0000', 50)).toBe('#cd0000');
+    });
+
+    it('should not allow values below 0', () => {
+      expect(darkenColor('#000000', 30)).toBe('#000000');
+    });
+
+    it('should handle different color values correctly', () => {
+      expect(darkenColor('#3498db', 40)).toBe('#1c80c3');
+    });
+  });
+
+  describe('generateAvatar', () => {
+    it('should generate a valid DiceBear avatar URL', () => {
+      const seed = 'test-user';
+      const avatarUrl = generateAvatar(seed);
+
+      expect(avatarUrl).toContain('https://api.dicebear.com/7.x/avataaars/svg');
+      expect(avatarUrl).toContain(`seed=${seed}`);
+      expect(avatarUrl).toContain('backgroundType=solid');
+    });
+
+    it('should generate different avatars for male and female', () => {
+      const seed = 'test-user';
+      const maleAvatar = generateAvatar(seed, 'male');
+      const femaleAvatar = generateAvatar(seed, 'female');
+
+      expect(maleAvatar).toContain('facialHairProbability=80');
+      expect(maleAvatar).toContain('top%5B%5D=shortCurly');
+      expect(maleAvatar).toContain('backgroundColor=b6e3f4');
+
+      expect(femaleAvatar).toContain('facialHairProbability=0');
+      expect(femaleAvatar).toContain('top%5B%5D=bigHair');
+      expect(femaleAvatar).toContain('backgroundColor=ffd5dc');
     });
   });
 });

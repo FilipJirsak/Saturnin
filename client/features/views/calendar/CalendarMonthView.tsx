@@ -1,8 +1,9 @@
-import { ClockIcon } from "@heroicons/react/20/solid";
-import {CalendarDay} from "~/utils/calendarUtils";
-import {cn} from "~/utils/helpers";
-import {Fragment} from "react";
+import { Clock } from "lucide-react";
+import { CalendarDay } from "~/utils/calendarUtils";
+import { cn } from "~/utils/helpers";
+import { Fragment } from "react";
 import { IssueFull } from "~/types";
+import { Button } from "~/components/ui/button";
 
 interface MonthViewProps {
   days: CalendarDay[];
@@ -167,22 +168,27 @@ export function CalendarMonthView({ days, issues, onSelectDay, onIssueSelect }: 
                 <ol className="divide-y divide-border overflow-hidden rounded-lg bg-card text-sm shadow-sm">
                   {selectedDay.events.map((event) => (
                       <li key={event.id}
-                          className="group flex p-4 pr-6 focus-within:bg-muted hover:bg-muted">
+                          className="flex p-4 pr-6">
                         <div className="flex-auto">
                           <p className="font-semibold text-foreground">{event.name}</p>
                           <time dateTime={event.datetime}
                                 className="mt-2 flex items-center text-muted-foreground">
-                            <ClockIcon className="mr-2 h-5 w-5 text-muted-foreground"
+                            <Clock className="mr-2 h-5 w-5 text-muted-foreground"
                                        aria-hidden="true"/>
                             {event.time}
                           </time>
                         </div>
-                        <a
-                            href={event.href}
-                            className="ml-6 flex-none self-center rounded-md bg-card px-3 py-2 font-semibold text-foreground shadow-sm ring-1 ring-inset ring-border group-hover:bg-muted"
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const issue = issues.find(i => i.code === event.id);
+                              if (issue) onIssueSelect(issue);
+                            }}
+                            className="ml-6 flex-none self-center"
                         >
                           Detail<span className="sr-only">, {event.name}</span>
-                        </a>
+                        </Button>
                       </li>
                   ))}
                 </ol>

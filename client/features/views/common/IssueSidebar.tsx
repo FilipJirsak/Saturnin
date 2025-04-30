@@ -220,7 +220,7 @@ export function IssueSidebar({
                         onValueChange={handleSelectChange}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Vyberte stav" />
+                        <SelectValue placeholder="Vyber stav" />
                       </SelectTrigger>
                       <SelectContent>
                         {ISSUE_STATES.map((state) => (
@@ -256,7 +256,7 @@ export function IssueSidebar({
                   </div>
                 </div>
 
-                <Separator className="bg-primary-50" />
+                <Separator />
 
                 <div className="grid gap-6">
                   <div className="grid gap-3">
@@ -266,7 +266,7 @@ export function IssueSidebar({
                         onValueChange={handleAssigneeChange}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Vyberte osobu" />
+                        <SelectValue placeholder="Vyber osobu" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="unassigned">Nikdo</SelectItem>
@@ -296,7 +296,7 @@ export function IssueSidebar({
                   </div>
                 </div>
 
-                <Separator className="bg-primary-50" />
+                <Separator />
 
                 <div className="grid gap-3">
                   <div className="flex items-center gap-2">
@@ -352,7 +352,7 @@ export function IssueSidebar({
                   )}
                 </div>
 
-                <Separator className="bg-primary-50"/>
+                <Separator />
 
                 <div className="grid gap-6">
                   <div className="grid gap-3">

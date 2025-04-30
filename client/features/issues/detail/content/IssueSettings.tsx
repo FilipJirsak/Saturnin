@@ -35,7 +35,7 @@ export function IssueSettings({ editedIssue, setEditedIssue }: IssueSettingsProp
                 onValueChange={(value) => setEditedIssue(prev => ({ ...prev, state: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte stav" />
+                <SelectValue placeholder="Vyber stav" />
               </SelectTrigger>
               <SelectContent>
                 {ISSUE_STATES.map((state) => (
@@ -64,7 +64,7 @@ export function IssueSettings({ editedIssue, setEditedIssue }: IssueSettingsProp
                 }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte osobu" />
+                <SelectValue placeholder="Vyber osobu" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Nikdo</SelectItem>

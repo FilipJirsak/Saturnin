@@ -17,12 +17,13 @@ import {
   STATISTICS_PERIODS
 } from '~/lib/constants';
 import {Activity, ActivityChartData, PieChartData, StatCardData, StatisticsPeriod} from "~/types/dashboard";
+import { generateAvatar } from '~/utils/helpers';
 
 export const sidebarItems = {
   user: {
     name: "Nela Letochová",
     email: "nela.letochova@example.com",
-    avatar: "/avatars/user.jpg",
+    avatar: generateAvatar('nelinka', 'female'),
   },
   teams: [
     {
@@ -96,14 +97,14 @@ export const sidebarItems = {
           title: "Kanban board",
           url: "/projects/board",
         },
-        {
+        /*{
           title: "Seznam issues",
           url: "/projects/tasks",
         },
         {
           title: "Milníky",
           url: "/projects/milestones",
-        }
+        }*/
       ],
     },
   ],
@@ -548,7 +549,7 @@ export const mockActivities: Activity[] = [
     timestamp: '2024-04-25T10:30:00',
     user: {
       name: 'Jan Novák',
-      avatar: '/avatars/jan.jpg'
+      avatar: generateAvatar('jan', 'male'),
     },
     status: ACTIVITY_STATUSES.IN_PROGRESS,
     priority: 'high'
@@ -560,7 +561,8 @@ export const mockActivities: Activity[] = [
     description: 'Přidána dokumentace pro nové endpointy',
     timestamp: '2024-04-25T09:15:00',
     user: {
-      name: 'Petra Svobodová'
+      name: 'Petra Svobodová',
+      avatar: generateAvatar('petra', 'female'),
     }
   },
   {
@@ -570,7 +572,8 @@ export const mockActivities: Activity[] = [
     description: 'Vytvořen nový koncept pro budoucí rozšíření systému',
     timestamp: '2024-04-25T08:45:00',
     user: {
-      name: 'Martin Dvořák'
+      name: 'Martin Dvořák',
+      avatar: generateAvatar('martin', 'male'),
     }
   },
   {
@@ -580,7 +583,8 @@ export const mockActivities: Activity[] = [
     description: 'Přidány nové větve pro plánované funkce',
     timestamp: '2024-04-24T16:20:00',
     user: {
-      name: 'Eva Králová'
+      name: 'Eva Králová',
+      avatar: generateAvatar('eva', 'female'),
     }
   },
   {
@@ -590,7 +594,8 @@ export const mockActivities: Activity[] = [
     description: 'Přijata nová zpráva od klienta ohledně požadavků na projekt',
     timestamp: '2024-04-24T15:30:00',
     user: {
-      name: 'Tomáš Malý'
+      name: 'Tomáš Malý',
+      avatar: generateAvatar('tomas', 'male'),
     }
   }
 ];

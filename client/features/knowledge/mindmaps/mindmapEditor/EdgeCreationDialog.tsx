@@ -31,7 +31,7 @@ export function EdgeCreationDialog({
           <DialogHeader>
             <DialogTitle>Vlastnosti propojení</DialogTitle>
             <DialogDescription>
-              Nastavte vlastnosti nového propojení mezi uzly.
+              Nastav vlastnosti nového propojení mezi uzly.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -48,7 +48,7 @@ export function EdgeCreationDialog({
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edgeStyle" className="text-right">Styl čáry</Label>
               <Select value={edgeStyle} onValueChange={setEdgeStyle}>
-                <SelectTrigger className="col-span-3"><SelectValue placeholder="Vyberte styl čáry"/></SelectTrigger>
+                <SelectTrigger className="col-span-3"><SelectValue placeholder="Vyber styl čáry"/></SelectTrigger>
                 <SelectContent>
                   {LINE_STYLES.map(s => (
                       <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
@@ -60,7 +60,7 @@ export function EdgeCreationDialog({
               <Label htmlFor="edgeColor" className="text-right">Barva</Label>
               <div className="col-span-3 flex items-center gap-2">
                 <Select value={edgeColor} onValueChange={setEdgeColor}>
-                  <SelectTrigger className="flex-1"><SelectValue placeholder="Vyberte barvu"/></SelectTrigger>
+                  <SelectTrigger className="flex-1"><SelectValue placeholder="Vyber barvu"/></SelectTrigger>
                   <SelectContent>
                     {EDGE_COLORS.map(c => (
                         <SelectItem key={c.value} value={c.value}>
