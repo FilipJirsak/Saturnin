@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
 
 import { cn } from "~/utils/helpers"
-import {ComponentPropsWithoutRef, ElementRef, forwardRef, HTMLAttributes} from "react";
+import {ComponentPropsWithoutRef, ElementRef, forwardRef, HTMLAttributes, ReactNode} from "react";
 
 const Sheet = SheetPrimitive.Root
 
@@ -51,7 +51,10 @@ const sheetVariants = cva(
 
 interface SheetContentProps
   extends ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  className?: string;
+  children?: ReactNode;
+}
 
 const SheetContent = forwardRef<
   ElementRef<typeof SheetPrimitive.Content>,
@@ -68,11 +71,26 @@ const SheetContent = forwardRef<
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
+      <SheetPrimitive.Description className="sr-only">
+        Sheet description
+      </SheetPrimitive.Description>
       {children}
     </SheetPrimitive.Content>
   </SheetPortal>
 ))
 SheetContent.displayName = SheetPrimitive.Content.displayName
+
+const SheetDescription = forwardRef<
+  ElementRef<typeof SheetPrimitive.Description>,
+  ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <SheetPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
+SheetDescription.displayName = SheetPrimitive.Description.displayName
 
 const SheetHeader = ({
   className,
@@ -113,18 +131,6 @@ const SheetTitle = forwardRef<
   />
 ))
 SheetTitle.displayName = SheetPrimitive.Title.displayName
-
-const SheetDescription = forwardRef<
-  ElementRef<typeof SheetPrimitive.Description>,
-  ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
->(({ className, ...props }, ref) => (
-  <SheetPrimitive.Description
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-SheetDescription.displayName = SheetPrimitive.Description.displayName
 
 export {
   Sheet,

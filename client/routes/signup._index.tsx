@@ -3,6 +3,7 @@ import { SignUpForm } from "~/features/authentication/SignupForm";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { requireGuest } from "~/utils/authGuard";
 import { CheckCircle, Laptop, Lock, Users } from "lucide-react";
+import {Logo} from "~/components/layout/Logo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,11 +26,7 @@ export default function SignUpPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {/*TODO (NL): Upravit logo*/}
-              <img
-                  src="/logo.png"
-                  alt="Logo"
-                  className="h-8 w-auto dark:invert"
-              />
+              <Logo />
               <span className="text-xl font-semibold font-display">Saturnin</span>
             </div>
             <ThemeToggle/>

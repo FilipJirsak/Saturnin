@@ -45,7 +45,7 @@ export default function IssueDetailsPage() {
 
   const handleDelete = async () => {
     // TODO (NL): Implementovat mazání issue
-    console.log("Mazání...");
+    // console.log("Mazání...");
   };
 
   return (

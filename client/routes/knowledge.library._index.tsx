@@ -78,7 +78,7 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
       return typedJson({ ok: false, error: "Target Folder ID je vyžadováno" }, { status: 400 });
     }
 
-    console.log(`Zpracovávám požadavek na přesun dokumentu ${documentId} do složky ${targetFolderId}`);
+    // console.log(`Zpracovávám požadavek na přesun dokumentu ${documentId} do složky ${targetFolderId}`);
 
     try {
       const updatedDoc = await moveDocumentToFolder(documentId, targetFolderId, keepTags);
@@ -217,8 +217,6 @@ export default function KnowledgeLibraryPage() {
     setIsLoading(prev => ({ ...prev, createFolder: true }));
 
     try {
-      console.log("Vytvářím novou složku:", newFolder);
-
       const formattedTag = newFolder.tag.toLowerCase().replace(/\s+/g, '-');
 
       const folderData = {

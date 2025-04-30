@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
 } from "~/components/ui/sidebar"
 import {ElementType, useState} from "react";
+import {Logo} from "~/components/layout/Logo";
 
 export function TeamSwitcher({
                                teams,
@@ -29,11 +30,15 @@ export function TeamSwitcher({
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                   size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-auto"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-auto hover:bg-transparent"
               >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <activeTeam.logo className="size-4" />
+                <div
+                    className="flex aspect-square size-8 mr-1 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                  <Logo />
                 </div>
+                {/*  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <activeTeam.logo className="size-4" />
+                </div>*/}
                 <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
                   {activeTeam.name}

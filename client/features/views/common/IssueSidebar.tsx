@@ -45,7 +45,6 @@ export function IssueSidebar({
 
   useEffect(() => {
     if (issue && isOpen) {
-      console.log("Issue loaded in sidebar:", issue);
       setFormData(issue);
       setSelectedTags(issue.tags || []);
       setDueDate(issue.due_date ? new Date(issue.due_date) : undefined);

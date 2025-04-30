@@ -3,6 +3,7 @@ import { ThemeToggle } from "~/features/darkMode/ThemeToggle";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import {requireGuest} from "~/utils/authGuard";
+import { Logo } from "~/components/layout/Logo";
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,12 +28,7 @@ export default function LoginPage() {
       <div className="flex min-h-svh flex-col bg-background">
         <header className="flex items-center justify-between p-4 md:p-6">
           <div className="flex items-center gap-2">
-            {/*TODO (NL): Upravit logo*/}
-            <img
-                src="/logo.png"
-                alt="Logo"
-                className="h-8 w-auto dark:invert"
-            />
+            <Logo />
             <span className="text-xl font-semibold font-display">Saturnin</span>
           </div>
           <ThemeToggle />

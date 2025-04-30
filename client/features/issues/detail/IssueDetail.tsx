@@ -74,14 +74,14 @@ export function IssueDetail({ issue, className, onSave, onDelete }: IssueDetailP
     }
   };
 
+  //TODO (NL): Implementovat mazání issues
   const handleDelete = async () => {
     try {
       await onDelete(issue);
       setIsDeleteDialogOpen(false);
       toast({
-        title: "Issue smazáno",
-        description: "Issue bylo úspěšně odstraněno",
-        variant: "success"
+        title: "Simulace mazání issue",
+        description: "Mazání issues bude implementováno později",
       });
     } catch (error) {
       console.error("Failed to delete issue:", error);

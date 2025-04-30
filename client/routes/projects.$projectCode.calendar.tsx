@@ -93,7 +93,7 @@ export default function ProjectCalendarView() {
   const handleSaveIssue = async (issue: Partial<IssueFull>) => {
     try {
       // TODO (NL): Implementovat uložení issue
-      console.log("Saving issue:", issue);
+      // console.log("Saving issue:", issue);
 
       if (selectedIssue) {
         const updatedIssues = issues.map(i =>

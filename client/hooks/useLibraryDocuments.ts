@@ -162,7 +162,7 @@ export function useLibraryDocuments({
     try {
       const folderTag = targetId.replace(/^folder-/, '');
 
-      console.log(`Přesouvám dokument ${draggedId} do složky s tagem ${folderTag}`);
+      // console.log(`Přesouvám dokument ${draggedId} do složky s tagem ${folderTag}`);
 
       const docResponse = await fetch(`/api/knowledge/documents/${draggedId}`);
       if (!docResponse.ok) {

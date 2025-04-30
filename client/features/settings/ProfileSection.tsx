@@ -55,8 +55,6 @@ export function ProfileSection({ user }: ProfileSectionProps) {
   };
 
   const handleSave = () => {
-    console.log("Ukládám data:", formData);
-    console.log("Nový avatar:", avatarFile);
     setIsEditing(false);
   };
 
