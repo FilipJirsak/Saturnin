@@ -4,12 +4,20 @@ import { useProjects } from "~/hooks/useProjects";
 import { useToast } from "~/hooks/use-toast";
 import {InboxIssueForm} from "~/features/inbox/InboxIssueForm";
 import {InboxIssueList} from "~/features/inbox/InboxIssueList";
+import { MetaFunction } from "@remix-run/node";
 
 //TODO (NL): Nahradit issues reálnými daty z API
 const issues = [
   { code: 'TEST1-1', title: 'Issue 1', description: 'Popis issue 1', state: 'new', last_modified: "2025-03-15T10:30:00Z" },
   { code: 'TEST1-2', title: 'Issue 2', state: 'new', last_modified: "2025-03-26T18:30:00Z" },
 ];
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Inbox | Saturnin" },
+    { name: "description", content: "Správa příchozích úkolů a poznámek" },
+  ];
+};
 
 export default function InboxPage() {
   const projects = useProjects();

@@ -4,10 +4,11 @@ import { AccountsSection } from "~/features/settings/AccountsSection";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/utils/authGuard";
+import { sidebarItems } from "~/lib/data";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Obecné informace | Saturnin" },
+    { title: "Nastavení - Obecné informace | Saturnin" },
     { name: "description", content: "Základní nastavení profilu" },
   ];
 };
@@ -21,7 +22,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
 export default function GeneralProfileRoute() {
   return (
       <div className="space-y-6">
-        <ProfileSection user={{ name: "Nela Letochová", email: "nela.letochova@example.com", avatar: "/placeholder.svg" }} />
+        <ProfileSection user={sidebarItems.user} />
         <AccountsSection />
 
         <Card className="bg-destructive/5 border-destructive/20">

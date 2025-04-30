@@ -1,5 +1,13 @@
 import { Link } from "@remix-run/react";
 import { useProjects } from "~/hooks/useProjects";
+import { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Projekty | Saturnin" },
+    { name: "description", content: "Přehled všech projektů" },
+  ];
+};
 
 export default function ProjectsPage() {
   const projects = useProjects() || [];

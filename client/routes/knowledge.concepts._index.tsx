@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLoaderData } from "@remix-run/react";
-import { type LoaderFunctionArgs } from "@remix-run/node";
+import {type LoaderFunctionArgs, MetaFunction} from "@remix-run/node";
 import { Grid2X2, Network, Plus, List } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -14,6 +14,13 @@ import { ConceptEmptyState } from "~/features/knowledge/concepts/ConceptEmptySta
 import { ConceptCreationSidebar } from "~/features/knowledge/concepts/ConceptCreationSidebar";
 import { MOCK_CONCEPTS } from "~/lib/data";
 import { filterConcepts, getConceptsFromLocalStorage } from "~/utils/knowledge/conceptUtils";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Znalosti - Koncepty | Saturnin" },
+    { name: "description", content: "Tvá znalostní báze" },
+  ];
+};
 
 export const loader = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);

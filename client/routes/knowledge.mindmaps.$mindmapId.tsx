@@ -1,6 +1,6 @@
 import { useState, useEffect, KeyboardEvent } from "react";
 import { useParams, useNavigate, useLoaderData, useLocation } from "@remix-run/react";
-import {LoaderFunction} from "@remix-run/node";
+import {LoaderFunction, MetaFunction} from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
 import {
   Card,
@@ -50,6 +50,17 @@ import {useMindMapActions} from "~/hooks/useMindMapActions";
 import {MindMap} from "~/types/knowledge";
 import {MindMapDeleteConfirmationDialog} from "~/features/knowledge/mindmaps/MindMapDeleteConfirmationDialog";
 import {MOCK_MINDMAPS} from "~/lib/data";
+
+type LoaderData = {
+  mindmap: MindMap | null;
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    { title: `Mindmaps - ${data?.mindmap?.title || 'Myšlenková mapa'} | Saturnin` },
+    { name: "description", content: "Detailní zobrazení myšlenkové mapy" },
+  ];
+};
 
 //TODO (NL): Implementovat skutečné API volání pro načtení myšlenkové mapy
 export const loader: LoaderFunction = async ({ request, params, context }) => {
@@ -290,7 +301,7 @@ export default function MindmapDetailPage() {
                   <p className="text-muted-foreground">{editedMindmap.description}</p>
               )}
 
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "editor" | "info")}>
+              <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "editor" | "info")}>
                 <div className="flex justify-between items-center">
                   <TabsList>
                     <TabsTrigger value="editor" className="flex items-center gap-1">

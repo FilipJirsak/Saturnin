@@ -23,6 +23,14 @@ import { getStateLabel, getStateColorClasses, filterAndSortIssues, hasActiveFilt
 import { formatDate } from "~/utils/dateUtils";
 import { IssueSidebar } from "~/features/views/common/IssueSidebar";
 import { useToast } from "~/hooks/use-toast";
+import { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = ({ params }) => {
+  return [
+    { title: `Seznam issues - ${params.projectCode} | Saturnin` },
+    { name: "description", content: "Seznam a správa issues projektu" },
+  ];
+};
 
 type ProjectContext = {
   project: ProjectWithIssues;

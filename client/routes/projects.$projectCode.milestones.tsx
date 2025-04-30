@@ -1,9 +1,17 @@
 import { useOutletContext } from "@remix-run/react";
 import {IssueFull, ProjectWithIssues} from "~/types";
+import { MetaFunction } from "@remix-run/node";
 
 type ProjectContext = {
   project: ProjectWithIssues;
   issues: IssueFull[];
+};
+
+export const meta: MetaFunction = ({ params }) => {
+  return [
+    { title: `Milníky - ${params.projectCode} | Saturnin` },
+    { name: "description", content: "Přehled a správa milníků projektu" },
+  ];
 };
 
 export default function ProjectMilestonesView() {

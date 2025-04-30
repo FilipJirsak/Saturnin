@@ -12,6 +12,14 @@ import {TagsHeader} from "~/features/knowledge/tags/TagsHeader";
 import {ContentStatsCard, PopularTagsCard, TagsCountCard} from "~/features/knowledge/tags/TagsStatsCards";
 import {TagsTable} from "~/features/knowledge/tags/TagsTable";
 import {TagsFormDialog} from "~/features/knowledge/tags/TagsFormDialog";
+import {MetaFunction} from "@remix-run/node";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Znalosti - Tagy | Saturnin" },
+    { name: "description", content: "Tvá znalostní báze" },
+  ];
+};
 
 export default function KnowledgeTagsPage() {
   const [tags, setTags] = useState<KnowledgeTag[]>(MOCK_TAGS);

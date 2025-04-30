@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {ActionFunctionArgs, LoaderFunctionArgs, redirect} from "@remix-run/node";
+import {ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect} from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { requireAuth } from "~/utils/authGuard";
@@ -20,6 +20,13 @@ import { LibraryDocumentCard } from "~/features/knowledge/library/LibraryDocumen
 import { useLibraryDocuments } from "~/hooks/useLibraryDocuments";
 import { moveDocumentToFolder } from "~/utils/knowledge/mdxUtils";
 import {LibraryCustomDragLayer} from "~/features/knowledge/library/LibraryCustomDragLayer";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Znalosti - Knihovna | Saturnin" },
+    { name: "description", content: "Tvá znalostní báze" },
+  ];
+};
 
 //TODO (NL): Vyčistit!!!
 export const loader = async (args: LoaderFunctionArgs) => {

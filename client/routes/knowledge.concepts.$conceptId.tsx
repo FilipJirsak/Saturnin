@@ -6,7 +6,7 @@ import {
   useParams,
   useFetcher,
 } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
   ChevronLeft,
   Edit,
@@ -60,6 +60,17 @@ import {
   saveConceptToLocalStorage,
   deleteConceptFromLocalStorage,
 } from "~/utils/knowledge/conceptUtils";
+
+type LoaderData = {
+  concept: Concept | null;
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    { title: `Koncept - ${data?.concept?.title || 'Koncept'} | Saturnin` },
+    { name: "description", content: "Detailní zobrazení konceptu" },
+  ];
+};
 
 export const loader = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);

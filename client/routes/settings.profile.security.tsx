@@ -4,7 +4,7 @@ import { requireAuth } from "~/utils/authGuard";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Zabezpečení | Saturnin" },
+    { title: "Nastavení - Zabezpečení | Saturnin" },
     { name: "description", content: "Nastavení zabezpečení tvého účtu" },
   ];
 };
