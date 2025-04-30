@@ -39,10 +39,11 @@ const mdxComponents = {
       <blockquote className="border-l-4 border-muted-foreground pl-4 italic my-3" {...props} />
   ),
   a: ({ href, ...props }: any) => {
-    if (href && /^PROJ-\d+$/.test(href)) {
+    if (href && /^[A-Z][A-Z0-9_]*-\d+$/.test(href)) {
+      const [projectCode, issueNumber] = href.split('-');
       return (
           <a
-              href={`/projects/${href.split('-')[0]}/issue/${href}`}
+              href={`/projects/${projectCode}/issue/${projectCode}-${issueNumber}`}
               className="text-primary hover:underline"
               {...props}
           />
@@ -79,7 +80,7 @@ function SimpleMarkdownRenderer({ content }: { content: string }) {
             `<pre class="bg-muted p-3 rounded-md overflow-x-auto my-4"><code>${code}</code></pre>`
         )
         .replace(/\`([^`]+)\`/g, "<code class='bg-muted px-1 rounded text-sm'>$1</code>")
-        .replace(/(PROJ-\d+)/g, '<a href="#" class="text-primary hover:underline">$1</a>');
+        .replace(/([A-Z][A-Z0-9_]*-\d+)/g, '<a href="$1" class="text-primary hover:underline">$1</a>');
 
     return html;
   }, [content]);
