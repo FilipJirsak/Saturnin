@@ -401,7 +401,7 @@ export default function ConceptDetailPage() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Opravdu chcete smazat tento koncept?
+                Opravdu chceš smazat tento koncept?
               </AlertDialogTitle>
               <AlertDialogDescription>
                 Tato akce je nevratná. Koncept „{editedConcept.title}“ bude trvale odstraněn.

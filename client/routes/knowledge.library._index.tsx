@@ -116,7 +116,7 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
 
     const folderDocument = {
       title,
-      content: `# ${title}\n\n${description || 'Složka pro organizaci dokumentů.'}\n\n_Toto je systémový dokument reprezentující složku. Do této složky můžete přetahovat další dokumenty v knihovně._`,
+      content: `# ${title}\n\n${description || 'Složka pro organizaci dokumentů.'}\n\n_Toto je systémový dokument reprezentující složku. Do této složky můžeš přetahovat další dokumenty v knihovně._`,
       tags: [tag, systemTag],
       author: "Systém",
       summary: description
@@ -197,7 +197,7 @@ export default function KnowledgeLibraryPage() {
       } else {
         toast({
           title: "Chyba při vytváření dokumentu",
-          description: "Dokument se nepodařilo vytvořit. Zkuste to prosím znovu.",
+          description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
           variant: "destructive"
         });
       }
@@ -205,7 +205,7 @@ export default function KnowledgeLibraryPage() {
       console.error("Chyba při vytváření dokumentu:", error);
       toast({
         title: "Chyba při vytváření dokumentu",
-        description: "Dokument se nepodařilo vytvořit. Zkuste to prosím znovu.",
+        description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
         variant: "destructive"
       });
     } finally {
@@ -250,7 +250,7 @@ export default function KnowledgeLibraryPage() {
         } else {
           toast({
             title: "Chyba při vytváření složky",
-            description: data.error || "Složku se nepodařilo vytvořit. Zkuste to prosím znovu.",
+            description: data.error || "Složku se nepodařilo vytvořit. Zkus to prosím znovu.",
             variant: "destructive"
           });
         }
@@ -259,13 +259,13 @@ export default function KnowledgeLibraryPage() {
           const errorData = await response.json();
           toast({
             title: "Chyba při vytváření složky",
-            description: errorData.error || `Server vrátil chybu (${response.status}). Zkuste to prosím znovu.`,
+            description: errorData.error || `Server vrátil chybu (${response.status}). Zkus to prosím znovu.`,
             variant: "destructive"
           });
         } catch (e) {
           toast({
             title: "Chyba při vytváření složky",
-            description: `Server vrátil chybu (${response.status}). Zkuste to prosím znovu.`,
+            description: `Server vrátil chybu (${response.status}). Zkus to prosím znovu.`,
             variant: "destructive"
           });
         }
@@ -274,7 +274,7 @@ export default function KnowledgeLibraryPage() {
       console.error("Chyba při vytváření složky:", error);
       toast({
         title: "Chyba při vytváření složky",
-        description: "Složku se nepodařilo vytvořit. Zkuste to prosím znovu.",
+        description: "Složku se nepodařilo vytvořit. Zkus to prosím znovu.",
         variant: "destructive"
       });
     } finally {

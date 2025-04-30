@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "server": "deno serve  --port 8080 --allow-read --allow-net server/index.ts",
-    "server:dev": "deno serve  --port 8080 --watch --allow-read  --allow-net server/index.ts",
+    "server": "deno serve  --port 8080 --allow-read --allow-net --allow-write server/index.ts",
+    "server:dev": "deno serve  --port 8080 --watch --allow-read  --allow-net --allow-write server/index.ts",
     "db:dev": "surreal start --unauthenticated surrealkv:./data",
     "db:init": "deno run --allow-read --allow-net server/db/init.ts",
     "db:sample": "deno run --allow-read --allow-net server/db/sample.ts"

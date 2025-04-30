@@ -8,7 +8,7 @@ import {Logo} from "~/components/layout/Logo";
 export const meta: MetaFunction = () => {
   return [
     { title: "Registrace | Saturnin" },
-    { name: "description", content: "Vytvořte si nový účet a začněte používat naši službu" },
+    { name: "description", content: "Vytvoř si nový účet a začni používat naši službu" },
   ];
 };
 

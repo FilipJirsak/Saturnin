@@ -34,16 +34,18 @@ export function CalendarTimeGridView({ viewType, currentDate, days, issues, onSe
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    const totalMinutes = hours * 60 + minutes;
 
-    return (totalMinutes / 1440) * 100;
+    const currentSlot = (hours * 12) + Math.floor(minutes / 5);
+    const totalSlots = 24 * 12;
+
+    return (currentSlot / totalSlots) * 100;
   };
 
   const updateTimeIndicator = () => {
-    if (!timeIndicatorRef.current) return;
+    if (!timeIndicatorRef.current || !containerRef.current) return;
 
     const position = calculateTimePosition();
-    timeIndicatorRef.current.style.top = `calc(${position}% + 3rem)`;
+    timeIndicatorRef.current.style.top = `calc(${position}% + 1.75rem - 2px)`;
   };
 
   const scrollToCurrentTime = () => {

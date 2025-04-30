@@ -110,7 +110,7 @@ export function InboxIssueList({
             </TabsContent>
             <TabsContent value="recent">
               {recentIssues.length === 0 ? (
-                  <EmptyState icon={Inbox} message="Nemáte žádné nedávno přidané issues" />
+                  <EmptyState icon={Inbox} message="Nemáš žádné nedávno přidané issues" />
               ) : (
                   <div className="space-y-4 mt-4">
                     {recentIssues.map(issue => (

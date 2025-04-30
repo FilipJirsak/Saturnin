@@ -211,7 +211,7 @@ export function useLibraryDocuments({
       console.error("Chyba při přesouvání dokumentu:", error);
       toast({
         title: "Chyba při přesouvání dokumentu",
-        description: error instanceof Error ? error.message : "Dokument se nepodařilo přesunout. Zkuste to prosím znovu.",
+        description: error instanceof Error ? error.message : "Dokument se nepodařilo přesunout. Zkus to prosím znovu.",
         variant: "destructive"
       });
 

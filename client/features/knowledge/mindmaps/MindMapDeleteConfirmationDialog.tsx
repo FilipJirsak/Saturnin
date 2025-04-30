@@ -43,7 +43,7 @@ export function MindMapDeleteConfirmationDialog({
     }
   };
 
-  const defaultDescription = `Opravdu chcete smazat ${itemType} "${title}"? Tato akce je nevratná a smaže i všechny související položky.`;
+  const defaultDescription = `Opravdu chceš smazat ${itemType} "${title}"? Tato akce je nevratná a smaže i všechny související položky.`;
 
   return (
       <Dialog open={open} onOpenChange={onOpenChange}>
