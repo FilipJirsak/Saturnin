@@ -72,7 +72,7 @@ const SheetContent = forwardRef<
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
       <SheetPrimitive.Description className="sr-only">
-        Sheet description
+        Sliding panel that appears from the edge of the screen containing additional content
       </SheetPrimitive.Description>
       {children}
     </SheetPrimitive.Content>
