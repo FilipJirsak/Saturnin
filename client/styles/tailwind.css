@@ -124,8 +124,6 @@
   }
 
   /*TODO (NL): Sloučit scrollbar*/
-
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     @apply w-2 h-2;
   }
@@ -143,12 +141,12 @@
   }
 
   .custom-scrollbar {
-    scrollbar-width: none; /* Pro Firefox */
-    -ms-overflow-style: none; /* Pro IE a Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    display: none; /* Pro Chrome, Safari a Opera */
+    display: none;
   }
 
   .hover-scrollbar {

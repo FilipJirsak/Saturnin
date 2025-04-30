@@ -39,7 +39,7 @@ export default function StatisticsPage() {
         >
           <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Vyberte období"/>
+              <SelectValue placeholder="Vyber období"/>
             </SelectTrigger>
             <SelectContent>
               {Object.entries(STATISTICS_PERIOD_LABELS).map(([key, label]) => (

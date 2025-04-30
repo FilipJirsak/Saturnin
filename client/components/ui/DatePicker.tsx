@@ -33,7 +33,7 @@ export function DatePicker({ selected, onSelect, className }: DatePickerProps) {
             {selected ? (
                 format(selected, "PPP", { locale: cs })
             ) : (
-                <span>Vyberte datum</span>
+                <span>Vyber datum</span>
             )}
           </Button>
         </PopoverTrigger>

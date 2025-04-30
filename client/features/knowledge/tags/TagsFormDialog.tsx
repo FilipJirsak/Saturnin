@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { KnowledgeTag } from "~/types/knowledge";
 import { COLOR_PRESETS } from "~/lib/data";
-import { cn } from "~/utils/helpers";
+import {cn, darkenColor} from "~/utils/helpers";
 
 interface ColorPickerProps {
   newTag: Partial<KnowledgeTag>;
@@ -19,9 +19,12 @@ export function ColorPicker({ newTag, onNewTag }: ColorPickerProps) {
                 key={color}
                 className={cn(
                     "w-6 h-6 rounded-full cursor-pointer border-2",
-                    newTag.color === color ? "border-primary" : "border-transparent"
+                    newTag.color === color ? "" : "border-transparent"
                 )}
-                style={{ backgroundColor: color }}
+                style={{
+                  backgroundColor: color,
+                  borderColor: newTag.color === color ? darkenColor(color, 40) : undefined
+                }}
                 onClick={() => onNewTag({ ...newTag, color })}
             />
         ))}
@@ -40,14 +43,16 @@ interface TagsFormDialogProps {
 }
 
 export function TagsFormDialog({
-                                open,
-                                setOpen,
-                                newTag,
-                                setNewTag,
-                                editMode,
-                                handleSaveTag,
-                                resetForm,
-                              }: TagsFormDialogProps) {
+                                 open,
+                                 setOpen,
+                                 newTag,
+                                 setNewTag,
+                                 editMode,
+                                 handleSaveTag,
+                                 resetForm,
+                               }: TagsFormDialogProps) {
+  const borderColor = newTag.color ? darkenColor(newTag.color) : undefined;
+
   return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
@@ -64,8 +69,11 @@ export function TagsFormDialog({
               </label>
               <div className="flex items-center">
                 <div
-                    className="h-5 w-5 rounded-full mr-2 flex-shrink-0"
-                    style={{ backgroundColor: newTag.color }}
+                    className="h-5 w-5 rounded-full mr-2 flex-shrink-0 border"
+                    style={{
+                      backgroundColor: newTag.color,
+                      borderColor: borderColor
+                    }}
                 />
                 <Input
                     id="tag-name"

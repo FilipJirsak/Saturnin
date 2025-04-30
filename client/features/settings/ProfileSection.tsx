@@ -8,6 +8,7 @@ import { Edit, Save, X, Mail, FileText, Upload } from "lucide-react";
 import { ChangeEvent, useState, useRef } from "react";
 import { User } from "~/types";
 import { getInitials } from "~/utils/helpers";
+import { formatDate } from "~/utils/dateUtils";
 
 // TODO (NL): Implementovat aktualizaci profilu na backendu
 // TODO (NL): Upravit texty, změnit některá data na dynamická
@@ -155,7 +156,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                     <textarea
                         id="bio"
                         className="w-full h-24 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        placeholder="Napište něco o sobě..."
+                        placeholder="Napiš něco o sobě..."
                         value={formData.bio}
                         onChange={handleChange}
                     />
@@ -223,7 +224,8 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                       </div>
 
                       <div className="flex items-center gap-2 text-sm rounded-lg bg-secondary/10 text-secondary-foreground px-3 py-1.5">
-                        <span>Člen od: XY</span>
+                        {/*TODO (NL): Doplnit reálné členství*/}
+                        <span>Člen od: {formatDate("2025-01-13")}</span>
                       </div>
                     </div>
                   </div>

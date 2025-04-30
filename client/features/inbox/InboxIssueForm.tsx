@@ -198,8 +198,9 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
                     <p className="text-sm font-medium mb-2">Připojené soubory:</p>
                     <ul className="space-y-1">
                       {attachedFiles.map((file, index) => (
-                          <li key={index} className="text-sm text-muted-foreground">
-                            {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                          <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span className="truncate flex-1">{file.name}</span>
+                            <span className="text-xs whitespace-nowrap">({(file.size / 1024).toFixed(1)} KB)</span>
                           </li>
                       ))}
                     </ul>

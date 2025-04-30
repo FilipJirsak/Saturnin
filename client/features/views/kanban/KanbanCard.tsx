@@ -1,5 +1,5 @@
 import { useDrag } from 'react-dnd';
-import { ChatBubbleLeftIcon, PaperClipIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { MessageSquare, Paperclip, Calendar } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { cn } from "~/utils/helpers";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
@@ -27,7 +27,6 @@ export function KanbanCard({ issue, onClick }: CardProps){
 
   const handleCardClick = (e: MouseEvent) => {
     const dragEndTime = Date.now();
-    // Only trigger click if the drag duration was less than 200ms (indicating a click rather than a drag)
     if (dragEndTime - dragStartTimeRef.current < 200) {
       onClick(issue);
     }
@@ -70,14 +69,14 @@ export function KanbanCard({ issue, onClick }: CardProps){
             <div className="flex items-center space-x-3">
               {/*TODO (NL): Budeme mít i komentáře?*/}
                 <div className="flex items-center text-muted-foreground">
-                  <ChatBubbleLeftIcon className="mr-1.5 h-3.5 w-3.5"/>
+                  <MessageSquare className="mr-1.5 h-4 w-4" />
                   <span className="text-xs">
                     {issue.comments_count || 0}
                   </span>
                 </div>
 
                 <div className="flex items-center text-muted-foreground">
-                  <PaperClipIcon className="mr-1.5 h-3.5 w-3.5"/>
+                  <Paperclip className="mr-1.5 h-4 w-4" />
                   <span className="text-xs">
                     {issue.attachments_count || 0}
                   </span>
@@ -85,7 +84,7 @@ export function KanbanCard({ issue, onClick }: CardProps){
 
               {due_date && (
                   <div className="flex items-center text-muted-foreground">
-                    <CalendarIcon className="mr-1.5 h-3.5 w-3.5"/>
+                    <Calendar className="mr-1.5 h-4 w-4" />
                     <span className="text-xs">
                       {format(new Date(due_date), "dd.MM")}
                     </span>

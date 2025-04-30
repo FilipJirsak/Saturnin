@@ -42,7 +42,7 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
     // TODO (NL): Implementovat skutečné uložení na server
     toast({
       title: "Issue aktualizováno",
-      description: `Issue ${code} přesunuto do stavu ${newState}`,
+      description: `Issue ${code} přesunuto do stavu ${ISSUE_STATES.find(s => s.value === newState)?.label || newState}`,
       variant: "success"
     });
   };

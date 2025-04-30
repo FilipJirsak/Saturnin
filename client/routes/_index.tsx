@@ -7,8 +7,8 @@ import {InboxIssueList} from "~/features/inbox/InboxIssueList";
 
 //TODO (NL): Nahradit issues reálnými daty z API
 const issues = [
-  { code: 'TEST1-1', title: 'Testovací issue 1', description: 'Popis issue 1', state: 'new', last_modified: "2025-03-15T10:30:00Z" },
-  { code: 'TEST1-2', title: 'Testovací issue 2', state: 'new', last_modified: "2025-03-26T18:30:00Z" },
+  { code: 'TEST1-1', title: 'Issue 1', description: 'Popis issue 1', state: 'new', last_modified: "2025-03-15T10:30:00Z" },
+  { code: 'TEST1-2', title: 'Issue 2', state: 'new', last_modified: "2025-03-26T18:30:00Z" },
 ];
 
 export default function InboxPage() {

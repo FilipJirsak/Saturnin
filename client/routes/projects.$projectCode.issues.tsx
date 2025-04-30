@@ -21,10 +21,13 @@ import { Label } from "~/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { getStateLabel, getStateColorClasses, filterAndSortIssues, hasActiveFilters } from "~/utils/issueUtils";
 import { formatDate } from "~/utils/dateUtils";
+import { IssueSidebar } from "~/features/views/common/IssueSidebar";
+import { useToast } from "~/hooks/use-toast";
 
 type ProjectContext = {
   project: ProjectWithIssues;
   issues: IssueFull[];
+  onUpdateProject: (project: ProjectWithIssues) => void;
 };
 
 type Filters = {
@@ -33,8 +36,9 @@ type Filters = {
 };
 
 export default function ProjectIssuesView() {
-  const { project, issues } = useOutletContext<ProjectContext>();
+  const { project, issues: initialIssues } = useOutletContext<ProjectContext>();
   const { projectCode } = useParams();
+  const [issues, setIssues] = useState<IssueFull[]>(initialIssues);
   const [searchTerm, setSearchTerm] = useState("");
   const [tempFilters, setTempFilters] = useState<Filters>({
     state: null,
@@ -52,6 +56,8 @@ export default function ProjectIssuesView() {
     direction: 'asc'
   });
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState<IssueFull | null>(null);
+  const { toast } = useToast();
 
   const requestSort = (key: keyof IssueFull) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -90,6 +96,30 @@ export default function ProjectIssuesView() {
 
   const areFiltersActive = hasActiveFilters(activeFilters);
   const hasChangedFilters = JSON.stringify(tempFilters) !== JSON.stringify(activeFilters);
+
+  const handleEditIssue = (issue: IssueFull) => {
+    setSelectedIssue(issue);
+  };
+
+  const handleSaveIssue = async (updatedIssue: Partial<IssueFull>) => {
+    if (!selectedIssue) return;
+
+    setIssues(prevIssues =>
+      prevIssues.map(issue =>
+        issue.code === selectedIssue.code
+          ? { ...issue, ...updatedIssue, last_modified: new Date().toISOString() }
+          : issue
+      )
+    );
+
+    toast({
+      title: "Issue aktualizováno",
+      description: `Issue ${selectedIssue.code} bylo úspěšně aktualizováno`,
+      variant: "success"
+    });
+
+    setSelectedIssue(null);
+  };
 
   // TODO (NL): Implementovat možnost hromadných operací s issues
   // TODO (NL): Implementovat možnost exportu issues do různých formátů
@@ -275,8 +305,8 @@ export default function ProjectIssuesView() {
                                 <Button
                                     variant="ghost"
                                     size="icon"
+                                    onClick={() => handleEditIssue(issue)}
                                 >
-                                  {/*TODO (NL): Přidat funkcionalitu pro editační tlačítko*/}
                                   <Edit className="h-4 w-4" />
                                   <span className="sr-only">Upravit</span>
                                 </Button>
@@ -290,6 +320,18 @@ export default function ProjectIssuesView() {
             </Table>
           </div>
         </CardContent>
+        {selectedIssue && projectCode && (
+          <IssueSidebar
+            issue={selectedIssue}
+            isOpen={!!selectedIssue}
+            onClose={() => {
+              setSelectedIssue(null);
+            }}
+            onSave={handleSaveIssue}
+            projectCode={projectCode as string}
+            isNew={false}
+          />
+        )}
       </Card>
   );
 }

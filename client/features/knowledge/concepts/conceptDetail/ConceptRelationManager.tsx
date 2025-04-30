@@ -115,7 +115,7 @@ export function ConceptRelationManager({
                   <div className="col-span-2">
                     <Select value={newRelationId} onValueChange={setNewRelationId}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Vyberte koncept" />
+                        <SelectValue placeholder="Vyber koncept" />
                       </SelectTrigger>
                       <SelectContent>
                         {filteredAvailableConcepts.map(concept => (

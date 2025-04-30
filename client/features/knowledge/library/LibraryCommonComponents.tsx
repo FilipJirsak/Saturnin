@@ -48,6 +48,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
+import { useToast } from "~/hooks/use-toast";
 
 export function TagsList({
                            tags,
@@ -96,6 +97,7 @@ export function DocumentActions({
 }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const deleteFormRef = useRef<HTMLFormElement>(null);
+  const { toast } = useToast();
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -108,6 +110,14 @@ export function DocumentActions({
       deleteFormRef.current?.requestSubmit();
     }
     setShowDeleteConfirm(false);
+  };
+
+  const handleShare = () => {
+    toast({
+      title: "Sdílení dokumentu",
+      description: "Funkce sdílení bude brzy dostupná",
+      variant: "default"
+    });
   };
 
   const isFolder = item.tags && item.tags.includes('_system_folder');
@@ -128,32 +138,11 @@ export function DocumentActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {/*  <DropdownMenuItem asChild>
-              <Link to={itemUrl} className="flex items-center">
-                <Eye className="mr-2 h-4 w-4" />
-                <span>Zobrazit</span>
-              </Link>
-            </DropdownMenuItem>*/}
-
-            {/*  {onEdit ? (
-                <DropdownMenuItem onClick={onEdit} className="flex items-center cursor-pointer">
-                  <Edit className="mr-2 h-4 w-4" />
-                  <span>Upravit</span>
-                </DropdownMenuItem>
-            ) : (
-                <DropdownMenuItem asChild>
-                  <Link to={`${itemUrl}/edit`} className="flex items-center">
-                    <Edit className="mr-2 h-4 w-4" />
-                    <span>Upravit</span>
-                  </Link>
-                </DropdownMenuItem>
-            )}*/}
-
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleShare}>
               <Share2 className="mr-2 h-4 w-4"/>
               <span>Sdílet</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled>
               <Copy className="mr-2 h-4 w-4"/>
               <span>Duplikovat</span>
             </DropdownMenuItem>
@@ -180,7 +169,7 @@ export function DocumentActions({
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Opravdu chcete smazat tento dokument?</AlertDialogTitle>
+              <AlertDialogTitle>Opravdu chceš smazat tento dokument?</AlertDialogTitle>
               <AlertDialogDescription>
                 Tato akce je nevratná a dokument bude trvale odstraněn.
               </AlertDialogDescription>
@@ -551,12 +540,22 @@ export function DocumentSidebar({
 }
 
 //TODO (NL): Přidat počítadlo komentářů
-//TODO (NL): Přidat funkcionalitu na kopírování odkazů
 export function DocumentFooter({
                                  commentsCount = 0
                                }: {
   commentsCount?: number
 }) {
+  const { toast } = useToast();
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Odkaz zkopírován",
+      description: "Odkaz byl uložen do schránky",
+      variant: "success"
+    });
+  };
+
   return (
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2">
         <div className="flex items-center gap-2">
@@ -565,7 +564,12 @@ export function DocumentFooter({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-xs">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs"
+            onClick={handleCopyLink}
+          >
             <LinkIcon className="h-3 w-3 mr-1" />
             Kopírovat odkaz
           </Button>

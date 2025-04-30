@@ -1,5 +1,5 @@
 import { useDrop } from 'react-dnd';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { Plus } from 'lucide-react';
 import { IssueFull } from "~/types";
 import {
   Card,
@@ -72,7 +72,7 @@ export function KanbanColumn({
                 className="h-7 w-7"
                 onClick={handleAddIssue}
             >
-              <PlusIcon className="h-4 w-4" strokeWidth={2} />
+              <Plus className="h-5 w-5" />
             </Button>
           </div>
         </CardHeader>

@@ -19,7 +19,7 @@ type ProjectContext = {
 
 /*TODO (NL): Dodělat zobrazení detailu issue*/
 export default function ProjectCalendarView() {
-  const { project, issues } = useOutletContext<ProjectContext>();
+  const { project, issues: initialIssues } = useOutletContext<ProjectContext>();
   const { projectCode } = useParams();
   const [viewType, setViewType] = useState<'month' | 'week' | 'day'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -27,6 +27,7 @@ export default function ProjectCalendarView() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [issues, setIssues] = useState<IssueFull[]>(initialIssues);
   const { toast } = useToast();
 
   // TODO (NL): Implementovat přetahování issues mezi dny
@@ -85,6 +86,13 @@ export default function ProjectCalendarView() {
     try {
       // TODO (NL): Implementovat uložení issue
       console.log("Saving issue:", issue);
+
+      if (selectedIssue) {
+        const updatedIssues = issues.map(i =>
+          i.code === selectedIssue.code ? { ...i, ...issue } : i
+        );
+        setIssues(updatedIssues);
+      }
 
       toast({
         title: "Issue uloženo",
