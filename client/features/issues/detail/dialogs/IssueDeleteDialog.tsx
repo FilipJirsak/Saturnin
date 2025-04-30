@@ -16,7 +16,7 @@ export function IssueDeleteDialog({ isOpen, setIsOpen, onDelete }: IssueDeleteDi
           <DialogHeader>
             <DialogTitle>Smazat issue</DialogTitle>
             <DialogDescription>
-              Opravdu chcete smazat toto issue? Tato akce je nevratná.
+              Opravdu chceš smazat toto issue? Tato akce je nevratná.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2">

@@ -33,7 +33,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       } else {
         toast({
           title: "Chyba při mazání mapy",
-          description: "Nepodařilo se smazat myšlenkovou mapu. Zkuste to prosím znovu.",
+          description: "Nepodařilo se smazat myšlenkovou mapu. Zkus to prosím znovu.",
           variant: "destructive"
         });
       }
@@ -41,7 +41,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       console.error(`Chyba při mazání myšlenkové mapy ${id}:`, error);
       toast({
         title: "Chyba při mazání mapy",
-        description: "Nepodařilo se smazat myšlenkovou mapu. Zkuste to prosím znovu.",
+        description: "Nepodařilo se smazat myšlenkovou mapu. Zkus to prosím znovu.",
         variant: "destructive"
       });
     }
@@ -74,7 +74,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       } else {
         toast({
           title: "Chyba při duplikování mapy",
-          description: "Nepodařilo se duplikovat myšlenkovou mapu. Zkuste to prosím znovu.",
+          description: "Nepodařilo se duplikovat myšlenkovou mapu. Zkus to prosím znovu.",
           variant: "destructive"
         });
         return null;
@@ -83,7 +83,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       console.error(`Chyba při duplikování myšlenkové mapy ${id}:`, error);
       toast({
         title: "Chyba při duplikování mapy",
-        description: "Nepodařilo se duplikovat myšlenkovou mapu. Zkuste to prosím znovu.",
+        description: "Nepodařilo se duplikovat myšlenkovou mapu. Zkus to prosím znovu.",
         variant: "destructive"
       });
       return null;
@@ -153,7 +153,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       } else {
         toast({
           title: "Chyba při ukládání mapy",
-          description: "Nepodařilo se uložit změny. Zkuste to prosím znovu.",
+          description: "Nepodařilo se uložit změny. Zkus to prosím znovu.",
           variant: "destructive"
         });
         return false;
@@ -162,7 +162,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       console.error(`Chyba při aktualizaci myšlenkové mapy ${id}:`, error);
       toast({
         title: "Chyba při ukládání mapy",
-        description: "Nepodařilo se uložit změny. Zkuste to prosím znovu.",
+        description: "Nepodařilo se uložit změny. Zkus to prosím znovu.",
         variant: "destructive"
       });
       return false;

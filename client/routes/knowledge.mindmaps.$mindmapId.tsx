@@ -468,7 +468,7 @@ export default function MindmapDetailPage() {
             onOpenChange={setDeleteDialogOpen}
             title={editedMindmap.title}
             itemType="myšlenkovou mapu"
-            description={`Opravdu chcete smazat myšlenkovou mapu "${editedMindmap.title}"? Tato akce je nevratná a smaže i všechny uzly a spojení.`}
+            description={`Opravdu chceš smazat myšlenkovou mapu "${editedMindmap.title}"? Tato akce je nevratná a smaže i všechny uzly a spojení.`}
             onConfirm={handleDeleteMap}
         />
       </div>

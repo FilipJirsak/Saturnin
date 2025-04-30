@@ -125,7 +125,7 @@ export function LibraryCreateDocumentSidebar({
 
       const message = err instanceof Error
           ? err.message
-          : 'Zkuste to znovu.'
+          : 'Zkus to znovu.'
 
       toast({
         title: "Chyba při vytváření dokumentu",

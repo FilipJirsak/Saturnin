@@ -83,7 +83,7 @@ export default function KnowledgeFolderDetailPage() {
       } else {
         toast({
           title: "Chyba při vytváření dokumentu",
-          description: "Dokument se nepodařilo vytvořit. Zkuste to prosím znovu.",
+          description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
           variant: "destructive"
         });
       }
@@ -91,7 +91,7 @@ export default function KnowledgeFolderDetailPage() {
       console.error("Chyba při vytváření dokumentu:", error);
       toast({
         title: "Chyba při vytváření dokumentu",
-        description: "Dokument se nepodařilo vytvořit. Zkuste to prosím znovu.",
+        description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
         variant: "destructive"
       });
     } finally {
@@ -139,7 +139,7 @@ export default function KnowledgeFolderDetailPage() {
           ) : (
               <EmptyState
                   message={`Složka ${folder.title} je prázdná`}
-                  description="Vytvořte nový dokument pomocí tlačítka 'Nový dokument' výše."
+                  description="Vytvoř nový dokument pomocí tlačítka 'Nový dokument' výše."
                   onCreateNew={() => setIsNewDocumentDialogOpen(true)}
               />
           )}

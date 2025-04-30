@@ -128,7 +128,7 @@ export default function ProjectDetailView() {
       console.error("Failed to save issue:", error);
       toast({
         title: "Chyba",
-        description: "Nepodařilo se uložit issue. Zkuste to prosím znovu.",
+        description: "Nepodařilo se uložit issue. Zkus to prosím znovu.",
         variant: "destructive"
       });
     }
@@ -308,7 +308,7 @@ export default function ProjectDetailView() {
                 Přidat nové issue
               </CardTitle>
               <CardDescription>
-                Vytvořte nové issue pro tento projekt
+                Vytvoř nové issue pro tento projekt
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -135,7 +135,7 @@ export default function KnowledgeMindMapsPage() {
       } else {
         toast({
           title: "Chyba při vytváření mapy",
-          description: "Nepodařilo se vytvořit myšlenkovou mapu. Zkuste to prosím znovu.",
+          description: "Nepodařilo se vytvořit myšlenkovou mapu. Zkus to prosím znovu.",
           variant: "destructive"
         });
       }
@@ -143,7 +143,7 @@ export default function KnowledgeMindMapsPage() {
       console.error("Chyba při vytváření myšlenkové mapy:", error);
       toast({
         title: "Chyba při vytváření mapy",
-        description: "Nepodařilo se vytvořit myšlenkovou mapu. Zkuste to prosím znovu.",
+        description: "Nepodařilo se vytvořit myšlenkovou mapu. Zkus to prosím znovu.",
         variant: "destructive"
       });
     } finally {
@@ -184,7 +184,7 @@ export default function KnowledgeMindMapsPage() {
         ) : filteredMindmaps.length === 0 ? (
             <Alert>
               <AlertDescription>
-                Zatím nemáte žádné myšlenkové mapy. Vytvořte novou pomocí tlačítka "Nová myšlenková mapa".
+                Zatím nemáš žádné myšlenkové mapy. Vytvoř novou pomocí tlačítka "Nová myšlenková mapa".
               </AlertDescription>
             </Alert>
         ) : (

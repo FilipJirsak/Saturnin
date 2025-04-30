@@ -22,7 +22,7 @@ export function IssueDescription({ description, isEditing, setEditedIssue }: Iss
                 value={description || ''}
                 onChange={(e) => setEditedIssue(prev => ({ ...prev, description: e.target.value }))}
                 className="min-h-[100px] border-none bg-muted/50 focus-visible:ring-2"
-                placeholder="Přidejte popis..."
+                placeholder="Přidej popis..."
             />
         ) : (
             <div className="prose prose-sm max-w-none text-muted-foreground bg-muted/50 p-4 rounded-lg">

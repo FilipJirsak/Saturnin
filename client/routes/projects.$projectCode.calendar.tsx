@@ -50,7 +50,7 @@ export default function ProjectCalendarView() {
       setError(null);
       setCurrentDate(navigateDate(currentDate, viewType, direction));
     } catch (err) {
-      setError("Nepodařilo se změnit datum. Zkuste to prosím znovu.");
+      setError("Nepodařilo se změnit datum. Zkus to prosím znovu.");
       console.error("Error navigating date:", err);
     } finally {
       setIsLoading(false);
@@ -63,7 +63,7 @@ export default function ProjectCalendarView() {
       setError(null);
       setCurrentDate(new Date());
     } catch (err) {
-      setError("Nepodařilo se přejít na dnešní datum. Zkuste to prosím znovu.");
+      setError("Nepodařilo se přejít na dnešní datum. Zkus to prosím znovu.");
       console.error("Error setting today's date:", err);
     } finally {
       setIsLoading(false);
@@ -78,7 +78,7 @@ export default function ProjectCalendarView() {
       const selectedDate = new Date(year, month - 1, day, 0, 0, 0, 0);
       setCurrentDate(selectedDate);
     } catch (err) {
-      setError("Nepodařilo se vybrat datum. Zkuste to prosím znovu.");
+      setError("Nepodařilo se vybrat datum. Zkus to prosím znovu.");
       console.error("Error selecting date:", err);
     } finally {
       setIsLoading(false);
@@ -113,7 +113,7 @@ export default function ProjectCalendarView() {
       console.error("Failed to save issue:", error);
       toast({
         title: "Chyba",
-        description: "Nepodařilo se uložit změny. Zkuste to prosím znovu.",
+        description: "Nepodařilo se uložit změny. Zkus to prosím znovu.",
         variant: "destructive"
       });
     }
