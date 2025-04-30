@@ -15,6 +15,14 @@ import {
   STATISTICS_TABS
 } from '~/lib/constants';
 import { type StatisticsPeriod } from '~/types/dashboard';
+import { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Statistiky | Saturnin" },
+    { name: "description", content: "Přehled výkonu a aktivit v systému" },
+  ];
+};
 
 export default function StatisticsPage() {
   const {

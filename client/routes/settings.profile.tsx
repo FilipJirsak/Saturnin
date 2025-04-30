@@ -3,6 +3,7 @@ import { Outlet, useLocation, Link } from "@remix-run/react";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { UserCircle, Shield, Bell, CreditCard } from "lucide-react";
 import { requireAuth } from "~/utils/authGuard";
+import { sidebarItems } from "~/lib/data";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,13 +15,8 @@ export const meta: MetaFunction = () => {
 export const loader = async (args: LoaderFunctionArgs) => {
   await requireAuth(args);
 
-  // TODO (NL): Implementovat načtení uživatelských dat z databáze a nahradit mock data
   return {
-    user: {
-      name: "Nela Letochová",
-      email: "nela.letochova@example.com",
-      avatar: "/placeholder.svg"
-    }
+    user: sidebarItems.user
   };
 };
 

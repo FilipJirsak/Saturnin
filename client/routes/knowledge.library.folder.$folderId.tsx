@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLoaderData } from "@remix-run/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
 import { Button } from "~/components/ui/button";
 import { ChevronLeft, FolderOpen, FilePlus } from "lucide-react";
@@ -12,6 +12,21 @@ import { DocumentItem, NewDocument } from "~/types/knowledge";
 import { LibraryDocumentCard } from "~/features/knowledge/library/LibraryDocumentCard";
 import { createMdxDocument } from "~/utils/knowledge/mdxUtils";
 import { useToast } from "~/hooks/use-toast";
+
+type LoaderData = {
+  folder: {
+    title: string;
+    description?: string;
+    documents: DocumentItem[];
+  };
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    { title: `Knihovna - složka ${data?.folder?.title || 'Složka'} (složka) | Saturnin` },
+    { name: "description", content: "Obsah složky v knihovně dokumentů" },
+  ];
+};
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireAuth({ request, params } as LoaderFunctionArgs);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLoaderData, useNavigate } from "@remix-run/react";
-import {ActionFunction, LoaderFunction, redirect} from "@remix-run/node";
+import {ActionFunction, LoaderFunction, MetaFunction, redirect} from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
 import { typedJson } from "~/utils/typedJson";
 import { useSearch } from "~/features/knowledge/KnowledgeLayout";
@@ -21,6 +21,13 @@ import { useToast } from "~/hooks/use-toast";
 import {useMindMapActions} from "~/hooks/useMindMapActions";
 import {MindMapCard} from "~/features/knowledge/mindmaps/MindMapCard";
 import {MOCK_MINDMAPS} from "~/lib/data";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Znalosti - Mindmapy | Saturnin" },
+    { name: "description", content: "Tvá znalostní báze" },
+  ];
+};
 
 // TODO (NL): Implementovat načítání dat z API
 export const loader: LoaderFunction = async ({ request, params, context }) => {

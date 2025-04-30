@@ -4,6 +4,15 @@ import { useDashboardActivities } from '~/hooks/useDashboardData';
 import { mockActivityChartData } from '~/lib/data';
 import { STATISTICS_PERIODS } from '~/lib/constants';
 import {DashboardSectionTitle} from "~/features/dashboard/DashboardSectionTitle";
+import { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Aktivity | Saturnin" },
+    { name: "description", content: "Přehled všech aktivit v systému" },
+  ];
+};
+
 
 export default function ActivitiesPage() {
   const {
@@ -72,3 +81,4 @@ export default function ActivitiesPage() {
       </div>
   );
 }
+

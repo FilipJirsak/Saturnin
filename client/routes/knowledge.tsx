@@ -4,7 +4,7 @@ import { KnowledgeLayout } from "~/features/knowledge/KnowledgeLayout";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Znalosti | Second Brain" },
+    { title: "Znalosti | Saturnin" },
     { name: "description", content: "Tvá znalostní báze" },
   ];
 };

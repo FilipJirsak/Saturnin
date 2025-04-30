@@ -1,8 +1,15 @@
-import { useLoaderData } from "@remix-run/react";
-import { LoaderFunctionArgs } from "@remix-run/node";
-import { IssueDetail } from "~/features/issues/detail/IssueDetail";
-import { IssueFull } from "~/types";
-import { useState } from "react";
+import {useLoaderData} from "@remix-run/react";
+import {LoaderFunctionArgs, MetaFunction} from "@remix-run/node";
+import {IssueDetail} from "~/features/issues/detail/IssueDetail";
+import {IssueFull} from "~/types";
+import {useState} from "react";
+
+export const meta: MetaFunction = ({ params }) => {
+  return [
+    { title: `Issue ${params.code} - ${params.projectCode} | Saturnin` },
+    { name: "description", content: "Detailní informace o issue" },
+  ];
+};
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const { projectCode, code } = params;
@@ -14,8 +21,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
       throw new Response("Issue nenalezeno", { status: 404 });
     }
 
-    const issue = await response.json();
-    return issue;
+    return await response.json();
   } catch (error) {
     console.error("Error loading issue:", error);
     throw new Response("Issue nenalezeno", { status: 404 });

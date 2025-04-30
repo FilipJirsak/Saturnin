@@ -11,10 +11,18 @@ import { AlertCircle } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { IssueSidebar } from "~/features/views/common/IssueSidebar";
 import { useToast } from "~/hooks/use-toast";
+import { MetaFunction } from "@remix-run/node";
 
 type ProjectContext = {
   project: ProjectWithIssues;
   issues: IssueFull[];
+};
+
+export const meta: MetaFunction = ({ params }) => {
+  return [
+    { title: `Kalendář - ${params.projectCode} | Saturnin` },
+    { name: "description", content: "Kalendářní přehled úkolů a milníků projektu" },
+  ];
 };
 
 /*TODO (NL): Dodělat zobrazení detailu issue*/

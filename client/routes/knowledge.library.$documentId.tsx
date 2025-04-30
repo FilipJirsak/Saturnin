@@ -4,7 +4,7 @@ import {
   Form,
   useNavigation,
 } from "@remix-run/react";
-import { redirect, LoaderFunction, ActionFunction} from "@remix-run/node";
+import { redirect, LoaderFunction, ActionFunction, MetaFunction} from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
 import {
   Card,
@@ -28,6 +28,24 @@ import {
   DocumentSidebar,
   DocumentFooter,
 } from "~/features/knowledge/library/LibraryCommonComponents";
+
+type LoaderData = {
+  title: string;
+  content: string;
+  author: string;
+  tags: string[];
+  relatedIssues: string[];
+  isShared: boolean;
+  compiledSource: string;
+  path: string;
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [
+    { title: `Knihovna - ${data?.title || 'Dokument'} (dokument) | Saturnin` },
+    { name: "description", content: "Detailní zobrazení dokumentu" },
+  ];
+};
 
 export const loader: LoaderFunction = async ({ request, params, context }) => {
   await requireAuth({ request, params, context });

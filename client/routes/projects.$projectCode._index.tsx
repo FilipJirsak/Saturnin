@@ -10,6 +10,14 @@ import { useState, useEffect } from "react";
 import { getStateLabel, getStateColorClasses } from "~/utils/issueUtils";
 import { useToast } from "~/hooks/use-toast";
 import { IssueSidebar } from "~/features/views/common/IssueSidebar";
+import { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = ({ params }) => {
+  return [
+    { title: `Detail projektu ${params.projectCode} | Saturnin` },
+    { name: "description", content: "Detail projektu" },
+  ];
+};
 
 type ProjectContext = {
   project: ProjectWithIssues;

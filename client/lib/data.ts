@@ -21,9 +21,11 @@ import { generateAvatar } from '~/utils/helpers';
 
 export const sidebarItems = {
   user: {
+    id: "user-1",
     name: "Nela Letochová",
     email: "nela.letochova@example.com",
     avatar: generateAvatar('nelinka', 'female'),
+    role: 'admin' as const
   },
   teams: [
     {
