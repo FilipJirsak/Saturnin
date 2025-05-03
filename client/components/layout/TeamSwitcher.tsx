@@ -1,50 +1,56 @@
-"use client";
+"use client"
 
-import { DropdownMenu, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "~/components/ui/sidebar";
-import { ElementType, useState } from "react";
-import { Logo } from "~/components/layout/Logo";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "~/components/ui/sidebar"
+import {ElementType, useState} from "react";
+import {Logo} from "~/components/layout/Logo";
 
 export function TeamSwitcher({
-  teams,
-}: {
+                               teams,
+                             }: {
   teams: {
-    name: string;
-    logo: ElementType;
-    plan: string;
-  }[];
+    name: string
+    logo: ElementType
+    plan: string
+  }[]
 }) {
-  const [activeTeam, setActiveTeam] = useState(teams[0]);
+  const [activeTeam, setActiveTeam] = useState(teams[0])
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-auto hover:bg-transparent"
-            >
-              <div className="flex aspect-square size-8 mr-1 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-                <Logo />
-              </div>
-              {
-                /*  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-auto hover:bg-transparent"
+              >
+                <div
+                    className="flex aspect-square size-8 mr-1 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                  <Logo />
+                </div>
+                {/*  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <activeTeam.logo className="size-4" />
-                </div>*/
-              }
-              <div className="grid flex-1 text-left text-sm leading-tight">
+                </div>*/}
+                <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
                   {activeTeam.name}
                 </span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
-              </div>
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
+                  <span className="truncate text-xs">{activeTeam.plan}</span>
+                </div>
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+  )
 }
 
 /*export function TeamSwitcher({

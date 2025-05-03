@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
+import {ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect} from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { requireAuth } from "~/utils/authGuard";
 import { Button } from "~/components/ui/button";
-import { Book, FilePlus, FolderPlus, SearchX } from "lucide-react";
+import { FilePlus, FolderPlus, Book, SearchX } from "lucide-react";
 import { typedJson } from "~/utils/typedJson";
 import { organizeDocumentsIntoFolders } from "~/utils/knowledge/libraryUtils";
 import { EmptyState } from "~/features/knowledge/library/LibraryCommonComponents";
@@ -15,11 +15,11 @@ import { useToast } from "~/hooks/use-toast";
 import { useSearch } from "~/features/knowledge/KnowledgeLayout";
 import { KnowledgeSearchResults } from "~/features/knowledge/KnowledgeSearchResults";
 import { filterDocumentsBySearchTerm } from "~/utils/knowledge/documentSearchUtils";
-import { createMdxDocument, deleteMdxDocument, getAllMdxDocuments } from "~/utils/knowledge/mdxUtils";
+import {getAllMdxDocuments, createMdxDocument, deleteMdxDocument} from "~/utils/knowledge/mdxUtils";
 import { LibraryDocumentCard } from "~/features/knowledge/library/LibraryDocumentCard";
 import { useLibraryDocuments } from "~/hooks/useLibraryDocuments";
 import { moveDocumentToFolder } from "~/utils/knowledge/mdxUtils";
-import { LibraryCustomDragLayer } from "~/features/knowledge/library/LibraryCustomDragLayer";
+import {LibraryCustomDragLayer} from "~/features/knowledge/library/LibraryCustomDragLayer";
 
 export const meta: MetaFunction = () => {
   return [
@@ -35,7 +35,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
   try {
     const mdxDocuments = await getAllMdxDocuments();
     return typedJson({
-      documents: organizeDocumentsIntoFolders(mdxDocuments),
+      documents: organizeDocumentsIntoFolders(mdxDocuments)
     });
   } catch (error) {
     console.error("Chyba při načítání dokumentů:", error);
@@ -86,20 +86,20 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
       if (!updatedDoc) {
         return typedJson({
           ok: false,
-          error: "Nepodařilo se přesunout dokument",
+          error: "Nepodařilo se přesunout dokument"
         }, { status: 500 });
       }
 
       return typedJson({
         ok: true,
         message: "Dokument byl úspěšně přesunut",
-        document: updatedDoc,
+        document: updatedDoc
       });
     } catch (error) {
       console.error("Chyba při přesouvání dokumentu:", error);
       return typedJson({
         ok: false,
-        error: "Došlo k chybě při přesouvání dokumentu",
+        error: "Došlo k chybě při přesouvání dokumentu"
       }, { status: 500 });
     }
   }
@@ -116,12 +116,10 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
 
     const folderDocument = {
       title,
-      content: `# ${title}\n\n${
-        description || "Složka pro organizaci dokumentů."
-      }\n\n_Toto je systémový dokument reprezentující složku. Do této složky můžeš přetahovat další dokumenty v knihovně._`,
+      content: `# ${title}\n\n${description || 'Složka pro organizaci dokumentů.'}\n\n_Toto je systémový dokument reprezentující složku. Do této složky můžeš přetahovat další dokumenty v knihovně._`,
       tags: [tag, systemTag],
       author: "Systém",
-      summary: description,
+      summary: description
     };
 
     try {
@@ -130,7 +128,7 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
       if (!createdDocument) {
         return typedJson({
           ok: false,
-          error: "Nepodařilo se vytvořit složku",
+          error: "Nepodařilo se vytvořit složku"
         }, { status: 500 });
       }
 
@@ -141,14 +139,14 @@ export const action = async ({ request, params, context }: ActionFunctionArgs) =
           id: tag,
           title,
           description,
-          documentId: createdDocument.id,
-        },
+          documentId: createdDocument.id
+        }
       });
     } catch (error) {
       console.error("Chyba při vytváření složky:", error);
       return typedJson({
         ok: false,
-        error: "Došlo k chybě při vytváření složky",
+        error: "Došlo k chybě při vytváření složky"
       }, { status: 500 });
     }
   }
@@ -174,13 +172,15 @@ export default function KnowledgeLibraryPage() {
     handleDocumentDropAction,
   } = useLibraryDocuments({
     initialDocuments,
-    isSearching,
+    isSearching
   });
 
-  const filteredDocuments = isSearching ? filterDocumentsBySearchTerm(documents, searchTerm) : documents;
+  const filteredDocuments = isSearching
+      ? filterDocumentsBySearchTerm(documents, searchTerm)
+      : documents;
 
   const handleCreateDocument = async (newDocument: NewDocument) => {
-    setIsLoading((prev) => ({ ...prev, createDocument: true }));
+    setIsLoading(prev => ({ ...prev, createDocument: true }));
 
     try {
       const createdDocument = await createMdxDocument(newDocument);
@@ -189,15 +189,16 @@ export default function KnowledgeLibraryPage() {
         toast({
           title: "Dokument vytvořen",
           description: `Dokument "${newDocument.title}" byl úspěšně vytvořen.`,
-          variant: "success",
+          variant: "success"
         });
 
         setIsNewDocumentDialogOpen(false);
+
       } else {
         toast({
           title: "Chyba při vytváření dokumentu",
           description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
-          variant: "destructive",
+          variant: "destructive"
         });
       }
     } catch (error) {
@@ -205,35 +206,33 @@ export default function KnowledgeLibraryPage() {
       toast({
         title: "Chyba při vytváření dokumentu",
         description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
-      setIsLoading((prev) => ({ ...prev, createDocument: false }));
+      setIsLoading(prev => ({ ...prev, createDocument: false }));
     }
   };
 
   const handleCreateFolder = async (newFolder: NewFolder) => {
-    setIsLoading((prev) => ({ ...prev, createFolder: true }));
+    setIsLoading(prev => ({ ...prev, createFolder: true }));
 
     try {
-      const formattedTag = newFolder.tag.toLowerCase().replace(/\s+/g, "-");
+      const formattedTag = newFolder.tag.toLowerCase().replace(/\s+/g, '-');
 
       const folderData = {
         title: newFolder.title,
-        content: `# ${newFolder.title}\n\n${
-          newFolder.description || "Složka pro organizaci dokumentů."
-        }\n\n_Toto je systémový dokument reprezentující složku._`,
+        content: `# ${newFolder.title}\n\n${newFolder.description || 'Složka pro organizaci dokumentů.'}\n\n_Toto je systémový dokument reprezentující složku._`,
         author: "Systém",
-        tags: [formattedTag, "_system_folder"],
+        tags: [formattedTag, "_system_folder"]
       };
 
       const response = await fetch("/api/knowledge/documents", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          "Accept": "application/json"
         },
-        body: JSON.stringify(folderData),
+        body: JSON.stringify(folderData)
       });
 
       if (response.ok) {
@@ -243,7 +242,7 @@ export default function KnowledgeLibraryPage() {
           toast({
             title: "Složka vytvořena",
             description: `Složka "${newFolder.title}" byla úspěšně vytvořena.`,
-            variant: "success",
+            variant: "success"
           });
 
           setIsNewFolderDialogOpen(false);
@@ -252,7 +251,7 @@ export default function KnowledgeLibraryPage() {
           toast({
             title: "Chyba při vytváření složky",
             description: data.error || "Složku se nepodařilo vytvořit. Zkus to prosím znovu.",
-            variant: "destructive",
+            variant: "destructive"
           });
         }
       } else {
@@ -261,13 +260,13 @@ export default function KnowledgeLibraryPage() {
           toast({
             title: "Chyba při vytváření složky",
             description: errorData.error || `Server vrátil chybu (${response.status}). Zkus to prosím znovu.`,
-            variant: "destructive",
+            variant: "destructive"
           });
         } catch (e) {
           toast({
             title: "Chyba při vytváření složky",
             description: `Server vrátil chybu (${response.status}). Zkus to prosím znovu.`,
-            variant: "destructive",
+            variant: "destructive"
           });
         }
       }
@@ -276,97 +275,93 @@ export default function KnowledgeLibraryPage() {
       toast({
         title: "Chyba při vytváření složky",
         description: "Složku se nepodařilo vytvořit. Zkus to prosím znovu.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
-      setIsLoading((prev) => ({ ...prev, createFolder: false }));
+      setIsLoading(prev => ({ ...prev, createFolder: false }));
     }
   };
 
   return (
-    <div className="space-y-6">
-      <LibraryCustomDragLayer />
+      <div className="space-y-6">
+        <LibraryCustomDragLayer />
 
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Book className="h-5 w-5 text-primary" />
-          Knihovna dokumentů
-          {isSearching && filteredDocuments.length > 0 && (
-            <span className="text-sm font-normal text-muted-foreground ml-2">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Book className="h-5 w-5 text-primary" />
+            Knihovna dokumentů
+            {isSearching && filteredDocuments.length > 0 && (
+                <span className="text-sm font-normal text-muted-foreground ml-2">
               {filteredDocuments.length} výsledků
             </span>
-          )}
-        </h2>
+            )}
+          </h2>
 
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-            onClick={() => setIsNewFolderDialogOpen(true)}
-          >
-            <FolderPlus className="h-4 w-4" />
-            <span>Nová složka</span>
-          </Button>
-          <Button
-            size="sm"
-            className="flex items-center gap-1"
-            onClick={() => setIsNewDocumentDialogOpen(true)}
-          >
-            <FilePlus className="h-4 w-4" />
-            <span>Nový dokument</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={() => setIsNewFolderDialogOpen(true)}
+            >
+              <FolderPlus className="h-4 w-4" />
+              <span>Nová složka</span>
+            </Button>
+            <Button
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={() => setIsNewDocumentDialogOpen(true)}
+            >
+              <FilePlus className="h-4 w-4" />
+              <span>Nový dokument</span>
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {isSearching && filteredDocuments.length === 0
-        ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <SearchX className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold mb-1">Žádné výsledky</h3>
-            <p className="text-muted-foreground mb-4">
-              Pro vyhledávání "{searchTerm}" nebyly nalezeny žádné dokumenty.
-            </p>
-          </div>
-        )
-        : isSearching
-        ? (
-          <KnowledgeSearchResults
-            documents={filteredDocuments}
-            searchTerm={searchTerm}
-            onToggleFolder={handleToggleFolder}
-          />
-        )
-        : documents.length === 0
-        ? <EmptyState onCreateNew={() => setIsNewDocumentDialogOpen(true)} />
-        : (
-          <div className="grid grid-cols-1 gap-4">
-            {filteredDocuments.map((doc, index) => (
-              <LibraryDocumentCard
-                key={doc.id}
-                item={doc}
-                index={index}
+        {isSearching && filteredDocuments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <SearchX className="h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-semibold mb-1">Žádné výsledky</h3>
+              <p className="text-muted-foreground mb-4">
+                Pro vyhledávání "{searchTerm}" nebyly nalezeny žádné dokumenty.
+              </p>
+            </div>
+        ) : isSearching ? (
+            <KnowledgeSearchResults
+                documents={filteredDocuments}
+                searchTerm={searchTerm}
                 onToggleFolder={handleToggleFolder}
-                isDraggable={true}
-                onDrop={handleDocumentDropAction}
-              />
-            ))}
-          </div>
+            />
+        ) : documents.length === 0 ? (
+            <EmptyState onCreateNew={() => setIsNewDocumentDialogOpen(true)} />
+        ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredDocuments.map((doc, index) => (
+                  <LibraryDocumentCard
+                      key={doc.id}
+                      item={doc}
+                      index={index}
+                      onToggleFolder={handleToggleFolder}
+                      isDraggable={true}
+                      onDrop={handleDocumentDropAction}
+                  />
+              ))}
+            </div>
         )}
 
-      <LibraryCreateDocumentSidebar
-        isOpen={isNewDocumentDialogOpen}
-        onClose={() => setIsNewDocumentDialogOpen(false)}
-        onSave={handleCreateDocument}
-        currentUser={currentUser}
-        isLoading={isLoading.createDocument}
-      />
-      <LibraryCreateFolderSidebar
-        isOpen={isNewFolderDialogOpen}
-        onClose={() => setIsNewFolderDialogOpen(false)}
-        onSave={handleCreateFolder}
-        isLoading={isLoading.createFolder}
-      />
-    </div>
+        <LibraryCreateDocumentSidebar
+            isOpen={isNewDocumentDialogOpen}
+            onClose={() => setIsNewDocumentDialogOpen(false)}
+            onSave={handleCreateDocument}
+            currentUser={currentUser}
+            isLoading={isLoading.createDocument}
+        />
+        <LibraryCreateFolderSidebar
+            isOpen={isNewFolderDialogOpen}
+            onClose={() => setIsNewFolderDialogOpen(false)}
+            onSave={handleCreateFolder}
+            isLoading={isLoading.createFolder}
+        />
+      </div>
   );
 }

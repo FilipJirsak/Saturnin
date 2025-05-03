@@ -1,8 +1,8 @@
-import { useLoaderData } from "@remix-run/react";
-import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { IssueDetail } from "~/features/issues/detail/IssueDetail";
-import { IssueFull } from "~/types";
-import { useState } from "react";
+import {useLoaderData} from "@remix-run/react";
+import {LoaderFunctionArgs, MetaFunction} from "@remix-run/node";
+import {IssueDetail} from "~/features/issues/detail/IssueDetail";
+import {IssueFull} from "~/types";
+import {useState} from "react";
 
 export const meta: MetaFunction = ({ params }) => {
   return [

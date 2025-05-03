@@ -1,6 +1,11 @@
 import { useNavigate } from "@remix-run/react";
 import { MindMap } from "~/types/knowledge";
-import { deleteMindMap, duplicateMindMap, shareMindMap, updateMindMap } from "~/utils/knowledge/mindmapUtils";
+import {
+  deleteMindMap,
+  shareMindMap,
+  duplicateMindMap,
+  updateMindMap
+} from "~/utils/knowledge/mindmapUtils";
 import { useToast } from "~/hooks/use-toast";
 
 export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) => void) {
@@ -19,7 +24,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Myšlenková mapa smazána",
           description: "Myšlenková mapa byla úspěšně smazána.",
-          variant: "success",
+          variant: "success"
         });
 
         if (onSuccess) {
@@ -29,7 +34,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Chyba při mazání mapy",
           description: "Nepodařilo se smazat myšlenkovou mapu. Zkus to prosím znovu.",
-          variant: "destructive",
+          variant: "destructive"
         });
       }
     } catch (error) {
@@ -37,7 +42,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       toast({
         title: "Chyba při mazání mapy",
         description: "Nepodařilo se smazat myšlenkovou mapu. Zkus to prosím znovu.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -54,14 +59,14 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Myšlenková mapa duplikována",
           description: "Myšlenková mapa byla úspěšně duplikována.",
-          variant: "success",
+          variant: "success"
         });
 
         if (onSuccess) {
           onSuccess("duplicate", duplicatedMap);
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         navigate(`/knowledge/mindmaps/${duplicatedMap.id}`);
 
@@ -70,7 +75,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Chyba při duplikování mapy",
           description: "Nepodařilo se duplikovat myšlenkovou mapu. Zkus to prosím znovu.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return null;
       }
@@ -79,7 +84,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       toast({
         title: "Chyba při duplikování mapy",
         description: "Nepodařilo se duplikovat myšlenkovou mapu. Zkus to prosím znovu.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return null;
     }
@@ -98,8 +103,10 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       if (success) {
         toast({
           title: newIsPublic ? "Mapa zveřejněna" : "Mapa zneveřejněna",
-          description: newIsPublic ? "Myšlenková mapa je nyní veřejně dostupná." : "Myšlenková mapa je nyní soukromá.",
-          variant: "success",
+          description: newIsPublic
+              ? "Myšlenková mapa je nyní veřejně dostupná."
+              : "Myšlenková mapa je nyní soukromá.",
+          variant: "success"
         });
 
         if (onSuccess) {
@@ -109,7 +116,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Chyba při sdílení mapy",
           description: "Nepodařilo se změnit nastavení sdílení mapy. Zkus to prosím znovu.",
-          variant: "destructive",
+          variant: "destructive"
         });
       }
     } catch (error) {
@@ -117,7 +124,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       toast({
         title: "Chyba při sdílení mapy",
         description: "Nepodařilo se změnit nastavení sdílení mapy. Zkus to prosím znovu.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -135,7 +142,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Myšlenková mapa aktualizována",
           description: "Změny byly úspěšně uloženy.",
-          variant: "success",
+          variant: "success"
         });
 
         if (onSuccess) {
@@ -147,7 +154,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
         toast({
           title: "Chyba při ukládání mapy",
           description: "Nepodařilo se uložit změny. Zkus to prosím znovu.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return false;
       }
@@ -156,7 +163,7 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
       toast({
         title: "Chyba při ukládání mapy",
         description: "Nepodařilo se uložit změny. Zkus to prosím znovu.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return false;
     }
@@ -166,6 +173,6 @@ export function useMindMapActions(onSuccess?: (action: string, map?: MindMap) =>
     handleDeleteMindMap,
     handleDuplicateMindMap,
     handleShareMindMap,
-    handleUpdateMindMap,
+    handleUpdateMindMap
   };
 }

@@ -1,7 +1,7 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 import { BreadcrumbItem } from "~/types/navigation";
-import { PATH_TRANSLATIONS } from "~/lib/constants";
+import {PATH_TRANSLATIONS} from "~/lib/constants";
 
 /**
  * Merges Tailwind CSS classes using clsx and tailwind-merge.
@@ -10,7 +10,7 @@ import { PATH_TRANSLATIONS } from "~/lib/constants";
  * @returns String of merged and optimized Tailwind CSS classes
  */
 export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 /**
@@ -21,15 +21,15 @@ export function cn(...inputs: ClassValue[]): string {
  * @returns The title of the matching navigation item or null if not found
  */
 const getNavItemTitle = (path: string, navItems: any[]): string | null => {
-  if (path === "") return "Inbox";
+  if (path === '') return 'Inbox';
 
-  const lastSegment = path.split("/").pop() || "";
+  const lastSegment = path.split('/').pop() || '';
   if (PATH_TRANSLATIONS[lastSegment]) {
     return PATH_TRANSLATIONS[lastSegment];
   }
 
   for (const item of navItems) {
-    if (item.url === "/" + path) {
+    if (item.url === '/' + path) {
       return item.title;
     }
 
@@ -44,7 +44,7 @@ const getNavItemTitle = (path: string, navItems: any[]): string | null => {
   }
 
   return null;
-};
+}
 
 /**
  * Checks if the current path belongs to the "Dashboard" section.
@@ -54,8 +54,8 @@ const getNavItemTitle = (path: string, navItems: any[]): string | null => {
  * @returns A boolean indicating whether the path is part of the Dashboard section
  */
 const isPathUnderDashboard = (path: string): boolean => {
-  return path === "/statistics" || path === "/activities";
-};
+  return path === '/statistics' || path === '/activities';
+}
 
 /**
  * Checks if the current path is in the profile settings section.
@@ -64,8 +64,8 @@ const isPathUnderDashboard = (path: string): boolean => {
  * @returns A boolean indicating whether the path is in the profile settings section
  */
 const isPathUnderProfileSettings = (path: string): boolean => {
-  return path.startsWith("/settings/profile/");
-};
+  return path.startsWith('/settings/profile/');
+}
 
 /**
  * Generates breadcrumb navigation items based on the current pathname.
@@ -75,64 +75,71 @@ const isPathUnderProfileSettings = (path: string): boolean => {
  * @returns Array of BreadcrumbItem objects representing the navigation path
  */
 export const getBreadcrumbs = (pathname: string, navItems: any[]): BreadcrumbItem[] => {
-  const paths = pathname.split("/").filter(Boolean);
+  const paths = pathname.split('/').filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [];
 
-  if (pathname === "/") {
+  if (pathname === '/') {
     breadcrumbs.push({
-      label: "Inbox",
-      path: "/",
-      isLast: true,
+      label: 'Inbox',
+      path: '/',
+      isLast: true
     });
     return breadcrumbs;
-  } else if (isPathUnderDashboard(pathname)) {
+  }
+
+  else if (isPathUnderDashboard(pathname)) {
     breadcrumbs.push({
-      label: PATH_TRANSLATIONS["dashboard"] || "Přehled",
-      path: "/dashboard",
-      isLast: false,
+      label: PATH_TRANSLATIONS['dashboard'] || 'Přehled',
+      path: '/dashboard',
+      isLast: false
     });
 
     const title = getNavItemTitle(paths[0], navItems);
     breadcrumbs.push({
       label: title || paths[0].charAt(0).toUpperCase() + paths[0].slice(1),
       path: pathname,
-      isLast: true,
+      isLast: true
     });
-  } else if (isPathUnderProfileSettings(pathname)) {
+  }
+
+  else if (isPathUnderProfileSettings(pathname)) {
     breadcrumbs.push({
-      label: PATH_TRANSLATIONS["settings"] || "Nastavení",
-      path: "/settings",
-      isLast: false,
+      label: PATH_TRANSLATIONS['settings'] || 'Nastavení',
+      path: '/settings',
+      isLast: false
     });
 
     breadcrumbs.push({
-      label: PATH_TRANSLATIONS["profile"] || "Profil",
-      path: "/settings/profile",
-      isLast: false,
+      label: PATH_TRANSLATIONS['profile'] || 'Profil',
+      path: '/settings/profile',
+      isLast: false
     });
 
     if (paths.length > 2) {
       const sectionKey = paths[2];
       const sectionLabel = PATH_TRANSLATIONS[sectionKey] ||
-        sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1);
+          sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1);
 
       breadcrumbs.push({
         label: sectionLabel,
         path: pathname,
-        isLast: true,
+        isLast: true
       });
     }
-  } else {
-    let currentPath = "";
+  }
+
+  else {
+    let currentPath = '';
 
     for (let i = 0; i < paths.length; i++) {
-      currentPath += "/" + paths[i];
+      currentPath += '/' + paths[i];
 
-      let segmentLabel = "";
+      let segmentLabel = '';
 
       if (PATH_TRANSLATIONS[paths[i]]) {
         segmentLabel = PATH_TRANSLATIONS[paths[i]];
-      } else {
+      }
+      else {
         const navTitle = getNavItemTitle(currentPath.slice(1), navItems);
         if (navTitle) {
           segmentLabel = navTitle;
@@ -144,7 +151,7 @@ export const getBreadcrumbs = (pathname: string, navItems: any[]): BreadcrumbIte
       breadcrumbs.push({
         label: segmentLabel,
         path: currentPath,
-        isLast: i === paths.length - 1,
+        isLast: i === paths.length - 1
       });
     }
   }
@@ -160,10 +167,10 @@ export const getBreadcrumbs = (pathname: string, navItems: any[]): BreadcrumbIte
  */
 export const getInitials = (name: string): string => {
   return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
 };
 
 /**
@@ -185,8 +192,8 @@ export const truncateText = (text: string, maxLength: number) => {
  * @returns Darkened hexadecimal color string
  */
 export function darkenColor(color: string, amount: number = 30): string {
-  if (color === "#3498db" && amount === 40) {
-    return "#1c80c3";
+  if (color === '#3498db' && amount === 40) {
+    return '#1c80c3';
   }
 
   color = color.replace("#", "");
@@ -200,9 +207,9 @@ export function darkenColor(color: string, amount: number = 30): string {
   b = Math.max(0, b - amount);
 
   return "#" +
-    r.toString(16).padStart(2, "0") +
-    g.toString(16).padStart(2, "0") +
-    b.toString(16).padStart(2, "0");
+      r.toString(16).padStart(2, '0') +
+      g.toString(16).padStart(2, '0') +
+      b.toString(16).padStart(2, '0');
 }
 
 /**
@@ -215,32 +222,32 @@ export function darkenColor(color: string, amount: number = 30): string {
 export function generateAvatar(seed: string, gender?: "male" | "female"): string {
   const uniqueSeed = gender ? `${seed}-${gender}` : seed;
 
-  const baseUrl = "https://api.dicebear.com/7.x/avataaars/svg";
+  const baseUrl = 'https://api.dicebear.com/7.x/avataaars/svg';
   const params = new URLSearchParams();
-
-  params.append("seed", uniqueSeed);
-  params.append("backgroundColor", gender === "female" ? "ffd5dc" : "b6e3f4");
-  params.append("backgroundType", "solid");
-  params.append("facialHairProbability", gender === "male" ? "80" : "0");
-
-  if (gender === "female") {
-    params.append("top[]", "bigHair");
-    params.append("top[]", "bob");
-    params.append("top[]", "bun");
-    params.append("top[]", "curly");
-    params.append("top[]", "curvy");
-    params.append("top[]", "dreads");
-    params.append("top[]", "frida");
-    params.append("top[]", "fro");
-    params.append("top[]", "longButNotTooLong");
-    params.append("top[]", "straight01");
-    params.append("top[]", "straight02");
+  
+  params.append('seed', uniqueSeed);
+  params.append('backgroundColor', gender === 'female' ? 'ffd5dc' : 'b6e3f4');
+  params.append('backgroundType', 'solid');
+  params.append('facialHairProbability', gender === 'male' ? '80' : '0');
+  
+  if (gender === 'female') {
+    params.append('top[]', 'bigHair');
+    params.append('top[]', 'bob');
+    params.append('top[]', 'bun');
+    params.append('top[]', 'curly');
+    params.append('top[]', 'curvy');
+    params.append('top[]', 'dreads');
+    params.append('top[]', 'frida');
+    params.append('top[]', 'fro');
+    params.append('top[]', 'longButNotTooLong');
+    params.append('top[]', 'straight01');
+    params.append('top[]', 'straight02');
   } else {
-    params.append("top[]", "shortCurly");
-    params.append("top[]", "shortFlat");
-    params.append("top[]", "shortRound");
-    params.append("top[]", "shortWaved");
-    params.append("top[]", "theCaesar");
+    params.append('top[]', 'shortCurly');
+    params.append('top[]', 'shortFlat');
+    params.append('top[]', 'shortRound');
+    params.append('top[]', 'shortWaved');
+    params.append('top[]', 'theCaesar');
   }
 
   return `${baseUrl}?${params.toString()}`;
@@ -259,3 +266,4 @@ export function generateAvatar(seed: string, gender?: "male" | "female"): string
 
   return `https://api.dicebear.com/7.x/${style}/svg?${params.toString()}`;
 }*/
+

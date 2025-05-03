@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from 'react';
 import { IssueFull } from "~/types";
-import { ISSUE_STATES } from "~/lib/constants";
-import { IssueSidebar } from "~/features/views/common/IssueSidebar";
-import { KanbanColumn } from "~/features/views/kanban/KanbanColumn";
-import { useToast } from "~/hooks/use-toast";
+import {ISSUE_STATES} from "~/lib/constants";
+import {IssueSidebar} from "~/features/views/common/IssueSidebar";
+import {KanbanColumn} from "~/features/views/kanban/KanbanColumn";
+import {useToast} from "~/hooks/use-toast";
 
 interface BoardProps {
   projectCode: string;
   issues: IssueFull[];
 }
 
-export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps) {
+export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps){
   const [issues, setIssues] = useState<IssueFull[]>(initialIssues);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Partial<IssueFull> | null>(null);
@@ -29,19 +29,21 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps) 
   }, [initialIssues]);
 
   const handleMoveCard = async (code: string, newState: string) => {
-    const issueToUpdate = issues.find((issue) => issue.code === code);
+    const issueToUpdate = issues.find(issue => issue.code === code);
     if (!issueToUpdate) return;
 
     const updatedIssue = { ...issueToUpdate, state: newState };
-    setIssues((prevIssues) => prevIssues.map((issue) => issue.code === code ? updatedIssue : issue));
+    setIssues(prevIssues =>
+        prevIssues.map(issue =>
+            issue.code === code ? updatedIssue : issue
+        )
+    );
 
     // TODO (NL): Implementovat skutečné uložení na server
     toast({
       title: "Issue aktualizováno",
-      description: `Issue ${code} přesunuto do stavu ${
-        ISSUE_STATES.find((s) => s.value === newState)?.label || newState
-      }`,
-      variant: "success",
+      description: `Issue ${code} přesunuto do stavu ${ISSUE_STATES.find(s => s.value === newState)?.label || newState}`,
+      variant: "success"
     });
   };
 
@@ -67,9 +69,9 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps) 
       // TODO (NL): Implementovat skutečné vytvoření na serveru
       const newIssue: IssueFull = {
         code: `${projectCode}-${issues.length + 1}`,
-        state: updatedIssue.state || "new",
-        title: updatedIssue.title || "",
-        summary: updatedIssue.summary || "",
+        state: updatedIssue.state || 'new',
+        title: updatedIssue.title || '',
+        summary: updatedIssue.summary || '',
         description: updatedIssue.description,
         assignee: updatedIssue.assignee,
         tags: updatedIssue.tags,
@@ -78,30 +80,30 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps) 
         attachments_count: updatedIssue.attachments_count || 0,
         created_at: new Date().toISOString(),
         last_modified: new Date().toISOString(),
-        data: updatedIssue.data,
+        data: updatedIssue.data
       };
 
-      setIssues((prevIssues) => [...prevIssues, newIssue]);
+      setIssues(prevIssues => [...prevIssues, newIssue]);
 
       toast({
         title: "Issue vytvořeno",
         description: `Issue ${newIssue.code} bylo úspěšně vytvořeno`,
-        variant: "success",
+        variant: "success"
       });
     } else {
       // TODO (NL): Implementovat skutečné uložení na server
-      setIssues((prevIssues) =>
-        prevIssues.map((issue) =>
-          issue.code === selectedIssue?.code
-            ? { ...issue, ...updatedIssue, last_modified: new Date().toISOString() }
-            : issue
-        )
+      setIssues(prevIssues =>
+          prevIssues.map(issue =>
+              issue.code === selectedIssue?.code
+                  ? { ...issue, ...updatedIssue, last_modified: new Date().toISOString() }
+                  : issue
+          )
       );
 
       toast({
         title: "Issue aktualizováno",
         description: `Issue ${selectedIssue?.code} bylo úspěšně aktualizováno`,
-        variant: "success",
+        variant: "success"
       });
     }
 
@@ -109,30 +111,30 @@ export function KanbanBoard({ projectCode, issues: initialIssues }: BoardProps) 
   };
 
   return (
-    <>
-      <div className="flex space-x-4 overflow-x-auto p-4">
-        {ISSUE_STATES.map((state) => (
-          <KanbanColumn
-            key={state.value}
-            title={state.label}
-            state={state.value}
-            issues={issues.filter((issue) => issue.state === state.value)}
-            onMoveCard={handleMoveCard}
-            projectCode={projectCode}
-            onCardClick={handleCardClick}
-            onAddClick={handleAddClick}
-          />
-        ))}
-      </div>
+      <>
+        <div className="flex space-x-4 overflow-x-auto p-4">
+          {ISSUE_STATES.map((state) => (
+              <KanbanColumn
+                  key={state.value}
+                  title={state.label}
+                  state={state.value}
+                  issues={issues.filter((issue) => issue.state === state.value)}
+                  onMoveCard={handleMoveCard}
+                  projectCode={projectCode}
+                  onCardClick={handleCardClick}
+                  onAddClick={handleAddClick}
+              />
+          ))}
+        </div>
 
-      <IssueSidebar
-        isOpen={isDetailsOpen}
-        issue={selectedIssue}
-        projectCode={projectCode}
-        onClose={handleSidebarClose}
-        onSave={handleSaveIssue}
-        isNew={isNewIssue}
-      />
-    </>
+        <IssueSidebar
+            isOpen={isDetailsOpen}
+            issue={selectedIssue}
+            projectCode={projectCode}
+            onClose={handleSidebarClose}
+            onSave={handleSaveIssue}
+            isNew={isNewIssue}
+        />
+      </>
   );
 }

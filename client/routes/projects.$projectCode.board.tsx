@@ -1,6 +1,6 @@
 import { useOutletContext } from "@remix-run/react";
-import { IssueFull, ProjectWithIssues } from "~/types";
-import { KanbanBoard } from "~/features/views/kanban/KanbanBoard";
+import { ProjectWithIssues, IssueFull } from "~/types";
+import {KanbanBoard} from "~/features/views/kanban/KanbanBoard";
 import { MetaFunction } from "@remix-run/node";
 
 type ProjectContext = {
@@ -19,10 +19,10 @@ export default function ProjectBoardView() {
   const { project, issues } = useOutletContext<ProjectContext>();
 
   return (
-    <div className="rounded-xl border bg-background">
-      <div className="overflow-x-auto">
-        <KanbanBoard projectCode={project.code} issues={issues} />
+      <div className="rounded-xl border bg-background">
+        <div className="overflow-x-auto">
+          <KanbanBoard projectCode={project.code} issues={issues} />
+        </div>
       </div>
-    </div>
   );
 }
