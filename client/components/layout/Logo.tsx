@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export const Logo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const checkDarkMode = () => {
-      const isDark = document.documentElement.classList.contains('dark');
+      const isDark = document.documentElement.classList.contains("dark");
       setIsDarkMode(isDark);
     };
 
@@ -14,7 +14,7 @@ export const Logo = () => {
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class']
+      attributeFilter: ["class"],
     });
 
     return () => observer.disconnect();
@@ -22,7 +22,7 @@ export const Logo = () => {
 
   return (
     <img
-      src={isDarkMode ? '/logo-dark.svg' : '/logo-light.svg'}
+      src={isDarkMode ? "/logo-dark.svg" : "/logo-light.svg"}
       alt="Logo"
       className="h-8 w-auto"
     />

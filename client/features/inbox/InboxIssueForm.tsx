@@ -1,16 +1,9 @@
-import {FormEvent, useState, useCallback, ChangeEvent, DragEvent} from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter
-} from "~/components/ui/card";
+import { ChangeEvent, DragEvent, FormEvent, useCallback, useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
-import { Plus, Loader2, Inbox, Link, Upload } from "lucide-react";
+import { Inbox, Link, Loader2, Plus, Upload } from "lucide-react";
 import { useToast } from "~/hooks/use-toast";
 import { IssueFull } from "~/types";
 import { cn } from "~/utils/helpers";
@@ -48,7 +41,7 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
     setIsDragging(false);
 
     const files = Array.from(e.dataTransfer.files);
-    setAttachedFiles(prev => [...prev, ...files]);
+    setAttachedFiles((prev) => [...prev, ...files]);
 
     toast({
       title: "Soubory přidány",
@@ -58,7 +51,7 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
 
   const handleFileInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setAttachedFiles(prev => [...prev, ...files]);
+    setAttachedFiles((prev) => [...prev, ...files]);
 
     toast({
       title: "Soubory přidány",
@@ -82,7 +75,7 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
 
     try {
       // TODO (NL): Nahradit reálným API voláním
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const newIssue: IssueFull = {
         code: `INBOX-${Date.now()}`,
@@ -93,12 +86,12 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
         attachments_count: attachedFiles.length,
         data: {
           link: link.trim() || undefined,
-          attachments: attachedFiles.map(file => ({
+          attachments: attachedFiles.map((file) => ({
             name: file.name,
             size: file.size,
-            type: file.type
-          }))
-        }
+            type: file.type,
+          })),
+        },
       };
 
       onIssueCreated(newIssue);
@@ -112,7 +105,6 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
         title: "Issue bylo vytvořeno",
         description: "Issue bylo úspěšně přidáno do inboxu",
       });
-
     } catch (error) {
       console.error(error);
       toast({
@@ -126,108 +118,110 @@ export function InboxIssueForm({ onIssueCreated }: IssueFormProps) {
   };
 
   return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Inbox className="h-5 w-5 text-primary" />
-            Přidat do Inboxu
-          </CardTitle>
-          <CardDescription>
-            Rychlý záznam issue bez přiřazení k projektu
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Inbox className="h-5 w-5 text-primary" />
+          Přidat do Inboxu
+        </CardTitle>
+        <CardDescription>
+          Rychlý záznam issue bez přiřazení k projektu
+        </CardDescription>
+      </CardHeader>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Input
+              placeholder="Název issue"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Textarea
+              placeholder="Popis issue (volitelné)"
+              className="min-h-32"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Link className="h-4 w-4 text-muted-foreground" />
               <Input
-                  placeholder="Název issue"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                placeholder="Odkaz (volitelné)"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Textarea
-                  placeholder="Popis issue (volitelné)"
-                  className="min-h-32"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+          </div>
+          <div
+            className={cn(
+              "border-2 border-dashed rounded-lg p-4 text-center",
+              isDragging ? "border-primary bg-primary/5" : "border-muted",
+            )}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <Upload className="h-6 w-6 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Přetáhni soubory sem nebo klikni pro výběr
+              </p>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                id={fileInputId}
+                onChange={handleFileInput}
               />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById(fileInputId)?.click()}
+              >
+                Vybrat soubory
+              </Button>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Link className="h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Odkaz (volitelné)"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                />
+            {attachedFiles.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium mb-2">Připojené soubory:</p>
+                <ul className="space-y-1">
+                  {attachedFiles.map((file, index) => (
+                    <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="truncate flex-1">{file.name}</span>
+                      <span className="text-xs whitespace-nowrap">({(file.size / 1024).toFixed(1)} KB)</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-            <div
-                className={cn(
-                    "border-2 border-dashed rounded-lg p-4 text-center",
-                    isDragging ? "border-primary bg-primary/5" : "border-muted"
-                )}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-            >
-              <div className="flex flex-col items-center gap-2">
-                <Upload className="h-6 w-6 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  Přetáhni soubory sem nebo klikni pro výběr
-                </p>
-                <input
-                    type="file"
-                    multiple
-                    className="hidden"
-                    id={fileInputId}
-                    onChange={handleFileInput}
-                />
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById(fileInputId)?.click()}
-                >
-                  Vybrat soubory
-                </Button>
-              </div>
-              {attachedFiles.length > 0 && (
-                  <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Připojené soubory:</p>
-                    <ul className="space-y-1">
-                      {attachedFiles.map((file, index) => (
-                          <li key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span className="truncate flex-1">{file.name}</span>
-                            <span className="text-xs whitespace-nowrap">({(file.size / 1024).toFixed(1)} KB)</span>
-                          </li>
-                      ))}
-                    </ul>
-                  </div>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!isValid || isSubmitting}
+          >
+            {isSubmitting
+              ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Vytvářím...
+                </>
+              )
+              : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Přidat issue
+                </>
               )}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-                type="submit"
-                className="w-full"
-                disabled={!isValid || isSubmitting}
-            >
-              {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Vytvářím...
-                  </>
-              ) : (
-                  <>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Přidat issue
-                  </>
-              )}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

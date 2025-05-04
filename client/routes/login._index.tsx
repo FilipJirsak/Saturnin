@@ -2,7 +2,7 @@ import { LoginForm } from "~/features/authentication/LoginForm";
 import { ThemeToggle } from "~/features/darkMode/ThemeToggle";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
-import {requireGuest} from "~/utils/authGuard";
+import { requireGuest } from "~/utils/authGuard";
 import { Logo } from "~/components/layout/Logo";
 
 export const meta: MetaFunction = () => {
@@ -25,29 +25,29 @@ export default function LoginPage() {
   const errorMessage = searchParams.get("error");
 
   return (
-      <div className="flex min-h-svh flex-col bg-background">
-        <header className="flex items-center justify-between p-4 md:p-6">
-          <div className="flex items-center gap-2">
-            <Logo />
-            <span className="text-xl font-semibold font-display">Saturnin</span>
-          </div>
-          <ThemeToggle />
-        </header>
+    <div className="flex min-h-svh flex-col bg-background">
+      <header className="flex items-center justify-between p-4 md:p-6">
+        <div className="flex items-center gap-2">
+          <Logo />
+          <span className="text-xl font-semibold font-display">Saturnin</span>
+        </div>
+        <ThemeToggle />
+      </header>
 
-        <main className="flex flex-1 items-center justify-center p-6 md:p-10">
-          <div className="w-full max-w-sm md:max-w-3xl">
-            {errorMessage && (
-                <div className="mb-4 rounded-lg bg-destructive/15 p-3 text-destructive">
-                  {errorMessage}
-                </div>
-            )}
-            <LoginForm redirectTo={redirectTo} />
-          </div>
-        </main>
+      <main className="flex flex-1 items-center justify-center p-6 md:p-10">
+        <div className="w-full max-w-sm md:max-w-3xl">
+          {errorMessage && (
+            <div className="mb-4 rounded-lg bg-destructive/15 p-3 text-destructive">
+              {errorMessage}
+            </div>
+          )}
+          <LoginForm redirectTo={redirectTo} />
+        </div>
+      </main>
 
-        <footer className="py-6 text-center text-sm text-muted-foreground">
-          <p>© 2025 Saturnin. Všechna práva vyhrazena.</p>
-        </footer>
-      </div>
+      <footer className="py-6 text-center text-sm text-muted-foreground">
+        <p>© 2025 Saturnin. Všechna práva vyhrazena.</p>
+      </footer>
+    </div>
   );
 }

@@ -1,32 +1,17 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  useLoaderData,
-  Form,
-  useNavigation,
-} from "@remix-run/react";
-import { redirect, LoaderFunction, ActionFunction, MetaFunction} from "@remix-run/node";
+import { useEffect, useRef, useState } from "react";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
+import { ActionFunction, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { FileText } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import { typedJson } from "~/utils/typedJson";
+import { deleteMdxDocument, getMdxDocumentBySlug, mdxToDocument, updateMdxDocument } from "~/utils/knowledge/mdxUtils";
 import {
-  getMdxDocumentBySlug,
-  mdxToDocument,
-  updateMdxDocument,
-  deleteMdxDocument,
-} from "~/utils/knowledge/mdxUtils";
-import {
-  DocumentDetailHeader,
   DocumentContent,
-  DocumentSidebar,
+  DocumentDetailHeader,
   DocumentFooter,
+  DocumentSidebar,
 } from "~/features/knowledge/library/LibraryCommonComponents";
 
 type LoaderData = {
@@ -42,7 +27,7 @@ type LoaderData = {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
-    { title: `Knihovna - ${data?.title || 'Dokument'} (dokument) | Saturnin` },
+    { title: `Knihovna - ${data?.title || "Dokument"} (dokument) | Saturnin` },
     { name: "description", content: "Detailní zobrazení dokumentu" },
   ];
 };
@@ -78,8 +63,8 @@ export const action: ActionFunction = async ({ request, params, context }) => {
     });
     if (!updated) {
       return typedJson(
-          { success: false, error: "Nepodařilo se aktualizovat dokument" },
-          { status: 500 }
+        { success: false, error: "Nepodařilo se aktualizovat dokument" },
+        { status: 500 },
       );
     }
     return redirect(`/knowledge/library/${updated.id}`);
@@ -89,8 +74,8 @@ export const action: ActionFunction = async ({ request, params, context }) => {
     const ok = await deleteMdxDocument(documentId);
     if (!ok) {
       return typedJson(
-          { success: false, error: "Nepodařilo se smazat dokument" },
-          { status: 500 }
+        { success: false, error: "Nepodařilo se smazat dokument" },
+        { status: 500 },
       );
     }
     return redirect("/knowledge/library");
@@ -115,9 +100,9 @@ export default function KnowledgeDocumentDetailPage() {
   const lastActionRef = useRef<"update" | "delete" | null>(null);
 
   const isSaving = (navigation.state === "submitting" && navigation.formData?.get("action") === "update") ||
-      (navigation.state === "loading" && lastActionRef.current === "update");
+    (navigation.state === "loading" && lastActionRef.current === "update");
   const isDeleting = (navigation.state === "submitting" && navigation.formData?.get("action") === "delete") ||
-      (navigation.state === "loading" && lastActionRef.current === "delete");
+    (navigation.state === "loading" && lastActionRef.current === "delete");
 
   useEffect(() => {
     setEditedDocument(loaderData);
@@ -142,72 +127,72 @@ export default function KnowledgeDocumentDetailPage() {
   };
 
   return (
-      <div className="space-y-6">
-        <DocumentDetailHeader
-            document={editedDocument}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            onSave={handleSave}
-            onDelete={handleDelete}
-            isSaving={isSaving}
-            isDeleting={isDeleting}
-            onEdit={handleEdit}
-        />
+    <div className="space-y-6">
+      <DocumentDetailHeader
+        document={editedDocument}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        onEdit={handleEdit}
+      />
 
-        <Card>
-          <CardHeader className="p-4 pb-0">
-            {isEditing ? (
-                <Input
-                    value={editedDocument.title}
-                    onChange={(e) =>
-                        setEditedDocument({ ...editedDocument, title: e.target.value })
-                    }
-                    className="text-xl font-bold"
-                />
-            ) : (
-                <CardTitle className="text-xl font-bold flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-blue-500" />
-                  {editedDocument.title}
-                </CardTitle>
+      <Card>
+        <CardHeader className="p-4 pb-0">
+          {isEditing
+            ? (
+              <Input
+                value={editedDocument.title}
+                onChange={(e) => setEditedDocument({ ...editedDocument, title: e.target.value })}
+                className="text-xl font-bold"
+              />
+            )
+            : (
+              <CardTitle className="text-xl font-bold flex items-center gap-2">
+                <FileText className="h-5 w-5 text-blue-500" />
+                {editedDocument.title}
+              </CardTitle>
             )}
-          </CardHeader>
+        </CardHeader>
 
-          <CardContent className="p-4">
-            <div className="flex flex-col lg:flex-row gap-8">
-              <DocumentContent
-                  document={editedDocument}
-                  isEditing={isEditing}
-                  onUpdateDocument={setEditedDocument}
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-              />
-              <DocumentSidebar
-                  document={editedDocument}
-                  isEditing={isEditing}
-                  onUpdateDocument={setEditedDocument}
-                  activeTab={activeTab}
-              />
-            </div>
-          </CardContent>
+        <CardContent className="p-4">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <DocumentContent
+              document={editedDocument}
+              isEditing={isEditing}
+              onUpdateDocument={setEditedDocument}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+            <DocumentSidebar
+              document={editedDocument}
+              isEditing={isEditing}
+              onUpdateDocument={setEditedDocument}
+              activeTab={activeTab}
+            />
+          </div>
+        </CardContent>
 
-          <CardFooter className="p-4 border-t text-sm">
-            <DocumentFooter commentsCount={0} />
-          </CardFooter>
-        </Card>
+        <CardFooter className="p-4 border-t text-sm">
+          <DocumentFooter commentsCount={0} />
+        </CardFooter>
+      </Card>
 
-        <Form method="post" id="update-form" ref={updateFormRef} className="hidden">
-          <input type="hidden" name="action" value="update" />
-          <input type="hidden" name="title" value={editedDocument.title} />
-          <input type="hidden" name="content" value={editedDocument.content} />
-          <input type="hidden" name="author" value={editedDocument.author || ""} />
-          <input type="hidden" name="tags" value={JSON.stringify(editedDocument.tags || [])} />
-          <input type="hidden" name="relatedIssues" value={JSON.stringify(editedDocument.relatedIssues || [])} />
-          <input type="hidden" name="isShared" value={editedDocument.isShared ? "true" : "false"} />
-        </Form>
+      <Form method="post" id="update-form" ref={updateFormRef} className="hidden">
+        <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="title" value={editedDocument.title} />
+        <input type="hidden" name="content" value={editedDocument.content} />
+        <input type="hidden" name="author" value={editedDocument.author || ""} />
+        <input type="hidden" name="tags" value={JSON.stringify(editedDocument.tags || [])} />
+        <input type="hidden" name="relatedIssues" value={JSON.stringify(editedDocument.relatedIssues || [])} />
+        <input type="hidden" name="isShared" value={editedDocument.isShared ? "true" : "false"} />
+      </Form>
 
-        <Form method="post" id="delete-form" ref={deleteFormRef} className="hidden">
-          <input type="hidden" name="action" value="delete" />
-        </Form>
-      </div>
+      <Form method="post" id="delete-form" ref={deleteFormRef} className="hidden">
+        <input type="hidden" name="action" value="delete" />
+      </Form>
+    </div>
   );
 }
