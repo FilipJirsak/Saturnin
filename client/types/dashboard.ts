@@ -5,16 +5,16 @@ export interface TeamMember {
   label: string;
 }
 
-export type ActivityType = 'issue' | 'document' | 'concept' | 'mindmap' | 'message';
+export type ActivityType = "issue" | "document" | "concept" | "mindmap" | "message";
 
-export type ActivityStatus = 'open' | 'closed' | 'in-progress';
+export type ActivityStatus = "open" | "closed" | "in-progress";
 
 export interface ActivityIconMapping {
   icon: LucideIcon;
   className: string;
 }
 
-export type StatisticsPeriod = 'week' | 'month' | 'quarter' | 'year';
+export type StatisticsPeriod = "week" | "month" | "quarter" | "year";
 
 export interface Activity {
   id: string;
@@ -27,7 +27,7 @@ export interface Activity {
     avatar?: string;
   };
   status?: ActivityStatus;
-  priority?: 'low' | 'medium' | 'high';
+  priority?: "low" | "medium" | "high";
 }
 
 export interface ActivityChartData {

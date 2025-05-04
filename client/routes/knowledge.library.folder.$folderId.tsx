@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { requireAuth } from "~/utils/authGuard";
 import { Button } from "~/components/ui/button";
-import { ChevronLeft, FolderOpen, FilePlus } from "lucide-react";
+import { ChevronLeft, FilePlus, FolderOpen } from "lucide-react";
 import { typedJson } from "~/utils/typedJson";
 import { EmptyState } from "~/features/knowledge/library/LibraryCommonComponents";
 import { getFolderWithDocuments } from "~/utils/knowledge/libraryUtils";
@@ -23,7 +23,7 @@ type LoaderData = {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [
-    { title: `Knihovna - složka ${data?.folder?.title || 'Složka'} (složka) | Saturnin` },
+    { title: `Knihovna - složka ${data?.folder?.title || "Složka"} (složka) | Saturnin` },
     { name: "description", content: "Obsah složky v knihovně dokumentů" },
   ];
 };
@@ -37,7 +37,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   }
 
   try {
-    const tag = folderId.replace('folder-', '');
+    const tag = folderId.replace("folder-", "");
     const folder = await getFolderWithDocuments(tag);
 
     return typedJson({ folder });
@@ -61,13 +61,11 @@ export default function KnowledgeFolderDetailPage() {
 
     try {
       const folderTag = folder.title.toLowerCase();
-      const tags = newDocument.tags.includes(folderTag)
-          ? newDocument.tags
-          : [folderTag, ...newDocument.tags];
+      const tags = newDocument.tags.includes(folderTag) ? newDocument.tags : [folderTag, ...newDocument.tags];
 
       const documentToCreate = {
         ...newDocument,
-        tags
+        tags,
       };
 
       const createdDocument = await createMdxDocument(documentToCreate);
@@ -76,7 +74,7 @@ export default function KnowledgeFolderDetailPage() {
         toast({
           title: "Dokument vytvořen",
           description: `Dokument "${newDocument.title}" byl úspěšně vytvořen ve složce "${folder.title}".`,
-          variant: "success"
+          variant: "success",
         });
 
         navigate(`/knowledge/library/${createdDocument.id}`);
@@ -84,7 +82,7 @@ export default function KnowledgeFolderDetailPage() {
         toast({
           title: "Chyba při vytváření dokumentu",
           description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
@@ -92,7 +90,7 @@ export default function KnowledgeFolderDetailPage() {
       toast({
         title: "Chyba při vytváření dokumentu",
         description: "Dokument se nepodařilo vytvořit. Zkus to prosím znovu.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -100,59 +98,57 @@ export default function KnowledgeFolderDetailPage() {
   };
 
   return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/knowledge/library")}
-              className="flex items-center gap-1"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span>Zpět do knihovny</span>
-          </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/knowledge/library")}
+          className="flex items-center gap-1"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span>Zpět do knihovny</span>
+        </Button>
 
-          <Button
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => setIsNewDocumentDialogOpen(true)}
-          >
-            <FilePlus className="h-4 w-4" />
-            <span>Nový dokument</span>
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2 mb-4">
-          <FolderOpen className="h-6 w-6 text-amber-500" />
-          <h2 className="text-xl font-semibold">{folder.title}</h2>
-        </div>
-
-        {folder.description && (
-            <p className="text-muted-foreground mb-6">{folder.description}</p>
-        )}
-
-        <div className="grid grid-cols-1 gap-4">
-          {folder.documents.length > 0 ? (
-              folder.documents.map((document: DocumentItem) => (
-                  <LibraryDocumentCard key={document.id} item={document} />
-              ))
-          ) : (
-              <EmptyState
-                  message={`Složka ${folder.title} je prázdná`}
-                  description="Vytvoř nový dokument pomocí tlačítka 'Nový dokument' výše."
-                  onCreateNew={() => setIsNewDocumentDialogOpen(true)}
-              />
-          )}
-        </div>
-
-        <LibraryCreateDocumentSidebar
-            isOpen={isNewDocumentDialogOpen}
-            onClose={() => setIsNewDocumentDialogOpen(false)}
-            onSave={handleCreateDocument}
-            currentUser={currentUser}
-            initialTag={folder.title.toLowerCase()}
-            isLoading={isLoading}
-        />
+        <Button
+          size="sm"
+          className="flex items-center gap-1"
+          onClick={() => setIsNewDocumentDialogOpen(true)}
+        >
+          <FilePlus className="h-4 w-4" />
+          <span>Nový dokument</span>
+        </Button>
       </div>
+
+      <div className="flex items-center gap-2 mb-4">
+        <FolderOpen className="h-6 w-6 text-amber-500" />
+        <h2 className="text-xl font-semibold">{folder.title}</h2>
+      </div>
+
+      {folder.description && <p className="text-muted-foreground mb-6">{folder.description}</p>}
+
+      <div className="grid grid-cols-1 gap-4">
+        {folder.documents.length > 0
+          ? (
+            folder.documents.map((document: DocumentItem) => <LibraryDocumentCard key={document.id} item={document} />)
+          )
+          : (
+            <EmptyState
+              message={`Složka ${folder.title} je prázdná`}
+              description="Vytvoř nový dokument pomocí tlačítka 'Nový dokument' výše."
+              onCreateNew={() => setIsNewDocumentDialogOpen(true)}
+            />
+          )}
+      </div>
+
+      <LibraryCreateDocumentSidebar
+        isOpen={isNewDocumentDialogOpen}
+        onClose={() => setIsNewDocumentDialogOpen(false)}
+        onSave={handleCreateDocument}
+        currentUser={currentUser}
+        initialTag={folder.title.toLowerCase()}
+        isLoading={isLoading}
+      />
+    </div>
   );
 }

@@ -43,18 +43,14 @@ export function ThemeToggle() {
   }
 
   return (
-      <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 rounded-full"
-          onClick={toggleTheme}
-          aria-label={theme === "dark" ? "Přepnout na světlý režim" : "Přepnout na tmavý režim"}
-      >
-        {theme === "dark" ? (
-            <Sun className="h-5 w-5" />
-        ) : (
-            <Moon className="h-5 w-5" />
-        )}
-      </Button>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-9 w-9 rounded-full"
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Přepnout na světlý režim" : "Přepnout na tmavý režim"}
+    >
+      {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+    </Button>
   );
 }

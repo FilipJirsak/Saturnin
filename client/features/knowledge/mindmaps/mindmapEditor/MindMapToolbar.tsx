@@ -1,7 +1,7 @@
-import { useRef, KeyboardEvent } from 'react';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { Plus, Link2, Save, Download, X, Share2 } from 'lucide-react';
+import { KeyboardEvent, useRef } from "react";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Download, Link2, Plus, Save, Share2, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ interface MindMapToolbarProps {
   onToggleConnect: () => void;
   hasUnsavedChanges: boolean;
   onSave: () => void;
-  onExport?: (format: 'png' | 'json' | 'svg') => void;
+  onExport?: (format: "png" | "json" | "svg") => void;
   onShare?: () => void;
   isPublic?: boolean;
 }
@@ -38,45 +38,53 @@ export function MindMapToolbar({
   onSave,
   onExport,
   onShare,
-  isPublic
+  isPublic,
 }: MindMapToolbarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       onAddNode();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       onCancelCreate();
     }
   };
 
   return (
     <div className="p-2 border-b flex items-center gap-2">
-      {isCreatingNode ? (
-        <>
-          <Input
-            ref={inputRef}
-            value={nodeName}
-            onChange={(e) => onNodeNameChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Název uzlu..."
-            className="w-48"
-            autoFocus
-          />
-          <Button size="sm" onClick={onAddNode} disabled={!nodeName}>
+      {isCreatingNode
+        ? (
+          <>
+            <Input
+              ref={inputRef}
+              value={nodeName}
+              onChange={(e) => onNodeNameChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Název uzlu..."
+              className="w-48"
+              autoFocus
+            />
+            <Button size="sm" onClick={onAddNode} disabled={!nodeName}>
+              <Plus className="h-4 w-4 mr-1" />
+              Přidat
+            </Button>
+            <Button size="sm" variant="ghost" onClick={onCancelCreate}>
+              <X className="h-4 w-4" />
+            </Button>
+          </>
+        )
+        : (
+          <Button
+            size="sm"
+            onClick={() => {
+              onCancelCreate();
+              inputRef.current?.focus();
+            }}
+          >
             <Plus className="h-4 w-4 mr-1" />
-            Přidat
+            Nový uzel
           </Button>
-          <Button size="sm" variant="ghost" onClick={onCancelCreate}>
-            <X className="h-4 w-4" />
-          </Button>
-        </>
-      ) : (
-        <Button size="sm" onClick={() => { onCancelCreate(); inputRef.current?.focus(); }}>
-          <Plus className="h-4 w-4 mr-1" />
-          Nový uzel
-        </Button>
-      )}
+        )}
 
       <div className="h-6 w-px bg-border mx-1" />
 
@@ -106,13 +114,13 @@ export function MindMapToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => onExport('png')}>
+            <DropdownMenuItem onClick={() => onExport("png")}>
               Exportovat jako PNG
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport('svg')}>
+            <DropdownMenuItem onClick={() => onExport("svg")}>
               Exportovat jako SVG
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport('json')}>
+            <DropdownMenuItem onClick={() => onExport("json")}>
               Exportovat jako JSON
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -120,14 +128,14 @@ export function MindMapToolbar({
       )}
 
       {onShare && (
-        <Button 
-          size="sm" 
-          variant="outline" 
+        <Button
+          size="sm"
+          variant="outline"
           onClick={onShare}
           className="ml-auto"
         >
           <Share2 className="h-4 w-4 mr-1" />
-          {isPublic ? 'Sdíleno' : 'Sdílet'}
+          {isPublic ? "Sdíleno" : "Sdílet"}
         </Button>
       )}
     </div>

@@ -1,24 +1,24 @@
 export type Code = {
-    code: string;
+  code: string;
 };
 
 export type TitleOrSummary = {
-    title: string;
-    summary?: string;
+  title: string;
+  summary?: string;
 } | {
-    title?: string;
-    summary: string;
+  title?: string;
+  summary: string;
 };
 
 export type Project = {
-    title: string;
-    initial_issue_state: string;
+  title: string;
+  initial_issue_state: string;
 };
 
 export type ProjectFull = Project & Code;
 
 export interface ProjectWithIssues extends ProjectFull {
-    issues: IssueFull[];
+  issues: IssueFull[];
 }
 
 export interface IssueData {
@@ -27,21 +27,21 @@ export interface IssueData {
 }
 
 export type Issue = TitleOrSummary & {
-    description?: string;
-    state?: string;
-    data?: IssueData;
-    tags?: string[];
-    due_date?: string;
-    comments_count?: number;
-    attachments_count?: number;
-    created_at?: string;
-    last_modified: string;
-    assignee?: string;
+  description?: string;
+  state?: string;
+  data?: IssueData;
+  tags?: string[];
+  due_date?: string;
+  comments_count?: number;
+  attachments_count?: number;
+  created_at?: string;
+  last_modified: string;
+  assignee?: string;
 };
 
 export type IssueFull = Issue & {
-    code: string;
-    state: string;
+  code: string;
+  state: string;
 };
 
 /*export type Issue = TitleOrSummary & {
@@ -57,15 +57,14 @@ export type IssueFull = Issue & {
 };*/
 
 export type LoaderData = {
-    projects: ProjectWithIssues[];
+  projects: ProjectWithIssues[];
 };
-
 
 /*Calendar*/
 
-export type IssueState = 'new' | 'to_do' | 'in_progress' | 'done';
+export type IssueState = "new" | "to_do" | "in_progress" | "done";
 
-export type CalendarViewType = 'month' | 'week' | 'day';
+export type CalendarViewType = "month" | "week" | "day";
 
 /*Settings + auth*/
 
@@ -74,5 +73,5 @@ export type User = {
   name: string;
   email: string;
   avatar: string;
-  role: 'admin' | 'user';
+  role: "admin" | "user";
 };

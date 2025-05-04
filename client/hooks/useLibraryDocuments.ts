@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DocumentItem } from "~/types/knowledge";
 import { useToast } from "~/hooks/use-toast";
 
@@ -15,9 +15,9 @@ interface UseLibraryDocumentsReturn {
 }
 
 export function useLibraryDocuments({
-                                      initialDocuments,
-                                      isSearching = false,
-                                    }: UseLibraryDocumentsProps): UseLibraryDocumentsReturn {
+  initialDocuments,
+  isSearching = false,
+}: UseLibraryDocumentsProps): UseLibraryDocumentsReturn {
   const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments);
   const { toast } = useToast();
 
@@ -32,40 +32,42 @@ export function useLibraryDocuments({
   }, [isSearching]);
 
   const resetFolderState = useCallback(() => {
-    setDocuments(prevDocs =>
-        prevDocs.map(doc => {
-          if (doc.type === "folder") {
-            return { ...doc, isExpanded: false };
-          }
-          return doc;
-        })
+    setDocuments((prevDocs) =>
+      prevDocs.map((doc) => {
+        if (doc.type === "folder") {
+          return { ...doc, isExpanded: false };
+        }
+        return doc;
+      })
     );
   }, []);
 
   const handleToggleFolder = useCallback((folderId: string) => {
-    setDocuments(prevDocs =>
-        prevDocs.map(doc => {
-          if (doc.id === folderId && doc.type === "folder") {
-            return { ...doc, isExpanded: !doc.isExpanded };
-          }
+    setDocuments((prevDocs) =>
+      prevDocs.map((doc) => {
+        if (doc.id === folderId && doc.type === "folder") {
+          return { ...doc, isExpanded: !doc.isExpanded };
+        }
 
-          if (doc.type === "folder" && doc.children) {
-            const updatedChildren = doc.children.map(child =>
-                child.id === folderId && child.type === "folder"
-                    ? { ...child, isExpanded: !child.isExpanded }
-                    : child
-            );
+        if (doc.type === "folder" && doc.children) {
+          const updatedChildren = doc.children.map((child) =>
+            child.id === folderId && child.type === "folder" ? { ...child, isExpanded: !child.isExpanded } : child
+          );
 
-            return { ...doc, children: updatedChildren };
-          }
+          return { ...doc, children: updatedChildren };
+        }
 
-          return doc;
-        })
+        return doc;
+      })
     );
   }, []);
 
   const handleDocumentDrop = useCallback((draggedId: string, targetId: string) => {
-    const findDocument = (items: DocumentItem[], docId: string, parentId: string | null = null): [DocumentItem | null, string | null] => {
+    const findDocument = (
+      items: DocumentItem[],
+      docId: string,
+      parentId: string | null = null,
+    ): [DocumentItem | null, string | null] => {
       for (const item of items) {
         if (item.id === docId) {
           return [{ ...item }, parentId];
@@ -96,23 +98,23 @@ export function useLibraryDocuments({
     };
 
     const processItems = (items: DocumentItem[]): DocumentItem[] => {
-      const newItems = items.filter(item => item.id !== draggedId).map(item => {
+      const newItems = items.filter((item) => item.id !== draggedId).map((item) => {
         if (item.type === "folder" && item.children) {
           return {
             ...item,
-            children: item.children.filter(child => child.id !== draggedId),
-            isExpanded: item.id === targetId ? true : item.isExpanded
+            children: item.children.filter((child) => child.id !== draggedId),
+            isExpanded: item.id === targetId ? true : item.isExpanded,
           };
         }
         return item;
       });
 
-      return newItems.map(item => {
+      return newItems.map((item) => {
         if (item.id === targetId && item.type === "folder") {
           return {
             ...item,
             children: [...(item.children || []), { ...draggedDocument!, recentlyMoved: true }],
-            isExpanded: true
+            isExpanded: true,
           };
         }
         return item;
@@ -120,9 +122,9 @@ export function useLibraryDocuments({
     };
 
     const removeHighlight = (items: DocumentItem[]): DocumentItem[] => {
-      return items.map(item => {
+      return items.map((item) => {
         const newItem = { ...item };
-        if ('recentlyMoved' in newItem) {
+        if ("recentlyMoved" in newItem) {
           delete newItem.recentlyMoved;
         }
 
@@ -152,7 +154,7 @@ export function useLibraryDocuments({
     setDocuments(updatedDocuments);
 
     setTimeout(() => {
-      setDocuments(currentDocs => removeHighlight(currentDocs));
+      setDocuments((currentDocs) => removeHighlight(currentDocs));
     }, 2000);
   }, [documents]);
 
@@ -160,7 +162,7 @@ export function useLibraryDocuments({
     handleDocumentDrop(draggedId, targetId);
 
     try {
-      const folderTag = targetId.replace(/^folder-/, '');
+      const folderTag = targetId.replace(/^folder-/, "");
 
       // console.log(`Přesouvám dokument ${draggedId} do složky s tagem ${folderTag}`);
 
@@ -177,19 +179,19 @@ export function useLibraryDocuments({
       const doc = docData.document;
 
       let updatedTags = [...(doc.frontmatter.tags || [])];
-      updatedTags = updatedTags.filter(tag => tag !== folderTag);
+      updatedTags = updatedTags.filter((tag) => tag !== folderTag);
       updatedTags.unshift(folderTag);
 
       const updateResponse = await fetch(`/api/knowledge/documents/${draggedId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Accept": "application/json",
         },
         body: JSON.stringify({
           tags: updatedTags,
-          content: doc.content
-        })
+          content: doc.content,
+        }),
       });
 
       if (updateResponse.ok) {
@@ -199,7 +201,7 @@ export function useLibraryDocuments({
           toast({
             title: "Dokument přesunut",
             description: `Dokument byl úspěšně přesunut do složky.`,
-            variant: "success"
+            variant: "success",
           });
         } else {
           throw new Error(updateData.error || "Nepodařilo se přesunout dokument");
@@ -212,7 +214,7 @@ export function useLibraryDocuments({
       toast({
         title: "Chyba při přesouvání dokumentu",
         description: error instanceof Error ? error.message : "Dokument se nepodařilo přesunout. Zkus to prosím znovu.",
-        variant: "destructive"
+        variant: "destructive",
       });
 
       resetFolderState();

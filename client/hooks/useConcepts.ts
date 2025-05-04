@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@remix-run/react";
 import { Concept } from "~/types/knowledge";
 import { useToast } from "~/hooks/use-toast";
 import {
   createNewConcept,
-  saveConceptToLocalStorage,
+  deleteConceptFromLocalStorage,
   getConceptsFromLocalStorage,
-  deleteConceptFromLocalStorage
+  saveConceptToLocalStorage,
 } from "~/utils/knowledge/conceptUtils";
 
 interface UseConceptProps {
@@ -29,13 +29,13 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
   }, []);
 
   const toggleConceptExpand = (conceptId: string) => {
-    setConcepts(prevConcepts =>
-        prevConcepts.map(concept => {
-          if (concept.id === conceptId) {
-            return { ...concept, isExpanded: !concept.isExpanded };
-          }
-          return concept;
-        })
+    setConcepts((prevConcepts) =>
+      prevConcepts.map((concept) => {
+        if (concept.id === conceptId) {
+          return { ...concept, isExpanded: !concept.isExpanded };
+        }
+        return concept;
+      })
     );
   };
 
@@ -54,15 +54,14 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
       toast({
         title: "Koncept vytvořen",
         description: "Nový koncept byl úspěšně vytvořen",
-        variant: "success"
+        variant: "success",
       });
-
     } catch (error) {
       console.error("Chyba při vytváření konceptu:", error);
       toast({
         title: "Chyba",
         description: "Nepodařilo se vytvořit koncept",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -75,20 +74,18 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
       const updatedDate = new Date().toISOString();
       const conceptToUpdate = {
         ...updatedConcept,
-        lastModified: updatedDate
+        lastModified: updatedDate,
       };
 
       saveConceptToLocalStorage(conceptToUpdate);
-      setConcepts(prevConcepts =>
-          prevConcepts.map(concept =>
-              concept.id === conceptToUpdate.id ? conceptToUpdate : concept
-          )
+      setConcepts((prevConcepts) =>
+        prevConcepts.map((concept) => concept.id === conceptToUpdate.id ? conceptToUpdate : concept)
       );
 
       toast({
         title: "Koncept aktualizován",
         description: "Změny byly úspěšně uloženy",
-        variant: "success"
+        variant: "success",
       });
 
       return true;
@@ -97,7 +94,7 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
       toast({
         title: "Chyba",
         description: "Nepodařilo se aktualizovat koncept",
-        variant: "destructive"
+        variant: "destructive",
       });
       return false;
     } finally {
@@ -109,14 +106,12 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
     setIsLoading(true);
     try {
       deleteConceptFromLocalStorage(conceptId);
-      setConcepts(prevConcepts =>
-          prevConcepts.filter(concept => concept.id !== conceptId)
-      );
+      setConcepts((prevConcepts) => prevConcepts.filter((concept) => concept.id !== conceptId));
 
       toast({
         title: "Koncept smazán",
         description: "Koncept byl úspěšně odstraněn",
-        variant: "success"
+        variant: "success",
       });
 
       return true;
@@ -125,7 +120,7 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
       toast({
         title: "Chyba",
         description: "Nepodařilo se smazat koncept",
-        variant: "destructive"
+        variant: "destructive",
       });
       return false;
     } finally {
@@ -142,6 +137,6 @@ export function useConcepts({ initialConcepts = [], currentUser = "Uživatel" }:
     toggleConceptExpand,
     handleCreateConcept,
     handleUpdateConcept,
-    handleDeleteConcept
+    handleDeleteConcept,
   };
 }

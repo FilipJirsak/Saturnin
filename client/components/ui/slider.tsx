@@ -1,7 +1,7 @@
-import * as SliderPrimitive from "@radix-ui/react-slider"
+import * as SliderPrimitive from "@radix-ui/react-slider";
 
-import { cn } from "~/utils/helpers"
-import {ComponentPropsWithoutRef, ElementRef, forwardRef} from "react";
+import { cn } from "~/utils/helpers";
+import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
 
 const Slider = forwardRef<
   ElementRef<typeof SliderPrimitive.Root>,
@@ -11,7 +11,7 @@ const Slider = forwardRef<
     ref={ref}
     className={cn(
       "relative flex w-full touch-none select-none items-center",
-      className
+      className,
     )}
     {...props}
   >
@@ -20,7 +20,7 @@ const Slider = forwardRef<
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50" />
   </SliderPrimitive.Root>
-))
-Slider.displayName = SliderPrimitive.Root.displayName
+));
+Slider.displayName = SliderPrimitive.Root.displayName;
 
-export { Slider }
+export { Slider };

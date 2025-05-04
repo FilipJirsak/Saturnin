@@ -1,21 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from "react";
 import {
   mockActivities,
   mockActivityChartData,
   mockIssuesData,
   mockKnowledgeData,
   mockSearchData,
-  mockStatCards
-} from '~/lib/data';
-import {
-  filterActivitiesBySearch,
-  filterActivitiesByTab,
-  sortActivitiesByDate
-} from '~/utils/dashboardUtils';
-import {
-  STATISTICS_PERIODS
-} from '~/lib/constants';
-import {Activity, ActivityChartData, PieChartData, StatisticsPeriod} from "~/types/dashboard";
+  mockStatCards,
+} from "~/lib/data";
+import { filterActivitiesBySearch, filterActivitiesByTab, sortActivitiesByDate } from "~/utils/dashboardUtils";
+import { STATISTICS_PERIODS } from "~/lib/constants";
+import { Activity, ActivityChartData, PieChartData, StatisticsPeriod } from "~/types/dashboard";
 
 interface UseDashboardActivitiesProps {
   initialSearchQuery?: string;
@@ -32,9 +26,9 @@ interface UseDashboardActivitiesResult {
 }
 
 export function useDashboardActivities({
-                                         initialSearchQuery = '',
-                                         initialTab = 'recent'
-                                       }: UseDashboardActivitiesProps = {}): UseDashboardActivitiesResult {
+  initialSearchQuery = "",
+  initialTab = "recent",
+}: UseDashboardActivitiesProps = {}): UseDashboardActivitiesResult {
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [selectedTab, setSelectedTab] = useState(initialTab);
 
@@ -51,7 +45,7 @@ export function useDashboardActivities({
     searchQuery,
     setSearchQuery,
     selectedTab,
-    setSelectedTab
+    setSelectedTab,
   };
 }
 
@@ -69,10 +63,9 @@ interface UseDashboardStatisticsResult {
   statCards: typeof mockStatCards;
 }
 
-
 export function useDashboardStatistics({
-                                         initialPeriod = STATISTICS_PERIODS.WEEK
-                                       }: UseDashboardStatisticsProps = {}): UseDashboardStatisticsResult {
+  initialPeriod = STATISTICS_PERIODS.WEEK,
+}: UseDashboardStatisticsProps = {}): UseDashboardStatisticsResult {
   const [selectedPeriod, setSelectedPeriod] = useState<StatisticsPeriod>(initialPeriod);
 
   const activityData = mockActivityChartData[selectedPeriod];
@@ -88,6 +81,6 @@ export function useDashboardStatistics({
     issuesData,
     knowledgeData,
     searchData,
-    statCards
+    statCards,
   };
 }

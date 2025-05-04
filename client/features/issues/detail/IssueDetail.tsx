@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { IssueFull } from '~/types';
+import { useEffect, useState } from "react";
+import { IssueFull } from "~/types";
 import { useToast } from "~/hooks/use-toast";
-import {IssueDetailHeader} from "~/features/issues/detail/IssueDetailHeader";
-import {IssueDetailContent} from "~/features/issues/detail/IssueDetailContent";
-import {IssueDeleteDialog} from "~/features/issues/detail/dialogs/IssueDeleteDialog";
-import {IssueAddTagDialog} from "~/features/issues/detail/dialogs/IssueAddTagDialog";
-import {Card} from "~/components/ui/card";
+import { IssueDetailHeader } from "~/features/issues/detail/IssueDetailHeader";
+import { IssueDetailContent } from "~/features/issues/detail/IssueDetailContent";
+import { IssueDeleteDialog } from "~/features/issues/detail/dialogs/IssueDeleteDialog";
+import { IssueAddTagDialog } from "~/features/issues/detail/dialogs/IssueAddTagDialog";
+import { Card } from "~/components/ui/card";
 
 // TODO (NL): Přidat podporu pro více typů příloh
 // TODO (NL): Přidat podporu pro přidání více tagů najednou
@@ -46,13 +46,13 @@ export function IssueDetail({ issue, className, onSave, onDelete }: IssueDetailP
           link: link,
           attachments: [
             ...(attachments || []),
-            ...attachedFiles.map(file => ({
+            ...attachedFiles.map((file) => ({
               name: file.name,
               size: file.size,
-              type: file.type
-            }))
-          ]
-        }
+              type: file.type,
+            })),
+          ],
+        },
       };
 
       await onSave(updatedIssue);
@@ -62,7 +62,7 @@ export function IssueDetail({ issue, className, onSave, onDelete }: IssueDetailP
       toast({
         title: "Změny uloženy",
         description: "Všechny změny byly úspěšně uloženy",
-        variant: "success"
+        variant: "success",
       });
     } catch (error) {
       console.error("Failed to save issue:", error);
@@ -98,7 +98,7 @@ export function IssueDetail({ issue, className, onSave, onDelete }: IssueDetailP
       const newTag = newTagValue.trim();
       const updatedIssue = {
         ...editedIssue,
-        tags: [...(editedIssue.tags || []), newTag]
+        tags: [...(editedIssue.tags || []), newTag],
       };
       setEditedIssue(updatedIssue);
       onSave(updatedIssue);
@@ -119,42 +119,41 @@ export function IssueDetail({ issue, className, onSave, onDelete }: IssueDetailP
   };
 
   return (
-      <div className={className}>
-        <Card className="border-none shadow-lg transition-all duration-200 hover:shadow-xl">
-          <IssueDetailHeader
-              issue={editedIssue}
-              isEditing={isEditing}
-              setIsEditing={setIsEditing}
-              setEditedIssue={setEditedIssue}
-              handleSave={handleSave}
-              handleCancelEdit={handleCancelEdit}
-              setIsDeleteDialogOpen={setIsDeleteDialogOpen}
-          />
-
-          <IssueDetailContent
-              editedIssue={editedIssue}
-              setEditedIssue={setEditedIssue}
-              isEditing={isEditing}
-              attachedFiles={attachedFiles}
-              setAttachedFiles={setAttachedFiles}
-              setIsAddTagDialogOpen={setIsAddTagDialogOpen}
-          />
-        </Card>
-
-        <IssueDeleteDialog
-            isOpen={isDeleteDialogOpen}
-            setIsOpen={setIsDeleteDialogOpen}
-            onDelete={handleDelete}
+    <div className={className}>
+      <Card className="border-none shadow-lg transition-all duration-200 hover:shadow-xl">
+        <IssueDetailHeader
+          issue={editedIssue}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          setEditedIssue={setEditedIssue}
+          handleSave={handleSave}
+          handleCancelEdit={handleCancelEdit}
+          setIsDeleteDialogOpen={setIsDeleteDialogOpen}
         />
 
-        <IssueAddTagDialog
-            isOpen={isAddTagDialogOpen}
-            setIsOpen={setIsAddTagDialogOpen}
-            newTagValue={newTagValue}
-            setNewTagValue={setNewTagValue}
-            onAddTag={handleAddTag}
+        <IssueDetailContent
+          editedIssue={editedIssue}
+          setEditedIssue={setEditedIssue}
+          isEditing={isEditing}
+          attachedFiles={attachedFiles}
+          setAttachedFiles={setAttachedFiles}
+          setIsAddTagDialogOpen={setIsAddTagDialogOpen}
         />
+      </Card>
 
-      </div>
+      <IssueDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        setIsOpen={setIsDeleteDialogOpen}
+        onDelete={handleDelete}
+      />
+
+      <IssueAddTagDialog
+        isOpen={isAddTagDialogOpen}
+        setIsOpen={setIsAddTagDialogOpen}
+        newTagValue={newTagValue}
+        setNewTagValue={setNewTagValue}
+        onAddTag={handleAddTag}
+      />
+    </div>
   );
 }

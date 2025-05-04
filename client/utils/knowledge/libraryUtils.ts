@@ -1,5 +1,5 @@
-import {getAllMdxDocuments} from "~/utils/knowledge/mdxUtils";
-import {DocumentItem, Folder, MdxDocument} from "~/types/knowledge";
+import { getAllMdxDocuments } from "~/utils/knowledge/mdxUtils";
+import { DocumentItem, Folder, MdxDocument } from "~/types/knowledge";
 
 /**
  * Organizes MDX documents into folders based on their primary tag.
@@ -18,24 +18,24 @@ export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]): Docum
   const folderDocumentIds = new Set<string>();
 
   for (const doc of mdxDocuments) {
-    const isFolder = doc.tags && doc.tags.includes('_system_folder');
+    const isFolder = doc.tags && doc.tags.includes("_system_folder");
 
     if (isFolder && doc.tags && doc.tags.length > 0) {
       folderDocumentIds.add(doc.id);
 
-      const folderTag = doc.tags.find(tag => tag !== '_system_folder');
+      const folderTag = doc.tags.find((tag) => tag !== "_system_folder");
 
       if (folderTag && !foldersByTag[folderTag]) {
         foldersByTag[folderTag] = {
           id: folderTag,
           type: "folder" as const,
           title: doc.title,
-          description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, ' '),
+          description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, " "),
           lastModified: doc.lastModified || doc.createdAt || new Date().toISOString(),
           path: `/knowledge/library/folder/${folderTag}`,
           children: [],
           isExpanded: false,
-          tags: doc.tags
+          tags: doc.tags,
         };
       }
     }
@@ -50,12 +50,12 @@ export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]): Docum
       id: doc.id,
       type: "document" as const,
       title: doc.title,
-      description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, ' ') + '...',
+      description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, " ") + "...",
       tags: doc.tags || [],
       author: doc.author || "Neznámý",
       lastModified: doc.lastModified || doc.createdAt || new Date().toISOString(),
       isShared: doc.isShared || false,
-      path: `/knowledge/library/${doc.id}`
+      path: `/knowledge/library/${doc.id}`,
     };
 
     let assignedToFolder = false;
@@ -82,13 +82,11 @@ export function organizeDocumentsIntoFolders(mdxDocuments: MdxDocument[]): Docum
     }
   }
 
-  Object.values(foldersByTag).forEach(folder => {
+  Object.values(foldersByTag).forEach((folder) => {
     documents.push(folder);
   });
 
-  return documents.sort((a, b) =>
-      new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime()
-  );
+  return documents.sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime());
 }
 
 /**
@@ -121,8 +119,8 @@ function getLatestModificationDate(documents: DocumentItem[]): string {
   }
 
   return documents.reduce(
-      (latest, doc) => new Date(doc.lastModified) > new Date(latest) ? doc.lastModified : latest,
-      documents[0].lastModified
+    (latest, doc) => new Date(doc.lastModified) > new Date(latest) ? doc.lastModified : latest,
+    documents[0].lastModified,
   );
 }
 
@@ -145,18 +143,18 @@ export async function getFolderWithDocuments(tag: string): Promise<Folder> {
   const mdxDocuments = await getAllMdxDocuments();
 
   const documents = mdxDocuments
-      .filter(doc => doc.tags && doc.tags.includes(tag))
-      .map(doc => ({
-        id: doc.id,
-        type: "document" as const,
-        title: doc.title,
-        description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, ' ') + '...',
-        tags: doc.tags || [],
-        author: doc.author,
-        lastModified: doc.lastModified || doc.createdAt || new Date().toISOString(),
-        isShared: doc.isShared || false,
-        path: `/knowledge/library/${doc.id}`
-      }));
+    .filter((doc) => doc.tags && doc.tags.includes(tag))
+    .map((doc) => ({
+      id: doc.id,
+      type: "document" as const,
+      title: doc.title,
+      description: doc.frontmatter.description || doc.content.substring(0, 100).replace(/\n/g, " ") + "...",
+      tags: doc.tags || [],
+      author: doc.author,
+      lastModified: doc.lastModified || doc.createdAt || new Date().toISOString(),
+      isShared: doc.isShared || false,
+      path: `/knowledge/library/${doc.id}`,
+    }));
 
   if (documents.length === 0) {
     console.log(`Nenalezeny žádné dokumenty pro tag: ${tag}`);
@@ -168,6 +166,6 @@ export async function getFolderWithDocuments(tag: string): Promise<Folder> {
     description: `Dokumenty s tagem: ${tag}`,
     lastModified: getLatestModificationDate(documents),
     path: `/knowledge/library/folder/${tag}`,
-    documents
+    documents,
   };
 }

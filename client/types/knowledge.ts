@@ -63,7 +63,7 @@ export interface MdxDocument {
   relatedIssues?: string[];
   isShared?: boolean;
   frontmatter: Record<string, any>;
-  compiledSource?: string
+  compiledSource?: string;
 }
 
 export interface SearchResult {
@@ -116,7 +116,7 @@ export interface ConceptDetailProps {
   setIsEditing: (value: boolean) => void;
   onSave: () => void;
   onUpdateConcept: (concept: Concept) => void;
-  availableConcepts?: Array<{id: string, title: string}>;
+  availableConcepts?: Array<{ id: string; title: string }>;
 }
 
 /*MINDMAPS*/
@@ -126,7 +126,7 @@ export interface MindMapConnection {
   sourceId: string;
   targetId: string;
   label?: string;
-  style?: 'solid' | 'dashed' | 'dotted';
+  style?: "solid" | "dashed" | "dotted";
   color?: string;
   thickness?: number;
 }
@@ -137,7 +137,7 @@ export interface MindMapNode {
   x: number;
   y: number;
   color?: string;
-  shape?: 'rectangle' | 'ellipse' | 'diamond';
+  shape?: "rectangle" | "ellipse" | "diamond";
   fontSize?: number;
   width?: number;
   height?: number;
@@ -157,7 +157,7 @@ export interface MindMap {
   connections: MindMapConnection[];
   color: string;
   isPublic: boolean;
-  viewMode: 'tree' | 'network' | 'free';
+  viewMode: "tree" | "network" | "free";
 }
 
 export interface NewMindMap {

@@ -6,49 +6,49 @@ import { Separator } from "~/components/ui/separator";
 //TODO (NL): Upravit texty
 export function NotificationsSection() {
   return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Nastavení upozornění</CardTitle>
-          <CardDescription>
-            Zde můžeš upravit, jak budeš dostávat upozornění
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-medium">Email</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Denní přehled</p>
-                  <p className="text-sm text-muted-foreground">
-                    Přehled aktivit za posledních 24 hodin
-                  </p>
-                </div>
-                <Switch />
+    <Card>
+      <CardHeader>
+        <CardTitle>Nastavení upozornění</CardTitle>
+        <CardDescription>
+          Zde můžeš upravit, jak budeš dostávat upozornění
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-sm font-medium">Email</h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Denní přehled</p>
+                <p className="text-sm text-muted-foreground">
+                  Přehled aktivit za posledních 24 hodin
+                </p>
               </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Oznámení o komentářích</p>
-                  <p className="text-sm text-muted-foreground">
-                    Když někdo komentuje tvé příspěvky
-                  </p>
-                </div>
-                <Switch defaultChecked />
+              <Switch />
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Oznámení o komentářích</p>
+                <p className="text-sm text-muted-foreground">
+                  Když někdo komentuje tvé příspěvky
+                </p>
               </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Oznámení o issues</p>
-                  <p className="text-sm text-muted-foreground">
-                    Když ti je přiřazeno nové issue
-                  </p>
-                </div>
-                <Switch defaultChecked />
+              <Switch defaultChecked />
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Oznámení o issues</p>
+                <p className="text-sm text-muted-foreground">
+                  Když ti je přiřazeno nové issue
+                </p>
               </div>
+              <Switch defaultChecked />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

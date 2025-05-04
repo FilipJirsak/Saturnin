@@ -17,13 +17,13 @@ try {
 
 function slugify(str: string): string {
   return str
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]+/g, "")
-      .replace(/^-+|-+$/g, "");
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]+/g, "")
+    .replace(/^-+|-+$/g, "");
 }
 
 router.get("/documents", async (c) => {
@@ -46,17 +46,19 @@ router.get("/documents/:slug", async (c) => {
     let body = raw;
     if (match) {
       const validLines = match[1]
-          .split("\n")
-          .filter(line => line.trim() && line.includes(": "));
+        .split("\n")
+        .filter((line) => line.trim() && line.includes(": "));
 
       fm = Object.fromEntries(
-          validLines.map((line) => {
-            const colonIndex = line.indexOf(": ");
-            const k = line.substring(0, colonIndex).trim();
-            let v = line.substring(colonIndex + 2).trim();
-            try { v = JSON.parse(v); } catch {}
-            return [k, v];
-          })
+        validLines.map((line) => {
+          const colonIndex = line.indexOf(": ");
+          const k = line.substring(0, colonIndex).trim();
+          let v = line.substring(colonIndex + 2).trim();
+          try {
+            v = JSON.parse(v);
+          } catch {}
+          return [k, v];
+        }),
       );
       body = raw.slice(match[0].length);
     }
@@ -112,20 +114,22 @@ router.put("/documents/:slug", async (c) => {
 
   if (match) {
     const validLines = match[1]
-        .split("\n")
-        .filter(line => {
-          const trimmed = line.trim();
-          return trimmed && trimmed.includes(": ");
-        });
+      .split("\n")
+      .filter((line) => {
+        const trimmed = line.trim();
+        return trimmed && trimmed.includes(": ");
+      });
 
     fm = Object.fromEntries(
-        validLines.map((line) => {
-          const colonIndex = line.indexOf(": ");
-          const k = line.substring(0, colonIndex).trim();
-          let v = line.substring(colonIndex + 2).trim();
-          try { v = JSON.parse(v); } catch {}
-          return [k, v];
-        })
+      validLines.map((line) => {
+        const colonIndex = line.indexOf(": ");
+        const k = line.substring(0, colonIndex).trim();
+        let v = line.substring(colonIndex + 2).trim();
+        try {
+          v = JSON.parse(v);
+        } catch {}
+        return [k, v];
+      }),
     );
 
     body = raw.slice(match[0].length);
@@ -137,15 +141,14 @@ router.put("/documents/:slug", async (c) => {
   fm.lastModified = new Date().toISOString();
 
   const cleanFrontmatter = Object.fromEntries(
-      Object.entries(fm).filter(([k]) => k.trim())
+    Object.entries(fm).filter(([k]) => k.trim()),
   );
 
-  const updatedFront =
-      "---\n" +
-      Object.entries(cleanFrontmatter)
-          .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
-          .join("\n") +
-      "\n---\n\n";
+  const updatedFront = "---\n" +
+    Object.entries(cleanFrontmatter)
+      .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+      .join("\n") +
+    "\n---\n\n";
 
   const finalBody = newContent !== undefined ? newContent : body;
   await Deno.writeTextFile(filePath, updatedFront + finalBody);
@@ -188,20 +191,22 @@ router.put("/documents/:slug/move", async (c) => {
 
   if (match) {
     const validLines = match[1]
-        .split("\n")
-        .filter(line => {
-          const trimmed = line.trim();
-          return trimmed && trimmed.includes(": ");
-        });
+      .split("\n")
+      .filter((line) => {
+        const trimmed = line.trim();
+        return trimmed && trimmed.includes(": ");
+      });
 
     fm = Object.fromEntries(
-        validLines.map((line) => {
-          const colonIndex = line.indexOf(": ");
-          const k = line.substring(0, colonIndex).trim();
-          let v = line.substring(colonIndex + 2).trim();
-          try { v = JSON.parse(v); } catch {}
-          return [k, v];
-        })
+      validLines.map((line) => {
+        const colonIndex = line.indexOf(": ");
+        const k = line.substring(0, colonIndex).trim();
+        let v = line.substring(colonIndex + 2).trim();
+        try {
+          v = JSON.parse(v);
+        } catch {}
+        return [k, v];
+      }),
     );
 
     body = raw.slice(match[0].length);
@@ -210,7 +215,7 @@ router.put("/documents/:slug/move", async (c) => {
   let updatedTags: string[];
 
   if (keepTags) {
-    updatedTags = Array.isArray(fm.tags) ? fm.tags.filter(tag => tag !== targetFolderTag) : [];
+    updatedTags = Array.isArray(fm.tags) ? fm.tags.filter((tag) => tag !== targetFolderTag) : [];
     updatedTags.unshift(targetFolderTag);
   } else {
     updatedTags = [targetFolderTag];
@@ -220,15 +225,14 @@ router.put("/documents/:slug/move", async (c) => {
   fm.lastModified = new Date().toISOString();
 
   const cleanFrontmatter = Object.fromEntries(
-      Object.entries(fm).filter(([k]) => k.trim())
+    Object.entries(fm).filter(([k]) => k.trim()),
   );
 
-  const updatedFront =
-      "---\n" +
-      Object.entries(cleanFrontmatter)
-          .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
-          .join("\n") +
-      "\n---\n\n";
+  const updatedFront = "---\n" +
+    Object.entries(cleanFrontmatter)
+      .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+      .join("\n") +
+    "\n---\n\n";
 
   await Deno.writeTextFile(filePath, updatedFront + body);
   return c.json({ ok: true });

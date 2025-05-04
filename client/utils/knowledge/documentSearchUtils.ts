@@ -10,10 +10,10 @@ import { DocumentItem, SearchResult } from "~/types/knowledge";
  * @param items - Array of document items to search through
  * @param searchTerm - The term to search for in the documents
  * @returns Array of search results containing matched items and their matching fields
- * */
+ */
 export function searchDocuments(
-    items: DocumentItem[],
-    searchTerm: string
+  items: DocumentItem[],
+  searchTerm: string,
 ): SearchResult[] {
   // TODO (NL): Implementovat cachování vyhledávacích výsledků pro opakované dotazy
   // TODO (NL): Použít algoritmus pro hodnocení relevance výsledků (např. weighted scoring)
@@ -31,7 +31,7 @@ export function searchDocuments(
       matches.push({
         field: "title",
         text: item.title,
-        highlight: highlightMatch(item.title, normalizedTerm)
+        highlight: highlightMatch(item.title, normalizedTerm),
       });
     }
 
@@ -39,26 +39,24 @@ export function searchDocuments(
       matches.push({
         field: "description",
         text: item.description,
-        highlight: highlightMatch(item.description, normalizedTerm)
+        highlight: highlightMatch(item.description, normalizedTerm),
       });
     }
 
-    const tagMatches = item.tags.filter(tag =>
-        tag.toLowerCase().includes(normalizedTerm)
-    );
+    const tagMatches = item.tags.filter((tag) => tag.toLowerCase().includes(normalizedTerm));
 
     if (tagMatches.length > 0) {
       matches.push({
         field: "tags",
         text: tagMatches.join(", "),
-        highlight: tagMatches.map(tag => highlightMatch(tag, normalizedTerm)).join(", ")
+        highlight: tagMatches.map((tag) => highlightMatch(tag, normalizedTerm)).join(", "),
       });
     }
 
     if (matches.length > 0) {
       results.push({
         item,
-        matches
+        matches,
       });
     }
 
@@ -87,7 +85,7 @@ function highlightMatch(text: string, searchTerm: string): string {
   // TODO (NL): Ošetřit zvýrazňování v HTML kódu, aby nedošlo k narušení struktury
   if (!searchTerm.trim()) return text;
 
-  const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+  const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, "gi");
   return text.replace(regex, '<mark style="background: hsl(265 100% 90%)!important">$1</mark>');
 }
 
@@ -102,7 +100,7 @@ function highlightMatch(text: string, searchTerm: string): string {
  * @returns The escaped string safe for regex operations
  */
 function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -119,8 +117,8 @@ function escapeRegExp(string: string): string {
  * @returns Filtered tree of document items matching the search term
  */
 export function filterDocumentsBySearchTerm(
-    documents: DocumentItem[],
-    searchTerm: string
+  documents: DocumentItem[],
+  searchTerm: string,
 ): DocumentItem[] {
   // TODO (NL): Optimalizovat pro velké kolekce dokumentů - implementovat postupné načítání výsledků
   // TODO (NL): Přidat možnost filtrování podle dalších kritérií (autor, datum, tagy)
@@ -128,19 +126,19 @@ export function filterDocumentsBySearchTerm(
   if (!searchTerm.trim()) return documents;
 
   const searchResults = searchDocuments(documents, searchTerm);
-  const matchedIds = new Set(searchResults.map(result => result.item.id));
+  const matchedIds = new Set(searchResults.map((result) => result.item.id));
 
   function filterItem(item: DocumentItem): DocumentItem | null {
     if (item.type === "folder" && item.children) {
       const filteredChildren = item.children
-          .map(filterItem)
-          .filter(Boolean) as DocumentItem[];
+        .map(filterItem)
+        .filter(Boolean) as DocumentItem[];
 
       if (matchedIds.has(item.id) || filteredChildren.length > 0) {
         return {
           ...item,
           children: filteredChildren,
-          isExpanded: true
+          isExpanded: true,
         };
       }
       return null;
@@ -150,6 +148,6 @@ export function filterDocumentsBySearchTerm(
   }
 
   return documents
-      .map(filterItem)
-      .filter((item): item is DocumentItem => item !== null);
+    .map(filterItem)
+    .filter((item): item is DocumentItem => item !== null);
 }

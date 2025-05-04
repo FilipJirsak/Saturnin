@@ -8,24 +8,20 @@ import {
   MessagesSquare,
   Network,
   Settings,
-  Users
+  Users,
 } from "lucide-react";
-import {Concept, KnowledgeTag, MindMap} from "~/types/knowledge";
-import {
-  ACTIVITY_TYPES,
-  ACTIVITY_STATUSES,
-  STATISTICS_PERIODS
-} from '~/lib/constants';
-import {Activity, ActivityChartData, PieChartData, StatCardData, StatisticsPeriod} from "~/types/dashboard";
-import { generateAvatar } from '~/utils/helpers';
+import { Concept, KnowledgeTag, MindMap } from "~/types/knowledge";
+import { ACTIVITY_STATUSES, ACTIVITY_TYPES, STATISTICS_PERIODS } from "~/lib/constants";
+import { Activity, ActivityChartData, PieChartData, StatCardData, StatisticsPeriod } from "~/types/dashboard";
+import { generateAvatar } from "~/utils/helpers";
 
 export const sidebarItems = {
   user: {
     id: "user-1",
     name: "Nela Letochová",
     email: "nela.letochova@example.com",
-    avatar: generateAvatar('nelinka', 'female'),
-    role: 'admin' as const
+    avatar: generateAvatar("nelinka", "female"),
+    role: "admin" as const,
   },
   teams: [
     {
@@ -37,7 +33,7 @@ export const sidebarItems = {
       name: "Tým 1",
       logo: Users,
       plan: "Team",
-    }
+    },
   ],
   navMain: [
     {
@@ -46,7 +42,7 @@ export const sidebarItems = {
       icon: Inbox,
       isActive: true,
     },
-      /*TODO (NL): Upravit URLs*/
+    /*TODO (NL): Upravit URLs*/
     {
       title: "Přehled",
       url: "/dashboard",
@@ -60,7 +56,7 @@ export const sidebarItems = {
         {
           title: "Aktivity",
           url: "/activities",
-        }
+        },
       ],
     },
     {
@@ -83,7 +79,7 @@ export const sidebarItems = {
         {
           title: "Tagy",
           url: "/knowledge/tags",
-        }
+        },
       ],
     },
     {
@@ -121,7 +117,7 @@ export const sidebarItems = {
           url: "/settings/profile",
         },
       ],
-    }
+    },
   ],
   projects: [
     {
@@ -140,8 +136,7 @@ export const sidebarItems = {
       icon: Library,
     },
   ],
-}
-
+};
 
 // TODO (NL): Zařídit, aby se mock data načítala jen jednou na začátku aplikace?
 export const MOCK_MINDMAPS: MindMap[] = [
@@ -177,7 +172,7 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-6", sourceId: "node-3", targetId: "node-6", label: "ověřuje", color: "#888", thickness: 1 },
       { id: "edge-7", sourceId: "node-2", targetId: "node-7", label: "používá", color: "#888", thickness: 1 },
       { id: "edge-8", sourceId: "node-2", targetId: "node-8", label: "využívá", color: "#888", thickness: 1 },
-    ]
+    ],
   },
   {
     id: "mindmap-2",
@@ -210,7 +205,7 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-6", sourceId: "node-1", targetId: "node-7", label: "zahrnuje", color: "#888", thickness: 1 },
       { id: "edge-7", sourceId: "node-2", targetId: "node-3", label: "nadřazený", color: "#888", thickness: 1 },
       { id: "edge-8", sourceId: "node-3", targetId: "node-4", label: "nadřazený", color: "#888", thickness: 1 },
-    ]
+    ],
   },
   {
     id: "mindmap-3",
@@ -247,7 +242,7 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-8", sourceId: "node-4", targetId: "node-8", label: "patří do", color: "#888", thickness: 1 },
       { id: "edge-9", sourceId: "node-3", targetId: "node-9", label: "vyvolává", color: "#888", thickness: 1 },
       { id: "edge-10", sourceId: "node-9", targetId: "node-4", label: "přijímá", color: "#888", thickness: 1 },
-    ]
+    ],
   },
   {
     id: "mindmap-4",
@@ -284,7 +279,7 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-7", sourceId: "node-4", targetId: "node-8", label: "cíl", color: "#888", thickness: 1 },
       { id: "edge-8", sourceId: "node-2", targetId: "node-9", label: "obsahuje", color: "#888", thickness: 1 },
       { id: "edge-9", sourceId: "node-2", targetId: "node-10", label: "obsahuje", color: "#888", thickness: 1 },
-    ]
+    ],
   },
   {
     id: "mindmap-5",
@@ -326,7 +321,7 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-10", sourceId: "node-1", targetId: "node-11", label: "obsahuje", color: "#888", thickness: 1 },
       { id: "edge-11", sourceId: "node-1", targetId: "node-12", label: "obsahuje", color: "#888", thickness: 1 },
       { id: "edge-12", sourceId: "node-4", targetId: "node-12", label: "zobrazuje", color: "#888", thickness: 1 },
-    ]
+    ],
   },
   {
     id: "mindmap-6",
@@ -359,7 +354,7 @@ export const MOCK_MINDMAPS: MindMap[] = [
       { id: "edge-6", sourceId: "node-3", targetId: "node-7", label: "publikuje", color: "#888", thickness: 1 },
       { id: "edge-7", sourceId: "node-7", targetId: "node-6", label: "konzumuje", color: "#888", thickness: 1 },
       { id: "edge-8", sourceId: "node-3", targetId: "node-4", label: "volá", color: "#888", thickness: 1 },
-    ]
+    ],
   },
 ];
 
@@ -367,7 +362,8 @@ export const MOCK_CONCEPTS: Concept[] = [
   {
     id: "concept-1",
     title: "Architektura MVC",
-    description: "Model-View-Controller je návrhový vzor používaný pro vývoj software, který odděluje aplikační logiku od uživatelského rozhraní.",
+    description:
+      "Model-View-Controller je návrhový vzor používaný pro vývoj software, který odděluje aplikační logiku od uživatelského rozhraní.",
     tags: ["architektura", "návrhový vzor", "software"],
     related: [
       { id: "concept-2", title: "Frontend", relation: "is_a" },
@@ -544,193 +540,193 @@ export const COLOR_PRESETS = [
 
 export const mockActivities: Activity[] = [
   {
-    id: '1',
+    id: "1",
     type: ACTIVITY_TYPES.ISSUE,
-    title: 'Implementace nového API endpointu',
-    description: 'Přidán nový endpoint pro správu uživatelských rolí',
-    timestamp: '2024-04-25T10:30:00',
+    title: "Implementace nového API endpointu",
+    description: "Přidán nový endpoint pro správu uživatelských rolí",
+    timestamp: "2024-04-25T10:30:00",
     user: {
-      name: 'Jan Novák',
-      avatar: generateAvatar('jan', 'male'),
+      name: "Jan Novák",
+      avatar: generateAvatar("jan", "male"),
     },
     status: ACTIVITY_STATUSES.IN_PROGRESS,
-    priority: 'high'
+    priority: "high",
   },
   {
-    id: '2',
+    id: "2",
     type: ACTIVITY_TYPES.DOCUMENT,
-    title: 'Aktualizace dokumentace API',
-    description: 'Přidána dokumentace pro nové endpointy',
-    timestamp: '2024-04-25T09:15:00',
+    title: "Aktualizace dokumentace API",
+    description: "Přidána dokumentace pro nové endpointy",
+    timestamp: "2024-04-25T09:15:00",
     user: {
-      name: 'Petra Svobodová',
-      avatar: generateAvatar('petra', 'female'),
-    }
+      name: "Petra Svobodová",
+      avatar: generateAvatar("petra", "female"),
+    },
   },
   {
-    id: '3',
+    id: "3",
     type: ACTIVITY_TYPES.CONCEPT,
-    title: 'Nový koncept: Microservices architektura',
-    description: 'Vytvořen nový koncept pro budoucí rozšíření systému',
-    timestamp: '2024-04-25T08:45:00',
+    title: "Nový koncept: Microservices architektura",
+    description: "Vytvořen nový koncept pro budoucí rozšíření systému",
+    timestamp: "2024-04-25T08:45:00",
     user: {
-      name: 'Martin Dvořák',
-      avatar: generateAvatar('martin', 'male'),
-    }
+      name: "Martin Dvořák",
+      avatar: generateAvatar("martin", "male"),
+    },
   },
   {
-    id: '4',
+    id: "4",
     type: ACTIVITY_TYPES.MINDMAP,
-    title: 'Aktualizace myšlenkové mapy projektu',
-    description: 'Přidány nové větve pro plánované funkce',
-    timestamp: '2024-04-24T16:20:00',
+    title: "Aktualizace myšlenkové mapy projektu",
+    description: "Přidány nové větve pro plánované funkce",
+    timestamp: "2024-04-24T16:20:00",
     user: {
-      name: 'Eva Králová',
-      avatar: generateAvatar('eva', 'female'),
-    }
+      name: "Eva Králová",
+      avatar: generateAvatar("eva", "female"),
+    },
   },
   {
-    id: '5',
+    id: "5",
     type: ACTIVITY_TYPES.MESSAGE,
-    title: 'Nová zpráva v inboxu',
-    description: 'Přijata nová zpráva od klienta ohledně požadavků na projekt',
-    timestamp: '2024-04-24T15:30:00',
+    title: "Nová zpráva v inboxu",
+    description: "Přijata nová zpráva od klienta ohledně požadavků na projekt",
+    timestamp: "2024-04-24T15:30:00",
     user: {
-      name: 'Tomáš Malý',
-      avatar: generateAvatar('tomas', 'male'),
-    }
-  }
+      name: "Tomáš Malý",
+      avatar: generateAvatar("tomas", "male"),
+    },
+  },
 ];
 
 export const mockActivityChartData: Record<StatisticsPeriod, ActivityChartData[]> = {
   [STATISTICS_PERIODS.WEEK]: [
-    { name: 'Po', issues: 4, documents: 2, concepts: 1 },
-    { name: 'Út', issues: 6, documents: 3, concepts: 2 },
-    { name: 'St', issues: 8, documents: 4, concepts: 3 },
-    { name: 'Čt', issues: 5, documents: 5, concepts: 2 },
-    { name: 'Pá', issues: 7, documents: 3, concepts: 4 },
-    { name: 'So', issues: 2, documents: 1, concepts: 1 },
-    { name: 'Ne', issues: 1, documents: 0, concepts: 0 },
+    { name: "Po", issues: 4, documents: 2, concepts: 1 },
+    { name: "Út", issues: 6, documents: 3, concepts: 2 },
+    { name: "St", issues: 8, documents: 4, concepts: 3 },
+    { name: "Čt", issues: 5, documents: 5, concepts: 2 },
+    { name: "Pá", issues: 7, documents: 3, concepts: 4 },
+    { name: "So", issues: 2, documents: 1, concepts: 1 },
+    { name: "Ne", issues: 1, documents: 0, concepts: 0 },
   ],
   [STATISTICS_PERIODS.MONTH]: [
-    { name: '1. týden', issues: 20, documents: 10, concepts: 5 },
-    { name: '2. týden', issues: 25, documents: 15, concepts: 8 },
-    { name: '3. týden', issues: 18, documents: 12, concepts: 6 },
-    { name: '4. týden', issues: 22, documents: 14, concepts: 7 },
+    { name: "1. týden", issues: 20, documents: 10, concepts: 5 },
+    { name: "2. týden", issues: 25, documents: 15, concepts: 8 },
+    { name: "3. týden", issues: 18, documents: 12, concepts: 6 },
+    { name: "4. týden", issues: 22, documents: 14, concepts: 7 },
   ],
   [STATISTICS_PERIODS.QUARTER]: [
-    { name: 'Leden', issues: 80, documents: 40, concepts: 20 },
-    { name: 'Únor', issues: 90, documents: 45, concepts: 25 },
-    { name: 'Březen', issues: 85, documents: 42, concepts: 22 },
+    { name: "Leden", issues: 80, documents: 40, concepts: 20 },
+    { name: "Únor", issues: 90, documents: 45, concepts: 25 },
+    { name: "Březen", issues: 85, documents: 42, concepts: 22 },
   ],
   [STATISTICS_PERIODS.YEAR]: [
-    { name: 'Q1', issues: 255, documents: 127, concepts: 67 },
-    { name: 'Q2', issues: 280, documents: 140, concepts: 75 },
-    { name: 'Q3', issues: 265, documents: 132, concepts: 70 },
-    { name: 'Q4', issues: 290, documents: 145, concepts: 78 },
+    { name: "Q1", issues: 255, documents: 127, concepts: 67 },
+    { name: "Q2", issues: 280, documents: 140, concepts: 75 },
+    { name: "Q3", issues: 265, documents: 132, concepts: 70 },
+    { name: "Q4", issues: 290, documents: 145, concepts: 78 },
   ],
 };
 
 export const mockIssuesData: Record<StatisticsPeriod, PieChartData[]> = {
   [STATISTICS_PERIODS.WEEK]: [
-    { name: 'Otevřené', value: 45 },
-    { name: 'V řešení', value: 35 },
-    { name: 'Uzavřené', value: 20 },
+    { name: "Otevřené", value: 45 },
+    { name: "V řešení", value: 35 },
+    { name: "Uzavřené", value: 20 },
   ],
   [STATISTICS_PERIODS.MONTH]: [
-    { name: 'Otevřené', value: 40 },
-    { name: 'V řešení', value: 35 },
-    { name: 'Uzavřené', value: 25 },
+    { name: "Otevřené", value: 40 },
+    { name: "V řešení", value: 35 },
+    { name: "Uzavřené", value: 25 },
   ],
   [STATISTICS_PERIODS.QUARTER]: [
-    { name: 'Otevřené', value: 35 },
-    { name: 'V řešení', value: 40 },
-    { name: 'Uzavřené', value: 25 },
+    { name: "Otevřené", value: 35 },
+    { name: "V řešení", value: 40 },
+    { name: "Uzavřené", value: 25 },
   ],
   [STATISTICS_PERIODS.YEAR]: [
-    { name: 'Otevřené', value: 30 },
-    { name: 'V řešení', value: 45 },
-    { name: 'Uzavřené', value: 25 },
+    { name: "Otevřené", value: 30 },
+    { name: "V řešení", value: 45 },
+    { name: "Uzavřené", value: 25 },
   ],
 };
 
 export const mockKnowledgeData: Record<StatisticsPeriod, PieChartData[]> = {
   [STATISTICS_PERIODS.WEEK]: [
-    { name: 'Dokumenty', value: 60 },
-    { name: 'Koncepty', value: 25 },
-    { name: 'Myšlenkové mapy', value: 15 },
+    { name: "Dokumenty", value: 60 },
+    { name: "Koncepty", value: 25 },
+    { name: "Myšlenkové mapy", value: 15 },
   ],
   [STATISTICS_PERIODS.MONTH]: [
-    { name: 'Dokumenty', value: 55 },
-    { name: 'Koncepty', value: 30 },
-    { name: 'Myšlenkové mapy', value: 15 },
+    { name: "Dokumenty", value: 55 },
+    { name: "Koncepty", value: 30 },
+    { name: "Myšlenkové mapy", value: 15 },
   ],
   [STATISTICS_PERIODS.QUARTER]: [
-    { name: 'Dokumenty', value: 50 },
-    { name: 'Koncepty', value: 35 },
-    { name: 'Myšlenkové mapy', value: 15 },
+    { name: "Dokumenty", value: 50 },
+    { name: "Koncepty", value: 35 },
+    { name: "Myšlenkové mapy", value: 15 },
   ],
   [STATISTICS_PERIODS.YEAR]: [
-    { name: 'Dokumenty', value: 45 },
-    { name: 'Koncepty', value: 40 },
-    { name: 'Myšlenkové mapy', value: 15 },
+    { name: "Dokumenty", value: 45 },
+    { name: "Koncepty", value: 40 },
+    { name: "Myšlenkové mapy", value: 15 },
   ],
 };
 
 export const mockSearchData: Record<StatisticsPeriod, PieChartData[]> = {
   [STATISTICS_PERIODS.WEEK]: [
-    { name: 'Úspěšné', value: 92 },
-    { name: 'Částečné', value: 5 },
-    { name: 'Neúspěšné', value: 3 },
+    { name: "Úspěšné", value: 92 },
+    { name: "Částečné", value: 5 },
+    { name: "Neúspěšné", value: 3 },
   ],
   [STATISTICS_PERIODS.MONTH]: [
-    { name: 'Úspěšné', value: 90 },
-    { name: 'Částečné', value: 7 },
-    { name: 'Neúspěšné', value: 3 },
+    { name: "Úspěšné", value: 90 },
+    { name: "Částečné", value: 7 },
+    { name: "Neúspěšné", value: 3 },
   ],
   [STATISTICS_PERIODS.QUARTER]: [
-    { name: 'Úspěšné', value: 88 },
-    { name: 'Částečné', value: 8 },
-    { name: 'Neúspěšné', value: 4 },
+    { name: "Úspěšné", value: 88 },
+    { name: "Částečné", value: 8 },
+    { name: "Neúspěšné", value: 4 },
   ],
   [STATISTICS_PERIODS.YEAR]: [
-    { name: 'Úspěšné', value: 85 },
-    { name: 'Částečné', value: 10 },
-    { name: 'Neúspěšné', value: 5 },
+    { name: "Úspěšné", value: 85 },
+    { name: "Částečné", value: 10 },
+    { name: "Neúspěšné", value: 5 },
   ],
 };
 
 export const mockStatCards: StatCardData[] = [
   {
-    title: 'Issues',
-    icon: 'AlertCircle',
+    title: "Issues",
+    icon: "AlertCircle",
     value: 156,
-    change: '+12% oproti minulému měsíci',
-    progressLabel: 'Otevřené',
+    change: "+12% oproti minulému měsíci",
+    progressLabel: "Otevřené",
     progressValue: 45,
   },
   {
-    title: 'Dokumenty',
-    icon: 'Book',
+    title: "Dokumenty",
+    icon: "Book",
     value: 234,
-    change: '+8% oproti minulému měsíci',
-    progressLabel: 'Nové',
+    change: "+8% oproti minulému měsíci",
+    progressLabel: "Nové",
     progressValue: 28,
   },
   {
-    title: 'Myšlenkové mapy',
-    icon: 'Map',
+    title: "Myšlenkové mapy",
+    icon: "Map",
     value: 45,
-    change: '+5 nových tento měsíc',
-    progressLabel: 'Aktivní',
+    change: "+5 nových tento měsíc",
+    progressLabel: "Aktivní",
     progressValue: 82,
   },
   {
-    title: 'Vyhledávání',
-    icon: 'Search',
+    title: "Vyhledávání",
+    icon: "Search",
     value: 1234,
-    change: '+15% oproti minulému měsíci',
-    progressLabel: 'Úspěšné',
+    change: "+15% oproti minulému měsíci",
+    progressLabel: "Úspěšné",
     progressValue: 92,
   },
-]
+];

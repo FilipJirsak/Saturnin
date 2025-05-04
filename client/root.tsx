@@ -1,5 +1,5 @@
 import type { LinksFunction } from "@remix-run/node";
-import {Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useLocation} from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useLocation } from "@remix-run/react";
 import "./styles/tailwind.css";
 import { createDragDropManager } from "dnd-core";
 import { DndProvider } from "react-dnd";
@@ -21,7 +21,8 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href:
+      "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
 
@@ -73,20 +74,20 @@ export function Layout({ children }: { children: ReactNode }) {
       lang="cs"
       suppressHydrationWarning
     >
-    <head>
-      <meta charSet="utf-8"/>
-      <meta
+      <head>
+        <meta charSet="utf-8" />
+        <meta
           name="viewport"
           content="width=device-width, initial-scale=1"
-      />
-      {/*<link rel="icon" href="/favicon.ico"/>*/}
-      <Meta/>
-      <Links/>
-      <script dangerouslySetInnerHTML={{__html: themeScript}}/>
-    </head>
-    <body>
-    {children}
-    <ScrollRestoration />
+        />
+        {/*<link rel="icon" href="/favicon.ico"/>*/}
+        <Meta />
+        <Links />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body>
+        {children}
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -96,26 +97,26 @@ export function Layout({ children }: { children: ReactNode }) {
 // TODO (NL): Implementovat správnou autentizaci a autorizaci
 function AuthLayout() {
   return (
-      <ThemeProvider>
-        <div className="min-h-svh">
-          <Outlet />
-        </div>
-      </ThemeProvider>
+    <ThemeProvider>
+      <div className="min-h-svh">
+        <Outlet />
+      </div>
+    </ThemeProvider>
   );
 }
 
 function AppLayoutWrapper({ projects }: { projects: any[] }) {
   return (
-      <ThemeProvider>
-        <DndProvider
-            manager={manager}
-            backend={HTML5Backend}
-        >
-          <AppLayout projects={projects}>
-            <Outlet />
-          </AppLayout>
-        </DndProvider>
-      </ThemeProvider>
+    <ThemeProvider>
+      <DndProvider
+        manager={manager}
+        backend={HTML5Backend}
+      >
+        <AppLayout projects={projects}>
+          <Outlet />
+        </AppLayout>
+      </DndProvider>
+    </ThemeProvider>
   );
 }
 
@@ -125,20 +126,16 @@ export default function App() {
   const location = useLocation();
 
   const isAuthPage = location.pathname === "/login" ||
-      location.pathname === "/signup" ||
-      location.pathname === "/reset-password";
+    location.pathname === "/signup" ||
+    location.pathname === "/reset-password";
 
   // TODO (NL): Upravit, až bude implementováno přihlašování
   const searchParams = new URLSearchParams(location.search);
   const isSimulatedLoggedIn = searchParams.get("simulateAuth") === "true";
 
   return (
-      <ClientOnly>
-        {isAuthPage && !isSimulatedLoggedIn ? (
-            <AuthLayout />
-        ) : (
-            <AppLayoutWrapper projects={projects} />
-        )}
-      </ClientOnly>
+    <ClientOnly>
+      {isAuthPage && !isSimulatedLoggedIn ? <AuthLayout /> : <AppLayoutWrapper projects={projects} />}
+    </ClientOnly>
   );
 }

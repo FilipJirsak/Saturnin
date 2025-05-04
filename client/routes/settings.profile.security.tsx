@@ -16,8 +16,8 @@ export const loader = async (args: LoaderFunctionArgs) => {
 
 export default function SecurityRoute() {
   return (
-      <div className="space-y-6">
-        <SecuritySection />
-      </div>
+    <div className="space-y-6">
+      <SecuritySection />
+    </div>
   );
 }

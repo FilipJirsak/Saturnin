@@ -16,7 +16,5 @@ export const meta: MetaFunction = () => {
 
 // TODO (NL): Tato komponenta by měla být nahrazena komponentou, která bude informovat uživatele o úspěšném odhlášení
 export default function LogoutRoute() {
-  return (
-      <div>Odhlašování...</div>
-  );
+  return <div>Odhlašování...</div>;
 }
